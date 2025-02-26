@@ -177,7 +177,7 @@ private:
 	int m_Map;
 	int m_RemainTime;
 	int m_TargetTime;
-	int m_TickCount;
+	XWORD m_TickCount;
 	int m_TimeCount;
 	int m_Stage;
 	int m_CurMonster;

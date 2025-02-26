@@ -166,9 +166,9 @@ void CArcaBattle::MainProc() // OK
 {
 	#if(GAMESERVER_UPDATE>=702)
 
-	if((GetTickCount()-this->m_TickCount) >= 1000)
+	if((GetTickCountEx()-this->m_TickCount) >= 1000)
 	{
-		this->m_TickCount = GetTickCount();
+		this->m_TickCount = GetTickCountEx();
 
 		this->m_RemainTime = (int)difftime(this->m_TargetTime,time(0));
 
@@ -847,11 +847,11 @@ bool CArcaBattle::RegenObelisk()
 		// ----
 		if( gObj[iObeliskIndex].Live == 1 )
 		{
-			this->m_ObeliskInfo[i].CreatedTime = GetTickCount();
+			this->m_ObeliskInfo[i].CreatedTime = GetTickCountEx();
 		}
 		else
 		{
-			if( GetTickCount() - this->m_ObeliskInfo[i].CreatedTime >= this->m_ObeliskInfo[i].RespawnTime )
+			if( GetTickCountEx() - this->m_ObeliskInfo[i].CreatedTime >= this->m_ObeliskInfo[i].RespawnTime )
 			{
 				int result = gObjAddMonster(this->m_ObeliskInfo[i].Map);
 				// ----
@@ -873,8 +873,8 @@ bool CArcaBattle::RegenObelisk()
 					gObj[result].Live			= true;
 					gObj[result].DieRegen		= 0;
 					gObj[result].MaxRegenTime	= 0;
-					gObj[result].MaxLife		= (double)this->m_ObeliskInfo[i].OccupyLife;
-					gObj[result].Life			= (double)this->m_ObeliskInfo[i].OccupyLife;
+					gObj[result].MaxLife		= (float)this->m_ObeliskInfo[i].OccupyLife;
+					gObj[result].Life			= (float)this->m_ObeliskInfo[i].OccupyLife;
 					// ----
 					this->m_ObeliskStateInfo[i].MonsterIndex = result;
 				}

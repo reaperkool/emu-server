@@ -34,8 +34,8 @@ public:
 	SOCKET m_socket;
 	IO_RECV_CONTEXT* m_IoRecvContext;
 	IO_SEND_CONTEXT* m_IoSendContext;
-	DWORD m_OnlineTime;
-	DWORD m_PacketTime;
+	XWORD m_OnlineTime;
+	XWORD m_PacketTime;
 };
 
 extern CClientManager gClientManager[MAX_CLIENT];

@@ -24,10 +24,14 @@ void CPacketManager::Init() // OK
 {
 	#if(GAMESERVER_UPDATE>=701)
 
+	#if(LEGACY_CRYPTO_ENABLE==1)
+	
 	BYTE DES_XEX3[24] = {0x0C,0xB0,0x66,0xCC,0xEF,0x92,0x8C,0x5C,0x65,0xF4,0xAC,0x3F,0x71,0xF2,0x7B,0xCE,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
 
 	this->m_Encryption.SetKey(DES_XEX3,sizeof(DES_XEX3));
 	this->m_Decryption.SetKey(DES_XEX3,sizeof(DES_XEX3));
+	
+	#endif
 
 	#else
 
@@ -215,6 +219,8 @@ int CPacketManager::Encrypt(BYTE* lpTarget,BYTE* lpSource,int size) // OK
 {
 	#if(GAMESERVER_UPDATE>=701)
 
+	#if(LEGACY_CRYPTO_ENABLE==1)
+
 	int OriSize = size;
 
 	BYTE* lpTempSource = lpSource;
@@ -230,6 +236,12 @@ int CPacketManager::Encrypt(BYTE* lpTarget,BYTE* lpSource,int size) // OK
 	lpTempTarget[size] = size-OriSize;
 
 	return (++size);
+
+	#else
+
+	return 0;
+
+	#endif
 
 	#else
 
@@ -269,6 +281,8 @@ int CPacketManager::Decrypt(BYTE* lpTarget,BYTE* lpSource,int size) // OK
 {
 	#if(GAMESERVER_UPDATE>=701)
 
+	#if(LEGACY_CRYPTO_ENABLE==1)
+
 	int OriSize = size;
 
 	BYTE* lpTempSource = lpSource;
@@ -282,6 +296,12 @@ int CPacketManager::Decrypt(BYTE* lpTarget,BYTE* lpSource,int size) // OK
 	this->m_Decryption.ProcessData(lpTempTarget,lpTempSource,size);
 
 	return (OriSize-lpTempSource[(OriSize-1)]);
+
+	#else
+
+	return 0;
+
+	#endif
 
 	#else
 

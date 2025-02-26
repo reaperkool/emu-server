@@ -30,7 +30,9 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDI_CONNECTSERVER       ICON                    "ConnectServer.ICO"
+
 IDI_SMALL               ICON                    "SMALL.ICO"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -76,9 +78,9 @@ STYLE DS_SETFONT | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
 CAPTION "About"
 FONT 8, "System", 0, 0, 0x0
 BEGIN
-    ICON            IDI_CONNECTSERVER,IDC_MYICON,14,9,20,20
-    LTEXT           "MuEMU ConnectServer",IDC_STATIC,49,10,119,8,SS_NOPREFIX
-    LTEXT           "Copyright (C) 2015",IDC_STATIC,49,20,119,8
+    ICON            IDI_CONNECTSERVER,IDC_MYICON,14,9,16,16
+    LTEXT           "ConnectServer",IDC_STATIC,49,10,119,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) 2025",IDC_STATIC,49,20,119,8
     DEFPUSHBUTTON   "OK",IDOK,195,6,30,11,WS_GROUP
 END
 
@@ -120,6 +122,17 @@ BEGIN
     END
 END
 #endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_ABOUTBOX AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -180,14 +193,14 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
-            VALUE "CompanyName", "MuEMU"
+            VALUE "CompanyName", "Reaperkool"
             VALUE "FileDescription", "ConnectServer"
-            VALUE "FileVersion", "1.0.0.0"
+            VALUE "FileVersion", "0.0.0.1"
             VALUE "InternalName", "ConnectServer"
-            VALUE "LegalCopyright", "Copyright © MuEMU.pl 2015"
+            VALUE "LegalCopyright", "Copyright © 2025"
             VALUE "OriginalFilename", "ConnectServer.exe"
-            VALUE "ProductName", "MuEMU ConnectServer"
-            VALUE "ProductVersion", "1.0.0.0"
+            VALUE "ProductName", "ConnectServer"
+            VALUE "ProductVersion", "0.0.0.1"
         END
     END
     BLOCK "VarFileInfo"

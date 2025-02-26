@@ -51,7 +51,7 @@ struct CUSTOM_EVENT_DROP_INFO
 	int State;
 	int RemainTime;
 	int TargetTime;
-	int TickCount;
+	XWORD TickCount;
 	int AlarmMinSave;
 	int AlarmMinLeft;
 	CUSTOM_EVENT_DROP_RULE_INFO RuleInfo;

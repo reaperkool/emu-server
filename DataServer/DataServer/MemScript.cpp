@@ -72,7 +72,7 @@ bool CMemScript::SetBuffer(char* path) // OK
 
 	this->m_count = 0;
 
-	this->m_tick = GetTickCount();
+	this->m_tick = GetTickCountEx();
 
 	return 1;
 }
@@ -135,7 +135,7 @@ char CMemScript::CheckComment(char ch) // OK
 
 eTokenResult CMemScript::GetToken() // OK
 {
-	if((GetTickCount()-this->m_tick) > 1000)
+	if((GetTickCountEx()-this->m_tick) > 1000)
 	{
 		this->SetLastError(4);
 		throw 1;

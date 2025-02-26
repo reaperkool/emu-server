@@ -10,7 +10,7 @@
 struct RECONNECT_INFO
 {
 	char Name[11];
-	DWORD ReconnectTime;
+	XWORD ReconnectTime;
 	int PartyNumber;
 	int AutoAddPointCount;
 	int AutoAddPointStats[5];

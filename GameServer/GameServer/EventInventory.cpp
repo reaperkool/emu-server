@@ -568,7 +568,7 @@ void CEventInventory::CGEventInventoryOpenRecv(PMSG_EVENT_INVENTORY_OPEN_RECV* l
 
 	CTime ExpireTime(gServerInfo.m_EventInventoryExpireYear,gServerInfo.m_EventInventoryExpireMonth,gServerInfo.m_EventInventoryExpireDay,0,0,0,-1);
 
-	DWORD time = (DWORD)(ExpireTime.GetTime()-CTime::GetTickCount().GetTime());
+	XWORD time = (XWORD)(ExpireTime.GetTime()-CTime::GetTickCount().GetTime());
 
 	PMSG_EVENT_INVENTORY_OPEN_SEND pMsg;
 

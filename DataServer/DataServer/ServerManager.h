@@ -36,8 +36,8 @@ public:
 	char m_ServerName[50];
 	WORD m_ServerPort;
 	WORD m_ServerCode;
-	DWORD m_OnlineTime;
-	DWORD m_PacketTime;
+	XWORD m_OnlineTime;
+	XWORD m_PacketTime;
 };
 
 extern CServerManager gServerManager[MAX_SERVER];

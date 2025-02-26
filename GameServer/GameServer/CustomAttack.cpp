@@ -175,7 +175,7 @@ void CCustomAttack::CommandCustomAttack(LPOBJ lpObj,char* arg) // OK
 
 	lpObj->AttackCustomSkill = SkillNumber;
 
-	lpObj->AttackCustomDelay = GetTickCount();
+	lpObj->AttackCustomDelay = GetTickCountEx();
 
 	lpObj->AttackCustomZoneX = lpObj->X;
 
@@ -245,7 +245,7 @@ void CCustomAttack::CommandCustomAttackOffline(LPOBJ lpObj,char* arg) // OK
 
 	lpObj->AttackCustomOfflineTime = 0;
 
-	lpObj->AttackCustomOfflineMoneyDelay = GetTickCount();
+	lpObj->AttackCustomOfflineMoneyDelay = GetTickCountEx();
 
 	lpObj->Money -= this->m_CustomAttackOfflineRequireMoney[lpObj->AccountLevel];
 
@@ -349,7 +349,7 @@ bool CCustomAttack::CheckRequireMoney(LPOBJ lpObj) // OK
 		return 1;
 	}
 
-	if((GetTickCount()-((DWORD)lpObj->AttackCustomOfflineMoneyDelay)) < 60000)
+	if((GetTickCountEx()-((XWORD)lpObj->AttackCustomOfflineMoneyDelay)) < 60000)
 	{
 		return 1;
 	}
@@ -361,7 +361,7 @@ bool CCustomAttack::CheckRequireMoney(LPOBJ lpObj) // OK
 
 	lpObj->Money -= this->m_CustomAttackOfflineRequireMoney[lpObj->AccountLevel];
 
-	lpObj->AttackCustomOfflineMoneyDelay = GetTickCount();
+	lpObj->AttackCustomOfflineMoneyDelay = GetTickCountEx();
 
 	return 1;
 }
@@ -400,10 +400,10 @@ void CCustomAttack::OnAttackSecondProc(LPOBJ lpObj) // OK
 			}
 		}
 
-		lpObj->CheckSumTime = GetTickCount();
-		lpObj->ConnectTickCount = GetTickCount();
-		lpObj->PcPointPointTime = ((this->m_CustomAttackOfflineGPGain==0)?GetTickCount():lpObj->PcPointPointTime);
-		lpObj->CashShopGoblinPointTime = ((this->m_CustomAttackOfflineGPGain==0)?GetTickCount():lpObj->CashShopGoblinPointTime);
+		lpObj->CheckSumTime = GetTickCountEx();
+		lpObj->ConnectTickCount = GetTickCountEx();
+		lpObj->PcPointPointTime = ((this->m_CustomAttackOfflineGPGain==0)?GetTickCountEx():lpObj->PcPointPointTime);
+		lpObj->CashShopGoblinPointTime = ((this->m_CustomAttackOfflineGPGain==0)?GetTickCountEx():lpObj->CashShopGoblinPointTime);
 	}
 }
 
@@ -493,11 +493,11 @@ void CCustomAttack::OnAttackMonsterAndMsgProc(LPOBJ lpObj) // OK
 		if(INVENTORY_FULL_RANGE(pMsg.SourceSlot) != 0){gItemManager.CGItemUseRecv(&pMsg,lpObj->Index);}
 	}
 
-	if((GetTickCount()-((DWORD)lpObj->AttackCustomDelay)) >= (((((DWORD)lpObj->PhysiSpeed)*5)>1500)?0:(1500-(((DWORD)lpObj->PhysiSpeed)*5))))
+	if((GetTickCountEx()-((XWORD)lpObj->AttackCustomDelay)) >= (((((XWORD)lpObj->PhysiSpeed)*5)>1500)?0:(1500-(((XWORD)lpObj->PhysiSpeed)*5))))
 	{
 		int MonsterIndex = -1;
 
-		lpObj->AttackCustomDelay = GetTickCount();
+		lpObj->AttackCustomDelay = GetTickCountEx();
 
 		if(this->GetTargetMonster(lpObj,lpSkill->m_index,&MonsterIndex) != 0)
 		{

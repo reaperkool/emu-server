@@ -155,15 +155,14 @@ void CGuild::CGGuildRequestRecv(PMSG_GUILD_REQUEST_RECV* lpMsg,int aIndex) // OK
 		return;
 	}
 
-	#if(GAMESERVER_TYPE==1)
-
-	if(gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE)
+	if (gServerInfo.m_ServerType == 1)
 	{
-		this->GCGuildResultSend(aIndex,6);
-		return;
+		if (gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE)
+		{
+			this->GCGuildResultSend(aIndex, 6);
+			return;
+		}
 	}
-
-	#endif
 
 	if(lpObj->Level < 6)
 	{
@@ -198,13 +197,13 @@ void CGuild::CGGuildRequestRecv(PMSG_GUILD_REQUEST_RECV* lpMsg,int aIndex) // OK
 	lpObj->Interface.use = 1;
 	lpObj->Interface.type = INTERFACE_GUILD;
 	lpObj->Interface.state = 0;
-	lpObj->InterfaceTime = GetTickCount();
+	lpObj->InterfaceTime = GetTickCountEx();
 	lpObj->TargetNumber = bIndex;
 
 	lpTarget->Interface.use = 1;
 	lpTarget->Interface.type = INTERFACE_GUILD;
 	lpTarget->Interface.state = 0;
-	lpTarget->InterfaceTime = GetTickCount();
+	lpTarget->InterfaceTime = GetTickCountEx();
 	lpTarget->TargetNumber = aIndex;
 
 	PMSG_GUILD_REQUEST_SEND pMsg;
@@ -281,15 +280,14 @@ void CGuild::CGGuildResultRecv(PMSG_GUILD_RESULT_RECV* lpMsg,int aIndex) // OK
 		goto CLEAR_JUMP;
 	}
 
-	#if(GAMESERVER_TYPE==1)
-
-	if(gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE)
+	if (gServerInfo.m_ServerType == 1)
 	{
-		this->GCGuildResultSend(bIndex,6);
-		goto CLEAR_JUMP;
+		if (gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE)
+		{
+			this->GCGuildResultSend(bIndex, 6);
+			goto CLEAR_JUMP;
+		}
 	}
-
-	#endif
 
 	if(lpTarget->Level < 6)
 	{
@@ -453,15 +451,14 @@ void CGuild::CGGuildDeleteRecv(PMSG_GUILD_DELETE_RECV* lpMsg,int aIndex) // OK
 		return;
 	}
 
-	#if(GAMESERVER_TYPE==1)
-
-	if(gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE)
+	if (gServerInfo.m_ServerType == 1)
 	{
-		DataSend(aIndex,(BYTE*)&pMsg,pMsg.header.size);
-		return;
+		if (gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE)
+		{
+			DataSend(aIndex, (BYTE*)&pMsg, pMsg.header.size);
+			return;
+		}
 	}
-
-	#endif
 
 	char name[11] = {0};
 
@@ -653,13 +650,14 @@ void CGuild::GCGuildAssignStatusSend(int aIndex,int type,int result,char* name) 
 
 void GCGuildWarDeclare(int aIndex, LPSTR _guildname) //check gs-cs
 {
-#if(GAMESERVER_TYPE==0)
-	PMSG_GUILDWAR_DECLARE pMsg;
-	pMsg.h.set(0x62, sizeof(pMsg));
-	memcpy(pMsg.GuildName, _guildname, sizeof(pMsg.GuildName));
+	if (gServerInfo.m_ServerType == 0)
+	{
+		PMSG_GUILDWAR_DECLARE pMsg;
+		pMsg.h.set(0x62, sizeof(pMsg));
+		memcpy(pMsg.GuildName, _guildname, sizeof(pMsg.GuildName));
 
-	DataSend(aIndex, (LPBYTE)&pMsg, pMsg.h.size);
-#endif
+		DataSend(aIndex, (LPBYTE)&pMsg, pMsg.h.size);
+	}
 }
 
 BOOL gObjGuildMasterCapacityTest(LPOBJ lpObj)
@@ -707,11 +705,12 @@ void GCGuildMasterManagerRun(int aIndex)
 void CGGuildMasterInfoSave(int aIndex, PMSG_GUILDINFOSAVE * lpMsg) //0x55
 {
 	char GuildName[9];
-	GuildName[8] ='\0';
-	memcpy(GuildName, lpMsg->GuildName, 8);
-	int len = strlen(GuildName);
+	int size = sizeof(GuildName) - 1;
+	GuildName[size - 1] = '\0';
+	memcpy(GuildName, lpMsg->GuildName, size - 1);
+	int len = (int)strlen(GuildName);
 
-	if ( len <= 2 || len > 8)
+	if ( len <= 2 || len > (size - 1))
 	{
 		PMSG_GUILDCREATED_RESULT pMsg;
 
@@ -769,407 +768,407 @@ void GCServerMsgStringSendGuild(GUILD_INFO_STRUCT* lpNode, LPSTR szMsg, BYTE typ
 
 void GCGuildWarRequestResult(LPSTR GuildName, int aIndex, int type)
 {
-#if(GAMESERVER_TYPE == 1)
-	return;
-#endif
-	PMSG_GUILDWARREQUEST_RESULT pMsg;
-
-	pMsg.h.set(0x60, sizeof(pMsg));
-	pMsg.Result = 3;
-
-	if ( gObj[aIndex].GuildNumber < 1)
+	if (gServerInfo.m_ServerType == 0)
 	{
-		DataSend(aIndex, (LPBYTE)&pMsg, pMsg.h.size);
-		return;
-	}
+		PMSG_GUILDWARREQUEST_RESULT pMsg;
 
-	GUILD_INFO_STRUCT * lpMyGuild = gObj[aIndex].Guild;
+		pMsg.h.set(0x60, sizeof(pMsg));
+		pMsg.Result = 3;
 
-	if ( !lpMyGuild )
-	{
-		DataSend(aIndex, (LPBYTE)&pMsg, pMsg.h.size);
-		return;
-	}
+		if (gObj[aIndex].GuildNumber < 1)
+		{
+			DataSend(aIndex, (LPBYTE)&pMsg, pMsg.h.size);
+			return;
+		}
 
-	if ( lpMyGuild->WarState == 1 || lpMyGuild->WarDeclareState == 1 )
-	{
-		pMsg.Result = 4;
-		DataSend(aIndex, (LPBYTE)&pMsg, pMsg.h.size);
-		return;
-	}
+		GUILD_INFO_STRUCT* lpMyGuild = gObj[aIndex].Guild;
 
-	if ( gServerInfo.m_PKLimitFree == 0 && gObj[aIndex].PKLevel >= 6)
-	{
-		pMsg.Result = 4;
-		DataSend(aIndex, (LPBYTE)&pMsg, pMsg.h.size);
-		return;
-	}
+		if (!lpMyGuild)
+		{
+			DataSend(aIndex, (LPBYTE)&pMsg, pMsg.h.size);
+			return;
+		}
 
-	if ( strcmp(lpMyGuild->Names[0], gObj[aIndex].Name ) )
-	{
-		pMsg.Result = 5;
-		DataSend(aIndex, (LPBYTE)&pMsg, pMsg.h.size);
-		return;
-	}
-
-	char _guildname[9];
-	memset(_guildname, 0, sizeof(_guildname));
-	memcpy(_guildname, GuildName, 8);
-
-	if ( !strncmp(lpMyGuild->Name, GuildName, 8))
-	{
-		return;
-	}
-
-	GUILD_INFO_STRUCT * lpNode = gGuildClass.SearchGuild(_guildname);
-
-	if ( lpNode )
-	{
-		if ( lpNode->WarState == 1 || lpNode->WarDeclareState == 1 )
+		if (lpMyGuild->WarState == 1 || lpMyGuild->WarDeclareState == 1)
 		{
 			pMsg.Result = 4;
 			DataSend(aIndex, (LPBYTE)&pMsg, pMsg.h.size);
 			return;
 		}
 
-		if ( lpMyGuild->GuildUnion != 0 && lpMyGuild->GuildUnion == lpNode->GuildUnion )
+		if (gServerInfo.m_PKLimitFree == 0 && gObj[aIndex].PKLevel >= 6)
+		{
+			pMsg.Result = 4;
+			DataSend(aIndex, (LPBYTE)&pMsg, pMsg.h.size);
+			return;
+		}
+
+		if (strcmp(lpMyGuild->Names[0], gObj[aIndex].Name))
+		{
+			pMsg.Result = 5;
+			DataSend(aIndex, (LPBYTE)&pMsg, pMsg.h.size);
+			return;
+		}
+
+		char _guildname[9];
+		memset(_guildname, 0, sizeof(_guildname));
+		memcpy(_guildname, GuildName, 8);
+
+		if (!strncmp(lpMyGuild->Name, GuildName, 8))
 		{
 			return;
 		}
 
-		int n=0;
-		int warmaster=-1;
+		GUILD_INFO_STRUCT* lpNode = gGuildClass.SearchGuild(_guildname);
 
-		while ( true )
+		if (lpNode)
 		{
-			if ( gObj[n].Type == OBJECT_USER )
-			{
-				if ( gObj[n].Connected > OBJECT_LOGGED )
-				{
-					if ( gObj[n].Name[0] == lpNode->Names[0][0] )
-					{
-						if ( !strcmp(gObj[n].Name, lpNode->Names[0]))
-						{
-							if ( gServerInfo.m_PKLimitFree == 0 && gObj[n].PKLevel >= 6)
-							{
-								pMsg.Result = 4;
-								DataSend(aIndex, (LPBYTE)&pMsg, pMsg.h.size);
-								return;
-							}
-
-							warmaster = n;
-							break;
-						}
-					}
-				}
-			}
-
-			if ( n < MAX_OBJECT-1 )
-			{
-				n++;
-			}
-			else
-			{
-				break;
-			}
-		}
-		
-		if ( warmaster >= 1 )
-		{
-			if ( CA_MAP_RANGE(gObj[aIndex].Map) || CA_MAP_RANGE(gObj[warmaster].Map) )
-			{
-				return;
-			}
-
-			if ( CC_MAP_RANGE(gObj[aIndex].Map) || CC_MAP_RANGE(gObj[warmaster].Map) )
-			{
-				return;
-			}
-
-			if ( IT_MAP_RANGE(gObj[aIndex].Map) || IT_MAP_RANGE(gObj[warmaster].Map) )
-			{
-				return;
-			}
-
-			if ( (gObj[warmaster].Option&1) != 1 )
+			if (lpNode->WarState == 1 || lpNode->WarDeclareState == 1)
 			{
 				pMsg.Result = 4;
 				DataSend(aIndex, (LPBYTE)&pMsg, pMsg.h.size);
 				return;
 			}
 
-			pMsg.Result = 1;
-			DataSend(aIndex, (LPBYTE)&pMsg, pMsg.h.size);
-			GCGuildWarRequestSend(lpMyGuild->Name, warmaster, type);
-			lpMyGuild->WarDeclareState = 1;
-			lpNode->WarDeclareState = 1;
-			lpMyGuild->WarType = type;
-			lpNode->WarType = type;
+			if (lpMyGuild->GuildUnion != 0 && lpMyGuild->GuildUnion == lpNode->GuildUnion)
+			{
+				return;
+			}
 
-			strcpy_s(lpMyGuild->TargetGuildName, lpNode->Name);
-			strcpy_s(lpNode->TargetGuildName, lpMyGuild->Name);
-			lpMyGuild->TargetGuildNode = lpNode;
-			lpNode->TargetGuildNode = lpMyGuild;
+			int n = 0;
+			int warmaster = -1;
+
+			while (true)
+			{
+				if (gObj[n].Type == OBJECT_USER)
+				{
+					if (gObj[n].Connected > OBJECT_LOGGED)
+					{
+						if (gObj[n].Name[0] == lpNode->Names[0][0])
+						{
+							if (!strcmp(gObj[n].Name, lpNode->Names[0]))
+							{
+								if (gServerInfo.m_PKLimitFree == 0 && gObj[n].PKLevel >= 6)
+								{
+									pMsg.Result = 4;
+									DataSend(aIndex, (LPBYTE)&pMsg, pMsg.h.size);
+									return;
+								}
+
+								warmaster = n;
+								break;
+							}
+						}
+					}
+				}
+
+				if (n < MAX_OBJECT - 1)
+				{
+					n++;
+				}
+				else
+				{
+					break;
+				}
+			}
+
+			if (warmaster >= 1)
+			{
+				if (CA_MAP_RANGE(gObj[aIndex].Map) || CA_MAP_RANGE(gObj[warmaster].Map))
+				{
+					return;
+				}
+
+				if (CC_MAP_RANGE(gObj[aIndex].Map) || CC_MAP_RANGE(gObj[warmaster].Map))
+				{
+					return;
+				}
+
+				if (IT_MAP_RANGE(gObj[aIndex].Map) || IT_MAP_RANGE(gObj[warmaster].Map))
+				{
+					return;
+				}
+
+				if ((gObj[warmaster].Option & 1) != 1)
+				{
+					pMsg.Result = 4;
+					DataSend(aIndex, (LPBYTE)&pMsg, pMsg.h.size);
+					return;
+				}
+
+				pMsg.Result = 1;
+				DataSend(aIndex, (LPBYTE)&pMsg, pMsg.h.size);
+				GCGuildWarRequestSend(lpMyGuild->Name, warmaster, type);
+				lpMyGuild->WarDeclareState = 1;
+				lpNode->WarDeclareState = 1;
+				lpMyGuild->WarType = type;
+				lpNode->WarType = type;
+
+				strcpy_s(lpMyGuild->TargetGuildName, lpNode->Name);
+				strcpy_s(lpNode->TargetGuildName, lpMyGuild->Name);
+				lpMyGuild->TargetGuildNode = lpNode;
+				lpNode->TargetGuildNode = lpMyGuild;
+			}
+			else
+			{
+				pMsg.Result = 2;
+				DataSend(aIndex, (LPBYTE)&pMsg, pMsg.h.size);
+			}
 		}
 		else
 		{
-			pMsg.Result = 2;
+			pMsg.Result = 0;
 			DataSend(aIndex, (LPBYTE)&pMsg, pMsg.h.size);
+			return;
 		}
-	}
-	else
-	{
-		pMsg.Result = 0;
-		DataSend(aIndex, (LPBYTE)&pMsg, pMsg.h.size);
-		return;
 	}
 }
 
 void GCGuildWarRequestSend(LPSTR GuildName, int aIndex, int type) //check gs-cs
 {
-#if(GAMESERVER_TYPE==0)
-	PMSG_GUILDWARSEND pMsg;
-	pMsg.h.set( 0x61, sizeof(pMsg));
-	pMsg.Type = type;
-	memcpy(pMsg.GuildName, GuildName, 8);
+	if (gServerInfo.m_ServerType == 0)
+	{
+		PMSG_GUILDWARSEND pMsg;
+		pMsg.h.set(0x61, sizeof(pMsg));
+		pMsg.Type = type;
+		memcpy(pMsg.GuildName, GuildName, 8);
 
-	DataSend(aIndex, (LPBYTE)&pMsg, pMsg.h.size);
-#endif
+		DataSend(aIndex, (LPBYTE)&pMsg, pMsg.h.size);
+	}
 }
 
 void GCGuildWarRequestSendRecv(PMSG_GUILDWARSEND_RESULT * lpMsg, int aIndex) // 61
 {
-#if(GAMESERVER_TYPE == 1)
-	return;
-#endif
-
-	PMSG_GUILDWAR_DECLARE pMsg;
-	int count=0;
-	int g_call=0;
-	
-	pMsg.h.set(0x62, sizeof(pMsg));
-	pMsg.Type = 0;
-	
-	GUILD_INFO_STRUCT * lpMyNode = gObj[aIndex].Guild;
-
-	if ( !lpMyNode )
+	if (gServerInfo.m_ServerType == 0)
 	{
-		PMSG_GUILDWARREQUEST_RESULT pResult;
+		PMSG_GUILDWAR_DECLARE pMsg;
+		int count = 0;
+		int g_call = 0;
 
-		pResult.h.type = 0xC1;
-		pResult.h.head = 0x60;
-		pResult.h.size = sizeof(pMsg);
-		pResult.Result = 0;
+		pMsg.h.set(0x62, sizeof(pMsg));
+		pMsg.Type = 0;
 
-		DataSend(aIndex, (LPBYTE)&pResult, pResult.h.size);
-		return;
-	}
+		GUILD_INFO_STRUCT* lpMyNode = gObj[aIndex].Guild;
 
-	if ( lpMyNode->TargetGuildNode && lpMsg->Result )
-	{
-		int iTarGetIndex = lpMyNode->TargetGuildNode->Index[0];
-
-		if ( CA_MAP_RANGE(gObj[iTarGetIndex].Map) || BC_MAP_RANGE(gObj[iTarGetIndex].Map) || CC_MAP_RANGE(gObj[iTarGetIndex].Map) || DS_MAP_RANGE(gObj[iTarGetIndex].Map) || IT_MAP_RANGE(gObj[iTarGetIndex].Map))
+		if (!lpMyNode)
 		{
-			lpMsg->Result = 0;
+			PMSG_GUILDWARREQUEST_RESULT pResult;
+
+			pResult.h.type = 0xC1;
+			pResult.h.head = 0x60;
+			pResult.h.size = sizeof(pMsg);
+			pResult.Result = 0;
+
+			DataSend(aIndex, (LPBYTE)&pResult, pResult.h.size);
+			return;
 		}
-	}
 
-	pMsg.Type = lpMyNode->WarType;
-
-	if ( lpMsg->Result == 0 )
-	{
-		if ( lpMyNode->TargetGuildNode )
+		if (lpMyNode->TargetGuildNode && lpMsg->Result)
 		{
-			if ( lpMyNode->TargetGuildNode->WarDeclareState == 1 )
+			int iTarGetIndex = lpMyNode->TargetGuildNode->Index[0];
+
+			if (CA_MAP_RANGE(gObj[iTarGetIndex].Map) || BC_MAP_RANGE(gObj[iTarGetIndex].Map) || CC_MAP_RANGE(gObj[iTarGetIndex].Map) || DS_MAP_RANGE(gObj[iTarGetIndex].Map) || IT_MAP_RANGE(gObj[iTarGetIndex].Map))
 			{
-				lpMyNode->TargetGuildNode->WarDeclareState = 0;
-				lpMyNode->WarDeclareState = 0;
+				lpMsg->Result = 0;
+			}
+		}
 
-				PMSG_GUILDWARREQUEST_RESULT pResult;
+		pMsg.Type = lpMyNode->WarType;
 
-				pResult.h.set(0x60, sizeof(pResult));
-				pResult.Result = 6;
-
-				if ( lpMyNode->TargetGuildNode->Index[0] >= 0 )
+		if (lpMsg->Result == 0)
+		{
+			if (lpMyNode->TargetGuildNode)
+			{
+				if (lpMyNode->TargetGuildNode->WarDeclareState == 1)
 				{
-					DataSend(lpMyNode->TargetGuildNode->Index[0], (LPBYTE)&pResult, pResult.h.size);
+					lpMyNode->TargetGuildNode->WarDeclareState = 0;
+					lpMyNode->WarDeclareState = 0;
+
+					PMSG_GUILDWARREQUEST_RESULT pResult;
+
+					pResult.h.set(0x60, sizeof(pResult));
+					pResult.Result = 6;
+
+					if (lpMyNode->TargetGuildNode->Index[0] >= 0)
+					{
+						DataSend(lpMyNode->TargetGuildNode->Index[0], (LPBYTE)&pResult, pResult.h.size);
+					}
 				}
 			}
 		}
-	}
-	else
-	{
-		if ( lpMyNode->WarDeclareState == 1 )
+		else
 		{
-			if ( lpMyNode->TargetGuildNode )
+			if (lpMyNode->WarDeclareState == 1)
 			{
-				if (lpMyNode->TargetGuildNode->WarDeclareState == 1 )
+				if (lpMyNode->TargetGuildNode)
 				{
-					if ( lpMyNode->WarType == 1 )
+					if (lpMyNode->TargetGuildNode->WarDeclareState == 1)
 					{
-						lpMyNode->BattleGroundIndex = gCheckBlankBattleGround();
-
-						switch ( lpMyNode->BattleGroundIndex )
+						if (lpMyNode->WarType == 1)
 						{
-							case 0xFF:
-								lpMyNode->WarDeclareState = 0;
-								lpMyNode->WarState = 0;
-								lpMyNode->TargetGuildNode->WarDeclareState = 0;
-								lpMyNode->TargetGuildNode->WarState = 0;
+							lpMyNode->BattleGroundIndex = gCheckBlankBattleGround();
 
-								PMSG_GUILDWARREQUEST_RESULT pResult;
+							switch (lpMyNode->BattleGroundIndex)
+							{
+								case 0xFF:
+									lpMyNode->WarDeclareState = 0;
+									lpMyNode->WarState = 0;
+									lpMyNode->TargetGuildNode->WarDeclareState = 0;
+									lpMyNode->TargetGuildNode->WarState = 0;
 
-								pResult.h.set(0x60, sizeof(pResult));
-								pResult.Result = 4;
+									PMSG_GUILDWARREQUEST_RESULT pResult;
 
-								DataSend(aIndex, (LPBYTE)&pResult, pResult.h.size);
-								return;
+									pResult.h.set(0x60, sizeof(pResult));
+									pResult.Result = 4;
+
+									DataSend(aIndex, (LPBYTE)&pResult, pResult.h.size);
+									return;
+							}
+
+							lpMyNode->TargetGuildNode->BattleGroundIndex = lpMyNode->BattleGroundIndex;
+
+							if (gBSGround[0]->m_BallIndex >= 0)
+							{
+								gObjMonsterRegen(&gObj[gBSGround[0]->m_BallIndex]);
+							}
+
+							BattleSoccerGoalEnd(0);
+							lpMyNode->PlayScore = 0;
+							lpMyNode->TargetGuildNode->PlayScore = 0;
+							gBattleGroundEnable(lpMyNode->BattleGroundIndex, TRUE);
+							gSetBattleTeamMaster(lpMyNode->BattleGroundIndex, 0, lpMyNode->Name, lpMyNode);
+							gSetBattleTeamMaster(lpMyNode->BattleGroundIndex, 1, lpMyNode->TargetGuildNode->Name, lpMyNode->TargetGuildNode);
 						}
 
-						lpMyNode->TargetGuildNode->BattleGroundIndex = lpMyNode->BattleGroundIndex;
-
-						if ( gBSGround[0]->m_BallIndex >= 0 )
-						{
-							gObjMonsterRegen(&gObj[gBSGround[0]->m_BallIndex]);
-						}
-
-						BattleSoccerGoalEnd(0);
+						lpMyNode->WarDeclareState = 2;
+						lpMyNode->WarState = 1;
+						lpMyNode->TargetGuildNode->WarDeclareState = 2;
+						lpMyNode->TargetGuildNode->WarState = 1;
 						lpMyNode->PlayScore = 0;
 						lpMyNode->TargetGuildNode->PlayScore = 0;
-						gBattleGroundEnable(lpMyNode->BattleGroundIndex, TRUE);
-						gSetBattleTeamMaster(lpMyNode->BattleGroundIndex, 0, lpMyNode->Name, lpMyNode);
-						gSetBattleTeamMaster(lpMyNode->BattleGroundIndex, 1, lpMyNode->TargetGuildNode->Name, lpMyNode->TargetGuildNode);
-					}
+						lpMyNode->BattleTeamCode = 0;
+						lpMyNode->TargetGuildNode->BattleTeamCode = 1;
+						memset(pMsg.GuildName, 0, sizeof(pMsg.GuildName));
+						memcpy(pMsg.GuildName, lpMyNode->TargetGuildNode->Name, sizeof(pMsg.GuildName));
+						pMsg.TeamCode = lpMyNode->BattleTeamCode;
+						count = 0;
 
-					lpMyNode->WarDeclareState = 2;
-					lpMyNode->WarState = 1;
-					lpMyNode->TargetGuildNode->WarDeclareState = 2;
-					lpMyNode->TargetGuildNode->WarState = 1;
-					lpMyNode->PlayScore = 0;
-					lpMyNode->TargetGuildNode->PlayScore = 0;
-					lpMyNode->BattleTeamCode = 0;
-					lpMyNode->TargetGuildNode->BattleTeamCode = 1;
-					memset(pMsg.GuildName, 0, sizeof(pMsg.GuildName));
-					memcpy(pMsg.GuildName, lpMyNode->TargetGuildNode->Name, sizeof(pMsg.GuildName));
-					pMsg.TeamCode = lpMyNode->BattleTeamCode;
-					count = 0;
-
-					for ( int n=0;n<MAX_GUILD_USER;n++)
-					{
-						if ( lpMyNode->Use[n] )
+						for (int n = 0; n < MAX_GUILD_USER; n++)
 						{
-							if ( lpMyNode->Index[n] >= 0 )
+							if (lpMyNode->Use[n])
 							{
-								g_call = 0;
-
-								if ( n > 0 )
+								if (lpMyNode->Index[n] >= 0)
 								{
-									if ( lpMyNode->WarType == 1 )
+									g_call = 0;
+
+									if (n > 0)
 									{
-										if ( gObj[lpMyNode->Index[0]].PartyNumber  >= 0 )
+										if (lpMyNode->WarType == 1)
 										{
-											if ( gObj[lpMyNode->Index[0]].PartyNumber == gObj[lpMyNode->Index[n]].PartyNumber )
+											if (gObj[lpMyNode->Index[0]].PartyNumber >= 0)
 											{
-												g_call = 1;
+												if (gObj[lpMyNode->Index[0]].PartyNumber == gObj[lpMyNode->Index[n]].PartyNumber)
+												{
+													g_call = 1;
+												}
 											}
 										}
+										else
+										{
+											g_call = 1;
+										}
 									}
-									else 
+									else if (n == 0)
 									{
 										g_call = 1;
 									}
-								}
-								else if ( n== 0 )
-								{
-									g_call = 1;
-								}
 
-								if ( g_call )
-								{
-									DataSend(lpMyNode->Index[n], (LPBYTE)&pMsg, pMsg.h.size);
-
-									gGuild.GCGuildWarScoreSend(lpMyNode->Index[n]);
-									int x = 60;
-
-									if ( lpMyNode->WarType == 1 )
+									if (g_call)
 									{
-										gObj[lpMyNode->Index[n]].IsInBattleGround = true;
+										DataSend(lpMyNode->Index[n], (LPBYTE)&pMsg, pMsg.h.size);
 
-										if ( gServerInfo.m_PKLimitFree != 0 || gObj[lpMyNode->Index[n]].PKLevel < 6 )
+										gGuild.GCGuildWarScoreSend(lpMyNode->Index[n]);
+										int x = 60;
+
+										if (lpMyNode->WarType == 1)
 										{
-											gObjTeleport(lpMyNode->Index[n], 6, x++, 153);
-											count++;
+											gObj[lpMyNode->Index[n]].IsInBattleGround = true;
+
+											if (gServerInfo.m_PKLimitFree != 0 || gObj[lpMyNode->Index[n]].PKLevel < 6)
+											{
+												gObjTeleport(lpMyNode->Index[n], 6, x++, 153);
+												count++;
+											}
 										}
 									}
 								}
 							}
 						}
-					}
 
-					memset(pMsg.GuildName, 0, sizeof(pMsg.GuildName));
-					memcpy(pMsg.GuildName, lpMyNode->Name, sizeof(pMsg.GuildName));
+						memset(pMsg.GuildName, 0, sizeof(pMsg.GuildName));
+						memcpy(pMsg.GuildName, lpMyNode->Name, sizeof(pMsg.GuildName));
 
-					pMsg.TeamCode = lpMyNode->TargetGuildNode->BattleTeamCode;
-					count = 0;
+						pMsg.TeamCode = lpMyNode->TargetGuildNode->BattleTeamCode;
+						count = 0;
 
-					for (int n=0;n<MAX_GUILD_USER;n++)
-					{
-						if ( lpMyNode->TargetGuildNode->Use[n] )
+						for (int n = 0; n < MAX_GUILD_USER; n++)
 						{
-							if ( lpMyNode->TargetGuildNode->Index[n] >= 0 )
+							if (lpMyNode->TargetGuildNode->Use[n])
 							{
-								g_call = 0;
-
-								if ( n > 0 )
+								if (lpMyNode->TargetGuildNode->Index[n] >= 0)
 								{
-									if ( lpMyNode->WarType == 1 )
+									g_call = 0;
+
+									if (n > 0)
 									{
-										if ( gObj[lpMyNode->TargetGuildNode->Index[0]].PartyNumber  >= 0 )
+										if (lpMyNode->WarType == 1)
 										{
-											if ( gObj[lpMyNode->TargetGuildNode->Index[0]].PartyNumber == gObj[lpMyNode->TargetGuildNode->Index[n]].PartyNumber )
+											if (gObj[lpMyNode->TargetGuildNode->Index[0]].PartyNumber >= 0)
 											{
-												g_call = 1;
+												if (gObj[lpMyNode->TargetGuildNode->Index[0]].PartyNumber == gObj[lpMyNode->TargetGuildNode->Index[n]].PartyNumber)
+												{
+													g_call = 1;
+												}
 											}
 										}
+										else
+										{
+											g_call = 1;
+										}
 									}
-									else 
+									else if (n == 0)
 									{
 										g_call = 1;
 									}
-								}
-								else if ( n== 0 )
-								{
-									g_call = 1;
-								}
 
-								if ( g_call )
-								{
-									DataSend(lpMyNode->TargetGuildNode->Index[n], (LPBYTE)&pMsg, pMsg.h.size);
-
-									gGuild.GCGuildWarScoreSend(lpMyNode->TargetGuildNode->Index[n]);
-									int x = 59;
-
-									if ( lpMyNode->TargetGuildNode->WarType == 1 )
+									if (g_call)
 									{
+										DataSend(lpMyNode->TargetGuildNode->Index[n], (LPBYTE)&pMsg, pMsg.h.size);
 
-										if ( gServerInfo.m_PKLimitFree != 0 || gObj[lpMyNode->TargetGuildNode->Index[n]].PKLevel < 6 )
+										gGuild.GCGuildWarScoreSend(lpMyNode->TargetGuildNode->Index[n]);
+										int x = 59;
+
+										if (lpMyNode->TargetGuildNode->WarType == 1)
 										{
-											gObj[lpMyNode->TargetGuildNode->Index[n]].IsInBattleGround = true;
-											gObjTeleport(lpMyNode->TargetGuildNode->Index[n], 6, x++, 164);
-											count++;
+
+											if (gServerInfo.m_PKLimitFree != 0 || gObj[lpMyNode->TargetGuildNode->Index[n]].PKLevel < 6)
+											{
+												gObj[lpMyNode->TargetGuildNode->Index[n]].IsInBattleGround = true;
+												gObjTeleport(lpMyNode->TargetGuildNode->Index[n], 6, x++, 164);
+												count++;
+											}
 										}
 									}
 								}
 							}
 						}
-					}
 
-					if ( lpMyNode->WarType == 1 )
-					{
-						gObjAddMsgSendDelay(&gObj[aIndex], 5, aIndex, 10000, 0);
-						GCServerMsgStringSendGuild(lpMyNode->TargetGuildNode,gMessage.GetMessage(490), 1);
-						GCServerMsgStringSendGuild(lpMyNode,gMessage.GetMessage(490), 1);
+						if (lpMyNode->WarType == 1)
+						{
+							gObjAddMsgSendDelay(&gObj[aIndex], 5, aIndex, 10000, 0);
+							GCServerMsgStringSendGuild(lpMyNode->TargetGuildNode, gMessage.GetMessage(490), 1);
+							GCServerMsgStringSendGuild(lpMyNode, gMessage.GetMessage(490), 1);
+						}
 					}
 				}
 			}
@@ -1443,12 +1442,12 @@ void CGRelationShipReqJoinBreakOff(PMSG_RELATIONSHIP_JOIN_BREAKOFF_REQ * aRecv, 
 	lpObj->Interface.use = 1;
 	lpObj->Interface.type = 14;
 	lpObj->Interface.state = 0;
-	lpObj->InterfaceTime = GetTickCount();
+	lpObj->InterfaceTime = GetTickCountEx();
 
 	lpTargetObj->Interface.use = 1;
 	lpTargetObj->Interface.type = 14;
 	lpTargetObj->Interface.state = 0;
-	lpTargetObj->InterfaceTime = GetTickCount();
+	lpTargetObj->InterfaceTime = GetTickCountEx();
 
 	PMSG_RELATIONSHIP_JOIN_BREAKOFF_REQ pMsg={0};
 

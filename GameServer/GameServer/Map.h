@@ -154,8 +154,8 @@ public:
 public:
 	BYTE m_Weather;
 	BYTE m_WeatherVariation;
-	DWORD m_WeatherTimer;
-	DWORD m_NextWeatherTimer;
+	XWORD m_WeatherTimer;
+	XWORD m_NextWeatherTimer;
 	BYTE* m_MapAttr;
 	int m_width;
 	int m_height;

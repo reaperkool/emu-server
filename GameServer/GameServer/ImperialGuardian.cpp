@@ -36,7 +36,7 @@ CImperialGuardian::CImperialGuardian() // OK
 	this->m_Map = 0;
 	this->m_RemainTime = 0;
 	this->m_TargetTime = 0;
-	this->m_TickCount = GetTickCount();
+	this->m_TickCount = GetTickCountEx();
 	this->m_TimeCount = 0;
 	this->m_Stage = 0;
 	this->m_CurMonster = 0;
@@ -172,14 +172,14 @@ void CImperialGuardian::MainProc() // OK
 {
 	#if(GAMESERVER_UPDATE>=501)
 
-	DWORD elapsed = GetTickCount()-this->m_TickCount;
+	XWORD elapsed = GetTickCountEx()-this->m_TickCount;
 
 	if(elapsed < 1000)
 	{
 		return;
 	}
 
-	this->m_TickCount = GetTickCount();
+	this->m_TickCount = GetTickCountEx();
 
 	this->m_RemainTime = (int)(difftime(this->m_TargetTime,time(0))*1000);
 
@@ -628,7 +628,7 @@ void CImperialGuardian::SetState_EMPTY() // OK
 
 	this->m_RemainTime = 0;
 	this->m_TargetTime = 0;
-	this->m_TickCount = GetTickCount();
+	this->m_TickCount = GetTickCountEx();
 	this->m_TimeCount = 0;
 	this->m_Stage = 0;
 	this->m_CurMonster = 0;

@@ -27,7 +27,7 @@ int CUnionInfo::GetUnionMemberCount()
 	int iCount = 0;
 
 	this->m_Sync.Lock();
-	iCount = this->m_vtUnionMember.size();
+	iCount = (int)this->m_vtUnionMember.size();
 	this->m_Sync.Unlock();
 
 	return iCount;
@@ -38,7 +38,7 @@ int CUnionInfo::GetRivalMemberCount()
 	int iCount = 0;
 
 	this->m_Sync.Lock();
-	iCount = this->m_vtRivalMember.size();
+	iCount = (int)this->m_vtRivalMember.size();
 	this->m_Sync.Unlock();
 
 	return iCount;

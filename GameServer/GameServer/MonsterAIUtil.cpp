@@ -63,7 +63,7 @@ BOOL CMonsterAIUtil::FindPathToMoveMonster(LPOBJ lpObj,int tx,int ty,int MaxPath
 	lpObj->PathX[0] = lpObj->X;
 	lpObj->PathY[0] = lpObj->Y;
 	lpObj->PathDir[0] = lpObj->Dir;
-	lpObj->LastMoveTime = GetTickCount();
+	lpObj->LastMoveTime = GetTickCountEx();
 
 	for(int n=1;n < lpObj->PathCount;n++)
 	{

@@ -6,8 +6,6 @@
 #include "GuardianStatue.h"
 #include "Protocol.h"
 
-#if(GAMESERVER_TYPE==1)
-
 CGuardianStatue gGuardianStatue;
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -110,5 +108,3 @@ void CGuardianStatue::GuardianStatueAct(int aIndex) // OK
 		}
 	}
 }
-
-#endif

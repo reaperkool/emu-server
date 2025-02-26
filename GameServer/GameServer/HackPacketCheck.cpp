@@ -152,7 +152,7 @@ bool CHackPacketCheck::CheckPacketHack(int aIndex,int index,int value,int encryp
 
 	if(this->CheckPacketHackMaxDelay(aIndex,index,lpInfo->MaxDelay) == 0)
 	{
-		gObj[aIndex].HackPacketDelay[index] = GetTickCount();
+		gObj[aIndex].HackPacketDelay[index] = GetTickCountEx();
 		gObj[aIndex].HackPacketCount[index] = 0;
 	}
 
@@ -167,7 +167,7 @@ bool CHackPacketCheck::CheckPacketHack(int aIndex,int index,int value,int encryp
 
 bool CHackPacketCheck::CheckPacketHackMaxDelay(int aIndex,int index,int MaxDelay) // OK
 {
-	return ((MaxDelay==0)?1:(((GetTickCount()-gObj[aIndex].HackPacketDelay[index])>=((DWORD)MaxDelay))?0:1));
+	return ((MaxDelay==0)?1:(((GetTickCountEx()-gObj[aIndex].HackPacketDelay[index])>=((XWORD)MaxDelay))?0:1));
 }
 
 bool CHackPacketCheck::CheckPacketHackMinCount(int aIndex,int index,int MinCount) // OK

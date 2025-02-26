@@ -190,8 +190,8 @@ public:
 	CCrywolfStateTimeInfo m_StartTimeInfo[MAX_CRYWOLF_STATE_TIME];
 	int m_StartTimeInfoCount;
 	CCrywolfStateTimeInfo m_StateTimeInfo[MAX_CRYWOLF_STATE];
-	DWORD m_CrywolfNotifyMsgStartTick;
-	DWORD m_CrywolfStartProcTick;
+	XWORD m_CrywolfNotifyMsgStartTick;
+	XWORD m_CrywolfStartProcTick;
 	int m_TurnUpBoss;
 	int m_ChangeAI;
 	int m_MonsterGroupNumberArray[MAX_CRYWOLF_MONSTER_GROUP];

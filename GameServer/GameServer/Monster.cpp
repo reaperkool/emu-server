@@ -271,7 +271,7 @@ bool gObjSetMonster(int aIndex,int MonsterClass) // OK
 
 	LPOBJ lpObj = &gObj[aIndex];
 
-	lpObj->ConnectTickCount = GetTickCount();
+	lpObj->ConnectTickCount = GetTickCountEx();
 	lpObj->ShopNumber = -1;
 	lpObj->TargetNumber = -1;
 	lpObj->SummonIndex = -1;
@@ -524,7 +524,7 @@ bool gObjMonsterRegen(LPOBJ lpObj) // OK
 			lpObj->Live = 0;
 			lpObj->State = OBJECT_DYING;
 			lpObj->DieRegen = 1;
-			lpObj->RegenTime = GetTickCount();
+			lpObj->RegenTime = GetTickCountEx();
 			return 0;
 		}
 
@@ -538,7 +538,7 @@ bool gObjMonsterRegen(LPOBJ lpObj) // OK
 			lpObj->Live = 0;
 			lpObj->State = OBJECT_DYING;
 			lpObj->DieRegen = 1;
-			lpObj->RegenTime = GetTickCount();
+			lpObj->RegenTime = GetTickCountEx();
 			return 0;
 		}
 	}
@@ -629,7 +629,7 @@ void gObjMonsterSetHitDamage(LPOBJ lpObj,int aIndex,int damage) // OK
 		if(lpObj->HitDamage[n].index == aIndex)
 		{
 			lpObj->HitDamage[n].damage = (((lpObj->HitDamage[n].damage+damage)>lpObj->MaxLife)?(int)lpObj->MaxLife:(lpObj->HitDamage[n].damage+damage));
-			lpObj->HitDamage[n].time = GetTickCount();
+			lpObj->HitDamage[n].time = GetTickCountEx();
 			return;
 		}
 	}
@@ -640,7 +640,7 @@ void gObjMonsterSetHitDamage(LPOBJ lpObj,int aIndex,int damage) // OK
 
 		lpObj->HitDamage[HitDamageIndex].damage = ((damage>lpObj->MaxLife)?(int)lpObj->MaxLife:damage);
 
-		lpObj->HitDamage[HitDamageIndex].time = GetTickCount();
+		lpObj->HitDamage[HitDamageIndex].time = GetTickCountEx();
 
 		lpObj->HitDamageCount++;
 	}
@@ -663,7 +663,7 @@ int gObjMonsterDelHitDamageUser(LPOBJ lpObj) // OK
 		{
 			result = 1;
 		}
-		else if((GetTickCount()-lpObj->HitDamage[n].time) > 30000)
+		else if((GetTickCountEx()-lpObj->HitDamage[n].time) > 30000)
 		{
 			result = 1;
 		}
@@ -701,7 +701,7 @@ int gObjMonsterGetTopHitDamageUser(LPOBJ lpObj) // OK
 			continue;
 		}
 
-		if((GetTickCount()-lpObj->HitDamage[n].time) > 30000)
+		if((GetTickCountEx()-lpObj->HitDamage[n].time) > 30000)
 		{
 			continue;
 		}
@@ -749,7 +749,7 @@ int gObjMonsterGetTopHitDamageParty(LPOBJ lpObj,int PartyNumber,int* TopHitDamag
 			continue;
 		}
 
-		if((GetTickCount()-lpObj->HitDamage[n].time) > 30000)
+		if((GetTickCountEx()-lpObj->HitDamage[n].time) > 30000)
 		{
 			continue;
 		}
@@ -1485,37 +1485,36 @@ void gObjMonsterAttack(LPOBJ lpObj,LPOBJ lpTarget) // OK
 
 void gObjMonsterDie(LPOBJ lpObj,LPOBJ lpTarget) // OK
 {
-	#if(GAMESERVER_TYPE==1)
-
-	if(lpObj->CsNpcType != 0)
+	if (gServerInfo.m_ServerType == 1)
 	{
-		switch(lpObj->CsNpcType)
+		if (lpObj->CsNpcType != 0)
 		{
-			case 1:
-				gCastleSiege.DelNPC(lpObj->Index,lpObj->Class,lpObj->CsNpcExistVal,1);
-				break;
-			case 2:
-				gCastleSiege.DelNPC(lpObj->Index,lpObj->Class,lpObj->CsNpcExistVal,0);
-				break;
-			case 3:
-				gCastleSiege.DelNPC(lpObj->Index,lpObj->Class,lpObj->CsNpcExistVal,0);
-				break;
-		}
+			switch (lpObj->CsNpcType)
+			{
+				case 1:
+					gCastleSiege.DelNPC(lpObj->Index, lpObj->Class, lpObj->CsNpcExistVal, 1);
+					break;
+				case 2:
+					gCastleSiege.DelNPC(lpObj->Index, lpObj->Class, lpObj->CsNpcExistVal, 0);
+					break;
+				case 3:
+					gCastleSiege.DelNPC(lpObj->Index, lpObj->Class, lpObj->CsNpcExistVal, 0);
+					break;
+			}
 
-		if(lpObj->Class == 278)
-		{
-			gLifeStone.DeleteLifeStone(lpObj->Index);
-		}
+			if (lpObj->Class == 278)
+			{
+				gLifeStone.DeleteLifeStone(lpObj->Index);
+			}
 
-		if(lpObj->Class == 286 || lpObj->Class == 287)
-		{
-			gMercenary.DeleteMercenary(lpObj->Index);
-		}
+			if (lpObj->Class == 286 || lpObj->Class == 287)
+			{
+				gMercenary.DeleteMercenary(lpObj->Index);
+			}
 
-		gObjDel(lpObj->Index);
+			gObjDel(lpObj->Index);
+		}
 	}
-
-	#endif
 
 	if(KALIMA_MAP_RANGE(lpObj->Map) != 0)
 	{
@@ -1961,12 +1960,12 @@ void gObjMonsterProcess(LPOBJ lpObj)
 		return;
 	}
 
-	if ( (GetTickCount() - lpObj->CurActionTime ) < (lpObj->NextActionTime + lpObj->DelayActionTime) )
+	if ( (GetTickCountEx() - lpObj->CurActionTime ) < (lpObj->NextActionTime + lpObj->DelayActionTime) )
 	{
 		return;
 	}
 
-	lpObj->CurActionTime = GetTickCount();
+	lpObj->CurActionTime = GetTickCountEx();
 
 	if ( BC_MAP_RANGE(lpObj->Map) != FALSE )
 	{
@@ -1988,20 +1987,21 @@ void gObjMonsterProcess(LPOBJ lpObj)
 		return;
 	}
 
-	#if(GAMESERVER_TYPE==1)
-	if(lpObj->Class == 283)
+	if (gServerInfo.m_ServerType == 1)
 	{
-		return;
+		if (lpObj->Class == 283)
+		{
+			return;
+		}
+		else if (lpObj->Class == 288)
+		{
+			return;
+		}
+		else if (lpObj->Class == 278)
+		{
+			return;
+		}
 	}
-	else if(lpObj->Class == 288)
-	{
-		return;
-	}
-	else if(lpObj->Class == 278)
-	{
-		return;
-	}
-	#endif
 
 	if((lpObj->Class >= 100 && lpObj->Class <= 110) || lpObj->Class == 523)
 	{
@@ -2023,9 +2023,10 @@ void gObjMonsterProcess(LPOBJ lpObj)
 	{
 		if ( lpObj->Class == 287 || lpObj->Class == 286 )
 		{
-			#if(GAMESERVER_TYPE==1)
-			gMercenary.MercenaryAct(lpObj->Index);
-			#endif
+			if (gServerInfo.m_ServerType == 1)
+			{
+				gMercenary.MercenaryAct(lpObj->Index);
+			}
 		}
 		else
 		{

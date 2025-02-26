@@ -146,13 +146,13 @@ int CItemDrop::DropItem(LPOBJ lpObj,LPOBJ lpTarget) // OK
 		{
 			int rate = (1000000/((DropRate==-1)?1000000:DropRate));
 
-			RandomManager.AddElement((int)(&(*it)),rate);
+			RandomManager.AddElement((XWORD)(&(*it)),rate);
 		}
 	}
 
 	ITEM_DROP_INFO* lpItemDropInfo;
 
-	if(RandomManager.GetRandomElement((int*)&lpItemDropInfo) == 0)
+	if(RandomManager.GetRandomElement((XWORD*)&lpItemDropInfo) == 0)
 	{
 		return 0;
 	}

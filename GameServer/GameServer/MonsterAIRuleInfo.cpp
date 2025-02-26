@@ -64,15 +64,15 @@ BOOL CMonsterAIRuleInfo::IsValid() // OK
 
 	if(this->m_AppliedTime == -1)
 	{
-		this->m_AppliedTime = GetTickCount();
+		this->m_AppliedTime = GetTickCountEx();
 	}
 
-	if((DWORD)(this->m_AppliedTime+(this->m_WaitTime*1000)) > GetTickCount())
+	if((XWORD)(this->m_AppliedTime+(this->m_WaitTime*1000)) > GetTickCountEx())
 	{
 		return 0;
 	}
 
-	if((DWORD)((this->m_AppliedTime+(this->m_WaitTime*1000))+(this->m_ContinuanceTime*1000)) < GetTickCount())
+	if((XWORD)((this->m_AppliedTime+(this->m_WaitTime*1000))+(this->m_ContinuanceTime*1000)) < GetTickCountEx())
 	{
 		return 0;
 	}

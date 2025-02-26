@@ -41,8 +41,6 @@
 
 #define XY_MACRO(value) ( (( (value)   )<0)?FALSE:(( (value)  )>255)?FALSE:TRUE  )
 
-#if(GAMESERVER_TYPE==1)
-
 //**********************************************//
 //**********************************************//
 //**********************************************//
@@ -663,5 +661,3 @@ static int g_iNpcDefense_CSTATUE[CS_MAX_UPGRADE + 1] = {
 static int g_iCastleWallStepAxisY[3] = {
 	113, 160, 203
 };
-
-#endif

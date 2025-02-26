@@ -7,19 +7,9 @@
 #include "MonsterSkillElementOption.h"
 #include "Skill.h"
 
-#if(GAMESERVER_TYPE==0)
-
-#define MAX_OBJECT 10000
-#define MAX_OBJECT_MONSTER 8000
+#define MAX_OBJECT_MONSTER 14000
 #define MAX_OBJECT_USER 1000
-
-#else
-
-#define MAX_OBJECT 4500
-#define MAX_OBJECT_MONSTER 2500
-#define MAX_OBJECT_USER 1000
-
-#endif
+#define MAX_OBJECT MAX_OBJECT_MONSTER + (MAX_OBJECT_USER * 2)
 
 #define OBJECT_START_MONSTER 0
 #define OBJECT_START_USER (MAX_OBJECT-MAX_OBJECT_USER)
@@ -190,7 +180,7 @@ struct MESSAGE_STATE_MACHINE
 
 	int MsgCode;
 	int SendUser;
-	int MsgTime;
+	XWORD MsgTime;
 	int SubCode;
 };
 
@@ -248,7 +238,7 @@ struct MESSAGE_STATE_ATTACK_MACHINE
 
 	int MsgCode;
 	int SendUser;
-	int MsgTime;
+	XWORD MsgTime;
 	int SubCode;
 	int SubCode2;
 };
@@ -433,7 +423,7 @@ struct HIT_DAMAGE_STRUCT
 {
 	int index;
 	int damage;
-	DWORD time;
+	XWORD time;
 };
 
 struct INTERFACE_STATE
@@ -457,16 +447,16 @@ struct OBJECTSTRUCT
 	char IpAddr[16];
 	BYTE ClassCode;
 	BYTE ClassFlag;
-	DWORD AutoSaveTime;
-	DWORD ConnectTickCount;
-	DWORD ClientTickCount;
-	DWORD ServerTickCount;
+	XWORD AutoSaveTime;
+	XWORD ConnectTickCount;
+	XWORD ClientTickCount;
+	XWORD ServerTickCount;
 	BYTE CheckTickCount;
-	DWORD PostTime;
+	XWORD PostTime;
 	DWORD TimeCount;
 	DWORD PKTickCount;
 	short CheckSumTableNum;
-	DWORD CheckSumTime;
+	XWORD CheckSumTime;
 	WORD Type;
 	BYTE Live;
 	char Account[11];
@@ -507,7 +497,7 @@ struct OBJECTSTRUCT
 	float EnergyToMana;
 	char PKCount;
 	char PKLevel;
-	int PKTime;
+	XWORD PKTime;
 	short X;
 	short Y;
 	BYTE Dir;
@@ -532,7 +522,7 @@ struct OBJECTSTRUCT
 	short PathX[15];
 	short PathY[15];
 	char PathDir[15];
-	DWORD PathTime;
+	XWORD PathTime;
 	DWORD Authority;
 	DWORD AuthorityCode;
 	DWORD Penalty;
@@ -542,9 +532,9 @@ struct OBJECTSTRUCT
 	DWORD State;
 	BYTE Rest;
 	char ViewState;
-	DWORD LastMoveTime;
+	XWORD LastMoveTime;
 	DWORD LastAttackTime;
-	DWORD TeleportTime;
+	XWORD TeleportTime;
 	char Teleport;
 	char KillerType;
 	char DieRegen;
@@ -552,24 +542,24 @@ struct OBJECTSTRUCT
 	BYTE RegenMapNumber;
 	BYTE RegenMapX;
 	BYTE RegenMapY;
-	DWORD RegenTime;
-	DWORD MaxRegenTime;
+	XWORD RegenTime;
+	XWORD MaxRegenTime;
 	short PosNum;
-	DWORD CurActionTime;
-	DWORD NextActionTime;
-	DWORD DelayActionTime;
+	XWORD CurActionTime;
+	XWORD NextActionTime;
+	XWORD DelayActionTime;
 	char DelayLevel;
 	int DrinkSpeed;
-	DWORD DrinkLastTime;
-	DWORD MonsterDeleteTime;
+	XWORD DrinkLastTime;
+	XWORD MonsterDeleteTime;
 	char KalimaGateExist;
 	int KalimaGateIndex;
 	char KalimaGateEnterCount;
 	OBJECTSTRUCT* AttackObj;
 	bool AttackerKilled;
 	int SelfDefense[MAX_SELF_DEFENSE];
-	DWORD SelfDefenseTime[MAX_SELF_DEFENSE];
-	DWORD MySelfDefenseTime;
+	XWORD SelfDefenseTime[MAX_SELF_DEFENSE];
+	XWORD MySelfDefenseTime;
 	int PartyNumber;
 	int PartyTargetUser;
 	int GuildNumber;
@@ -638,7 +628,7 @@ struct OBJECTSTRUCT
 	HIT_DAMAGE_STRUCT* HitDamage;
 	short HitDamageCount;
 	INTERFACE_STATE Interface;
-	DWORD InterfaceTime;
+	XWORD InterfaceTime;
 	char Transaction;
 	CItem* Inventory;
 	CItem* Inventory1;
@@ -678,12 +668,12 @@ struct OBJECTSTRUCT
 	BYTE* MuunInventoryMap;
 	#endif
 	DWORD Option;
-	int ChaosCastleBlowTime;
+	XWORD ChaosCastleBlowTime;
 	int DuelUserReserved;
 	int DuelUserRequested;
 	int DuelUser;
 	BYTE DuelScore;
-	DWORD DuelTickCount;
+	XWORD DuelTickCount;
 	bool PShopOpen;
 	bool PShopTransaction;
 	bool PShopItemChange;
@@ -709,7 +699,7 @@ struct OBJECTSTRUCT
 	BYTE LastTeleportTime;
 	BYTE SkillNovaState;
 	BYTE SkillNovaCount;
-	DWORD SkillNovaTime;
+	XWORD SkillNovaTime;
 	BYTE ReqWarehouseOpen;
 	bool IsFullSetItem;
 	WORD SkillSummonPartyTime;
@@ -718,7 +708,7 @@ struct OBJECTSTRUCT
 	BYTE SkillSummonPartyY;
 	bool IsChaosMixCompleted;
 	bool SkillLongSpearChange;
-	DWORD CharSaveTime;
+	XWORD CharSaveTime;
 	int LoadQuestKillCount;
 	int QuestKillCountIndex;
 	struct QUEST_KILL_COUNT* QuestKillCount;
@@ -731,8 +721,8 @@ struct OBJECTSTRUCT
 	#pragma pack()
 	CSkill* MasterSkill;
 	CEffect* Effect;
-	DWORD* SkillDelay;
-	DWORD* HackPacketDelay;
+	XWORD* SkillDelay;
+	XWORD* HackPacketDelay;
 	DWORD* HackPacketCount;
 	int ExtInventory;
 	int ExtWarehouse;
@@ -746,13 +736,13 @@ struct OBJECTSTRUCT
 	int AutoResetStats[5];
 	int AttackCustom;
 	int AttackCustomSkill;
-	int AttackCustomDelay;
+	XWORD AttackCustomDelay;
 	int AttackCustomZoneX;
 	int AttackCustomZoneY;
 	int AttackCustomZoneMap;
 	int AttackCustomOffline;
 	int AttackCustomOfflineTime;
-	int AttackCustomOfflineMoneyDelay;
+	XWORD AttackCustomOfflineMoneyDelay;
 	int MiniMapState;
 	int MiniMapValue;
 	int MiningStage;
@@ -765,18 +755,18 @@ struct OBJECTSTRUCT
 	int CommandManagerTransaction[1];
 	int LuckyCoinTransaction[2];
 	int PcPointTransaction[2];
-	DWORD AutoAttackTime;
-	DWORD TradeOkTime;
-	DWORD PotionTime;
-	DWORD ComboTime;
-	DWORD HelperDelayTime;
-	DWORD HelperTotalTime;
-	DWORD PcPointPointTime;
-	DWORD HPAutoRecuperationTime;
-	DWORD MPAutoRecuperationTime;
-	DWORD BPAutoRecuperationTime;
-	DWORD SDAutoRecuperationTime;
-	DWORD CashShopGoblinPointTime;
+	XWORD AutoAttackTime;
+	XWORD TradeOkTime;
+	XWORD PotionTime;
+	XWORD ComboTime;
+	XWORD HelperDelayTime;
+	XWORD HelperTotalTime;
+	XWORD PcPointPointTime;
+	XWORD HPAutoRecuperationTime;
+	XWORD MPAutoRecuperationTime;
+	XWORD BPAutoRecuperationTime;
+	XWORD SDAutoRecuperationTime;
+	XWORD CashShopGoblinPointTime;
 	int Reset;
 	int MasterReset;
 	int ChangeSkin;
@@ -844,7 +834,7 @@ struct OBJECTSTRUCT
 	int AttackSuccessRatePvP;
 	int DefenseSuccessRatePvP;
 	int ShieldDamageReduction;
-	int ShieldDamageReductionTime;
+	XWORD ShieldDamageReductionTime;
 	int DamageReduction[MAX_DAMAGE_REDUCTION];
 	int DamageReflect;
 	int HuntHP;
@@ -877,13 +867,12 @@ struct OBJECTSTRUCT
 	int MobilityTalismanY;
 	bool MapServerMoveQuit;
 	bool MapServerMoveRequest;
-	DWORD MapServerMoveQuitTickCount;
+	XWORD MapServerMoveQuitTickCount;
 	short NextServerCode;
 	short LastServerCode;
 	short DestMap;
 	BYTE DestX;
 	BYTE DestY;
-	#if(GAMESERVER_TYPE==1)
 	union
 	{
 		struct
@@ -903,32 +892,29 @@ struct OBJECTSTRUCT
 	BYTE CsNpcRgLevel;
 	BYTE CsJoinSide;
 	bool CsGuildInvolved;
-	#endif
 	bool IsCastleNPCUpgradeCompleted;
 	BYTE CsSiegeWeaponState;
 	int CsWeaponIndex;
 	BYTE KillCount;
 	int AccumulatedDamage;
-	#if(GAMESERVER_TYPE==1)
 	BYTE LifeStoneCount;
 	BYTE CreationState;
 	int CreatedActivationTime;
-	#endif
 	int AccumulatedCrownAccessTime;
 	CMonsterSkillElementOption MonsterSkillElementOption;
 	int BasicAI;
 	int CurrentAI;
 	int CurrentAIState;
-	int LastAIRunTime;
+	XWORD LastAIRunTime;
 	int GroupNumber;
 	int SubGroupNumber;
 	int GroupMemberGuid;
 	int RegenType;
 	CMonsterAIAgro Agro;
-	int LastAutomataRuntime;
-	int LastAutomataDelay;
+	XWORD LastAutomataRuntime;
+	XWORD LastAutomataDelay;
 	int CrywolfMVPScore;
-	DWORD LastCheckTick;
+	XWORD LastCheckTick;
 };
 
 struct OBJECTSTRUCT_HEADER

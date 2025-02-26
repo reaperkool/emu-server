@@ -261,16 +261,15 @@ void CGuildMatching::CGGuildMatchingJoinAcceptRecv(PMSG_GUILD_MATCHING_JOIN_ACCE
 		return;
 	}
 
-	#if(GAMESERVER_TYPE==1)
-
-	if(gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE)
+	if (gServerInfo.m_ServerType == 1)
 	{
-		gGuild.GCGuildResultSend(aIndex,6);
-		DataSend(aIndex,(BYTE*)&pMsg,pMsg.header.size);
-		return;
+		if (gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE)
+		{
+			gGuild.GCGuildResultSend(aIndex, 6);
+			DataSend(aIndex, (BYTE*)&pMsg, pMsg.header.size);
+			return;
+		}
 	}
-
-	#endif
 
 	if(lpObj->Level < 6)
 	{

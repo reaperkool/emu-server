@@ -49,7 +49,7 @@ struct INVASION_INFO
 	int State;
 	int RemainTime;
 	int TargetTime;
-	int TickCount;
+	XWORD TickCount;
 	int MonsterIndex[MAX_INVASION_MONSTER];
 	int RespawnMessage;
 	int DespawnMessage;

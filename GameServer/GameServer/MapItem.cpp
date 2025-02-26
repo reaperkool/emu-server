@@ -52,9 +52,9 @@ void CMapItem::CreateItem(int index,int level,int x,int y,float dur,BYTE Option1
 
 	this->m_State = OBJECT_CREATE;
 
-	this->m_Time = GetTickCount()+(gServerInfo.m_ItemDropTime*1000);
+	this->m_Time = GetTickCountEx()+(gServerInfo.m_ItemDropTime*1000);
 
-	this->m_LootTime = GetTickCount()+(gServerInfo.m_ItemDropTime*500);
+	this->m_LootTime = GetTickCountEx()+(gServerInfo.m_ItemDropTime*500);
 
 	this->m_Serial = serial;
 }
@@ -87,9 +87,9 @@ void CMapItem::DropCreateItem(int index,int level,int x,int y,float dur,BYTE Opt
 
 	this->m_State = OBJECT_CREATE;
 
-	this->m_Time = GetTickCount()+(gServerInfo.m_ItemDropTime*1000);
+	this->m_Time = GetTickCountEx()+(gServerInfo.m_ItemDropTime*1000);
 
-	this->m_LootTime = GetTickCount()+(gServerInfo.m_ItemDropTime*500);
+	this->m_LootTime = GetTickCountEx()+(gServerInfo.m_ItemDropTime*500);
 
 	this->m_Serial = serial;
 }

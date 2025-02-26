@@ -177,13 +177,13 @@ bool CItemBagEx::GetItem(LPOBJ lpObj,CItem* lpItem) // OK
 			{
 				if(this->CheckDropClass(lpObj,(DropInfo->OptionValue & 2),DropInfo->RequireClass) != 0)
 				{
-					RandomManager.AddElement((int)(&(*DropInfo)),DropInfo->SectionRate);
+					RandomManager.AddElement((XWORD)(&(*DropInfo)),DropInfo->SectionRate);
 				}
 			}
 
 			ITEM_BAG_EX_DROP_INFO* lpItemBagDropInfo = 0;
 
-			if(RandomManager.GetRandomElement((int*)&lpItemBagDropInfo) == 0)
+			if(RandomManager.GetRandomElement((XWORD*)&lpItemBagDropInfo) == 0)
 			{
 				return 0;
 			}
@@ -254,13 +254,13 @@ bool CItemBagEx::DropItem(LPOBJ lpObj,int map,int x,int y) // OK
 			{
 				if(this->CheckDropClass(lpObj,(DropInfo->OptionValue & 2),DropInfo->RequireClass) != 0)
 				{
-					RandomManager.AddElement((int)(&(*DropInfo)),DropInfo->SectionRate);
+					RandomManager.AddElement((XWORD)(&(*DropInfo)),DropInfo->SectionRate);
 				}
 			}
 
 			ITEM_BAG_EX_DROP_INFO* lpItemBagDropInfo = 0;
 
-			if(RandomManager.GetRandomElement((int*)&lpItemBagDropInfo) == 0)
+			if(RandomManager.GetRandomElement((XWORD*)&lpItemBagDropInfo) == 0)
 			{
 				continue;
 			}

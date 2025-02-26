@@ -143,7 +143,7 @@ void CRaklionBattleOfSelupan::ProcState_STANDBY() // OK
 
 void CRaklionBattleOfSelupan::ProcState_PATTERN1() // OK
 {
-	if(this->m_SkillDelay > (GetTickCount()-this->m_SkillDelayTick))
+	if(this->m_SkillDelay > (GetTickCountEx()-this->m_SkillDelayTick))
 	{
 		return;
 	}
@@ -160,7 +160,7 @@ void CRaklionBattleOfSelupan::ProcState_PATTERN1() // OK
 
 void CRaklionBattleOfSelupan::ProcState_PATTERN2() // OK
 {
-	if(this->m_SkillDelay > (GetTickCount()-this->m_SkillDelayTick))
+	if(this->m_SkillDelay > (GetTickCountEx()-this->m_SkillDelayTick))
 	{
 		return;
 	}
@@ -177,7 +177,7 @@ void CRaklionBattleOfSelupan::ProcState_PATTERN2() // OK
 
 void CRaklionBattleOfSelupan::ProcState_PATTERN3() // OK
 {
-	if(this->m_SkillDelay > (GetTickCount()-this->m_SkillDelayTick))
+	if(this->m_SkillDelay > (GetTickCountEx()-this->m_SkillDelayTick))
 	{
 		return;
 	}
@@ -194,7 +194,7 @@ void CRaklionBattleOfSelupan::ProcState_PATTERN3() // OK
 
 void CRaklionBattleOfSelupan::ProcState_PATTERN4() // OK
 {
-	if(this->m_SkillDelay > (GetTickCount()-this->m_SkillDelayTick))
+	if(this->m_SkillDelay > (GetTickCountEx()-this->m_SkillDelayTick))
 	{
 		return;
 	}
@@ -211,7 +211,7 @@ void CRaklionBattleOfSelupan::ProcState_PATTERN4() // OK
 
 void CRaklionBattleOfSelupan::ProcState_PATTERN5() // OK
 {
-	if(this->m_SkillDelay > (GetTickCount()-this->m_SkillDelayTick))
+	if(this->m_SkillDelay > (GetTickCountEx()-this->m_SkillDelayTick))
 	{
 		return;
 	}
@@ -228,7 +228,7 @@ void CRaklionBattleOfSelupan::ProcState_PATTERN5() // OK
 
 void CRaklionBattleOfSelupan::ProcState_PATTERN6() // OK
 {
-	if(this->m_SkillDelay > (GetTickCount()-this->m_SkillDelayTick))
+	if(this->m_SkillDelay > (GetTickCountEx()-this->m_SkillDelayTick))
 	{
 		return;
 	}
@@ -245,7 +245,7 @@ void CRaklionBattleOfSelupan::ProcState_PATTERN6() // OK
 
 void CRaklionBattleOfSelupan::ProcState_PATTERN7() // OK
 {
-	if(this->m_SkillDelay > (GetTickCount()-this->m_SkillDelayTick))
+	if(this->m_SkillDelay > (GetTickCountEx()-this->m_SkillDelayTick))
 	{
 		return;
 	}
@@ -443,7 +443,7 @@ void CRaklionBattleOfSelupan::PatternStateSkillUseProc(int skill) // OK
 
 	this->m_SkillDelay = this->m_RaklionSelupan.GetSelupanSkillDelay();
 
-	this->m_SkillDelayTick = GetTickCount();
+	this->m_SkillDelayTick = GetTickCountEx();
 }
 
 void CRaklionBattleOfSelupan::SetPatternCondition(int pattern,int condition) // OK

@@ -81,7 +81,7 @@ struct CUSTOM_ARENA_INFO
 	int State;
 	int RemainTime;
 	int TargetTime;
-	int TickCount;
+	XWORD TickCount;
 	int EnterEnabled;
 	int AlarmMinSave;
 	int AlarmMinLeft;

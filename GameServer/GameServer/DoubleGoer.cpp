@@ -32,14 +32,14 @@ CDoubleGoer::CDoubleGoer() // OK
 	this->m_Map = 0;
 	this->m_RemainTime = 0;
 	this->m_TargetTime = 0;
-	this->m_TickCount = GetTickCount();
+	this->m_TickCount = GetTickCountEx();
 	this->m_TimeCount = 0;
 	this->m_CurMonster = 0;
 	this->m_MaxMonster = 0;
 	this->m_PartyNumber = -1;
 	this->m_PartyCount = 0;
 	this->m_HighestLevel = 0;
-	this->m_CreateMonsterTime = GetTickCount();
+	this->m_CreateMonsterTime = GetTickCountEx();
 
 	this->CleanUser();
 
@@ -198,14 +198,14 @@ void CDoubleGoer::MainProc() // OK
 {
 	#if(GAMESERVER_UPDATE>=501)
 
-	DWORD elapsed = GetTickCount()-this->m_TickCount;
+	XWORD elapsed = GetTickCountEx()-this->m_TickCount;
 
 	if(elapsed < 1000)
 	{
 		return;
 	}
 
-	this->m_TickCount = GetTickCount();
+	this->m_TickCount = GetTickCountEx();
 
 	this->m_RemainTime = (int)(difftime(this->m_TargetTime,time(0))*1000);
 
@@ -294,9 +294,9 @@ void CDoubleGoer::ProcState_START() // OK
 			break;
 	}
 
-	if((GetTickCount()-this->m_CreateMonsterTime) > 5000)
+	if((GetTickCountEx()-this->m_CreateMonsterTime) > 5000)
 	{
-		this->m_CreateMonsterTime = GetTickCount();
+		this->m_CreateMonsterTime = GetTickCountEx();
 
 		this->SetMonster(533+(GetLargeRand()%7));
 	}
@@ -394,13 +394,13 @@ void CDoubleGoer::SetState_EMPTY() // OK
 
 	this->m_RemainTime = 0;
 	this->m_TargetTime = 0;
-	this->m_TickCount = GetTickCount();
+	this->m_TickCount = GetTickCountEx();
 	this->m_TimeCount = 0;
 	this->m_CurMonster = 0;
 	this->m_MaxMonster = 0;
 	this->m_PartyCount = 0;
 	this->m_HighestLevel = 0;
-	this->m_CreateMonsterTime = GetTickCount();
+	this->m_CreateMonsterTime = GetTickCountEx();
 
 	if(OBJECT_RANGE(this->m_PartyNumber) != 0)
 	{
@@ -456,7 +456,7 @@ void CDoubleGoer::SetState_STAND() // OK
 	this->m_TimeCount = 0;
 	this->m_CurMonster = 0;
 	this->m_MaxMonster = 0;
-	this->m_CreateMonsterTime = GetTickCount();
+	this->m_CreateMonsterTime = GetTickCountEx();
 
 	this->SetEntranceZone();
 
@@ -476,7 +476,7 @@ void CDoubleGoer::SetState_START() // OK
 	this->m_TimeCount = 0;
 	this->m_CurMonster = 0;
 	this->m_MaxMonster = 3;
-	this->m_CreateMonsterTime = GetTickCount();
+	this->m_CreateMonsterTime = GetTickCountEx();
 
 	this->DelEntranceZone();
 
@@ -496,7 +496,7 @@ void CDoubleGoer::SetState_CLEAN() // OK
 	#if(GAMESERVER_UPDATE>=501)
 
 	this->m_TimeCount = 0;
-	this->m_CreateMonsterTime = GetTickCount();
+	this->m_CreateMonsterTime = GetTickCountEx();
 
 	for(int n=0;n < MAX_DG_USER;n++)
 	{

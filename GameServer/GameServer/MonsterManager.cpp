@@ -316,54 +316,53 @@ void CMonsterManager::SetMonsterData() // OK
 			continue;
 		}
 
-		#if(GAMESERVER_TYPE==1)
-
-		LPOBJ lpObj = &gObj[index];
-
-		if(lpObj->Map == MAP_CASTLE_SIEGE)
+		if (gServerInfo.m_ServerType == 1)
 		{
-			if(lpObj->Class == 216)
-			{
-				gCastleSiege.SetCrownIndex(index);
-			}
-		}
+			LPOBJ lpObj = &gObj[index];
 
-		if(lpObj->Map == MAP_CRYWOLF)
-		{
-			if(lpObj->Type == OBJECT_MONSTER)
+			if (lpObj->Map == MAP_CASTLE_SIEGE)
 			{
-				if(gCrywolf.m_ObjCommonMonster.AddObj(index) == 0)
+				if (lpObj->Class == 216)
 				{
-					gObjDel(index);
-					continue;
+					gCastleSiege.SetCrownIndex(index);
 				}
 			}
 
-			if(lpObj->Type == OBJECT_NPC)
+			if (lpObj->Map == MAP_CRYWOLF)
 			{
-				if(lpObj->Class >= 204 && lpObj->Class <= 209)
+				if (lpObj->Type == OBJECT_MONSTER)
 				{
-					if(gCrywolf.m_ObjSpecialNPC.AddObj(index) == 0)
+					if (gCrywolf.m_ObjCommonMonster.AddObj(index) == 0)
 					{
 						gObjDel(index);
 						continue;
 					}
 				}
-				else
+
+				if (lpObj->Type == OBJECT_NPC)
 				{
-					if(lpObj->Class != 406 && lpObj->Class != 407)
+					if (lpObj->Class >= 204 && lpObj->Class <= 209)
 					{
-						if(gCrywolf.m_ObjCommonNPC.AddObj(index) == 0)
+						if (gCrywolf.m_ObjSpecialNPC.AddObj(index) == 0)
 						{
 							gObjDel(index);
 							continue;
 						}
 					}
+					else
+					{
+						if (lpObj->Class != 406 && lpObj->Class != 407)
+						{
+							if (gCrywolf.m_ObjCommonNPC.AddObj(index) == 0)
+							{
+								gObjDel(index);
+								continue;
+							}
+						}
+					}
 				}
 			}
 		}
-
-		#endif
 	}
 
 	gBloodCastle.Init();

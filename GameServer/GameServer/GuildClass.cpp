@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "GuildClass.h"
 #include "Guild.h"
+#include "ServerInfo.h"
 #include "Viewport.h"
 #include "Util.h"
 
@@ -73,9 +74,10 @@ GUILD_INFO_STRUCT * CGuildClass::AddGuild(int number, char* guildname, GUILDMARK
 			pNewNode->GuildStatus[i] = -1;
 		}
 
-#if(GAMESERVER_TYPE == 1) 
-		pNewNode->LifeStone = NULL; //@24/04/2010
-#endif
+		if (gServerInfo.m_ServerType == 1)
+		{
+			pNewNode->LifeStone = NULL; //@24/04/2010
+		}
 
 		this->BuildMemberTotal(pNewNode);
 		this->AddTail(pNewNode);

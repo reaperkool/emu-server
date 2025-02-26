@@ -15,7 +15,7 @@ public:
 public:
 	int m_Index;
 	int m_Active;
-	DWORD m_ActiveTime;
+	XWORD m_ActiveTime;
 	CSkill* m_SkillBackup;
 	CSkill* m_Skill;
 	VIEWPORT_STRUCT* m_VpPlayer;
@@ -48,8 +48,8 @@ public:
 	QUEST_KILL_COUNT* m_QuestKillCount;
 	QUEST_WORLD_LIST* m_QuestWorldList;
 	GENS_SYSTEM_VICTIM_LIST* m_GensVictimList;
-	DWORD* m_SkillDelay;
-	DWORD* m_HackPacketDelay;
+	XWORD* m_SkillDelay;
+	XWORD* m_HackPacketDelay;
 	DWORD* m_HackPacketCount;
 	#if(GAMESERVER_UPDATE>=701)
 	PENTAGRAM_JEWEL_INFO* m_PentagramJewelInfo_Inventory;

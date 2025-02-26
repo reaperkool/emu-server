@@ -114,10 +114,10 @@ void CBattleGround::SetScore(int team, int score)
 void CBattleGround::SetTimer(int g_time)
 {
 	this->m_nTimer = g_time;
-	this->m_dwCurTimer = GetTickCount();
+	this->m_dwCurTimer = GetTickCountEx();
 }
 
-int CBattleGround::GetTimer()
+XWORD CBattleGround::GetTimer()
 {
-	return (GetTickCount() - this->m_dwCurTimer) / 1000;
+	return (GetTickCountEx() - this->m_dwCurTimer) / 1000;
 }

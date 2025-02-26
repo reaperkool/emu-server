@@ -54,7 +54,7 @@ private:
 	NOTICE_INFO m_NoticeInfo[MAX_NOTICE];
 	int m_count;
 	int m_NoticeValue;
-	DWORD m_NoticeTime;
+	XWORD m_NoticeTime;
 };
 
 extern CNotice gNotice;

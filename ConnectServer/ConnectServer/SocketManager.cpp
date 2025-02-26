@@ -7,7 +7,6 @@
 #include "ClientManager.h"
 #include "ConnectServerProtocol.h"
 #include "IpManager.h"
-#include "Protect.h"
 #include "Util.h"
 
 CSocketManager gSocketManager;
@@ -44,8 +43,6 @@ CSocketManager::~CSocketManager() // OK
 
 bool CSocketManager::Start(WORD port) // OK
 {
-	PROTECT_START
-
 	this->m_port = port;
 
 	if(this->CreateListenSocket() == 0)
@@ -77,8 +74,6 @@ bool CSocketManager::Start(WORD port) // OK
 		this->Clean();
 		return 0;
 	}
-
-	PROTECT_FINAL
 
 	LogAdd(LOG_BLACK,"[SocketManager] Server started at port [%d]",this->m_port);
 	return 1;
@@ -588,7 +583,7 @@ DWORD WINAPI CSocketManager::ServerAcceptThread(CSocketManager* lpSocketManager)
 
 	while(true)
 	{
-		SOCKET socket = WSAAccept(lpSocketManager->m_listen,(sockaddr*)&SocketAddr,&SocketAddrSize,(LPCONDITIONPROC)&lpSocketManager->ServerAcceptCondition,(DWORD)lpSocketManager);
+		SOCKET socket = WSAAccept(lpSocketManager->m_listen,(sockaddr*)&SocketAddr,&SocketAddrSize,(LPCONDITIONPROC)&lpSocketManager->ServerAcceptCondition,(XWORD)lpSocketManager);
 
 		if(socket == SOCKET_ERROR && WSAGetLastError() != WSAEWOULDBLOCK)
 		{
@@ -617,13 +612,9 @@ DWORD WINAPI CSocketManager::ServerAcceptThread(CSocketManager* lpSocketManager)
 			continue;
 		}
 
-		PROTECT_START
-
 		CClientManager* lpClientManager = &gClientManager[index];
 
 		lpClientManager->AddClient(index,inet_ntoa(SocketAddr.sin_addr),socket);
-
-		PROTECT_FINAL
 
 		DWORD RecvSize=0,Flags=0;
 
@@ -647,7 +638,7 @@ DWORD WINAPI CSocketManager::ServerAcceptThread(CSocketManager* lpSocketManager)
 DWORD WINAPI CSocketManager::ServerWorkerThread(CSocketManager* lpSocketManager) // OK
 {
 	DWORD IoSize;
-	DWORD index;
+	XWORD index;
 	LPOVERLAPPED lpOverlapped;
 
 	while(true)
@@ -676,10 +667,10 @@ DWORD WINAPI CSocketManager::ServerWorkerThread(CSocketManager* lpSocketManager)
 		switch(lpIoContext->IoType)
 		{
 			case IO_RECV:
-				lpSocketManager->OnRecv(index,IoSize,(IO_RECV_CONTEXT*)lpIoContext);
+				lpSocketManager->OnRecv((int)index,IoSize,(IO_RECV_CONTEXT*)lpIoContext);
 				break;
 			case IO_SEND:
-				lpSocketManager->OnSend(index,IoSize,(IO_SEND_CONTEXT*)lpIoContext);
+				lpSocketManager->OnSend((int)index,IoSize,(IO_SEND_CONTEXT*)lpIoContext);
 				break;
 		}
 

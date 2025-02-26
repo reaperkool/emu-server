@@ -66,7 +66,7 @@ BOOL CMonsterAI::RunAI(int aIndex,int MonsterClass) // OK
 		return 0;
 	}
 
-	if((GetTickCount()-lpObj->LastAIRunTime) < ((DWORD)lpMonsterAIUnitInfo->m_DelayTime))
+	if((GetTickCountEx()-lpObj->LastAIRunTime) < ((XWORD)lpMonsterAIUnitInfo->m_DelayTime))
 	{
 		return 0;
 	}
@@ -76,7 +76,7 @@ BOOL CMonsterAI::RunAI(int aIndex,int MonsterClass) // OK
 		return 0;
 	}
 
-	lpObj->LastAIRunTime = GetTickCount();
+	lpObj->LastAIRunTime = GetTickCountEx();
 
 	return 1;
 }
@@ -85,7 +85,7 @@ void CMonsterAI::MonsterStateMsgProc(int aIndex) // OK
 {
 	for(int n=0;n < MAX_MONSTER_SEND_MSG;n++)
 	{
-		if(gSMMsg[aIndex][n].MsgCode != -1 && GetTickCount() > ((DWORD)gSMMsg[aIndex][n].MsgTime))
+		if(gSMMsg[aIndex][n].MsgCode != -1 && GetTickCountEx() > ((XWORD)gSMMsg[aIndex][n].MsgTime))
 		{
 			CMonsterAI::ProcessStateMsg(&gObj[aIndex],gSMMsg[aIndex][n].MsgCode,gSMMsg[aIndex][n].SendUser,gSMMsg[aIndex][n].SubCode);
 			gSMMsg[aIndex][n].Clear();
@@ -202,13 +202,13 @@ void CMonsterAI::MonsterMove(int aIndex) // OK
 		MoveTime = (DWORD)((lpObj->MoveSpeed+((lpObj->DelayLevel==0)?0:300))*(double)1.0);
 	}
 
-	if((GetTickCount()-lpObj->PathTime) > MoveTime && lpObj->PathCur < (MAX_ROAD_PATH_TABLE-1))
+	if((GetTickCountEx()-lpObj->PathTime) > MoveTime && lpObj->PathCur < (MAX_ROAD_PATH_TABLE-1))
 	{
 		if(gMap[lpObj->Map].CheckAttr(lpObj->PathX[lpObj->PathCur],lpObj->PathY[lpObj->PathCur],4) != 0 || gMap[lpObj->Map].CheckAttr(lpObj->PathX[lpObj->PathCur],lpObj->PathY[lpObj->PathCur],8) != 0)
 		{
 			lpObj->PathCur = 0;
 			lpObj->PathCount = 0;
-			lpObj->PathTime = GetTickCount();
+			lpObj->PathTime = GetTickCountEx();
 			lpObj->PathStartEnd = 0;
 
 			memset(lpObj->PathX,0,sizeof(lpObj->PathX));
@@ -224,7 +224,7 @@ void CMonsterAI::MonsterMove(int aIndex) // OK
 			lpObj->X = lpObj->PathX[lpObj->PathCur];
 			lpObj->Y = lpObj->PathY[lpObj->PathCur];
 			lpObj->Dir = lpObj->PathDir[lpObj->PathCur];
-			lpObj->PathTime = GetTickCount();
+			lpObj->PathTime = GetTickCountEx();
 
 			if((++lpObj->PathCur) >= lpObj->PathCount)
 			{

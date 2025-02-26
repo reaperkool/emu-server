@@ -2,12 +2,10 @@
 #include "resource.h"
 #include "ConnectServer.h"
 #include "MiniDump.h"
-#include "Protect.h"
 #include "ServerDisplayer.h"
 #include "ServerList.h"
 #include "SocketManager.h"
 #include "SocketManagerUdp.h"
-#include "ThemidaSDK.h"
 #include "Util.h"
 
 HINSTANCE hInst;
@@ -20,8 +18,6 @@ long MaxIpConnection;
 
 int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,int nCmdShow) // OK
 {
-	VM_START
-
 	CMiniDump::Start();
 
 	LoadString(hInstance,IDS_APP_TITLE,szTitle,MAX_LOADSTRING);
@@ -38,23 +34,9 @@ int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine
 
 	GetPrivateProfileString("ConnectServerInfo","CustomerHardwareId","",CustomerHardwareId,sizeof(CustomerHardwareId),".\\ConnectServer.ini");
 
-	#if(PROTECT_STATE==1)
-
-	#if(CONNECTSERVER_UPDATE>=801)
-	gProtect.StartAuth(AUTH_SERVER_TYPE_S8_CONNECT_SERVER);
-	#elif(CONNECTSERVER_UPDATE>=601)
-	gProtect.StartAuth(AUTH_SERVER_TYPE_S6_CONNECT_SERVER);
-	#elif(CONNECTSERVER_UPDATE>=401)
-	gProtect.StartAuth(AUTH_SERVER_TYPE_S4_CONNECT_SERVER);
-	#else
-	gProtect.StartAuth(AUTH_SERVER_TYPE_S2_CONNECT_SERVER);
-	#endif
-
-	#endif
-
 	char buff[256];
 
-	wsprintf(buff,"[%s] MuEMU ConnectServer (QueueSize : %d)",CONNECTSERVER_VERSION,0);
+	wsprintf(buff,"[%s] ConnectServer (QueueSize : %d)",CONNECTSERVER_VERSION,0);
 
 	SetWindowText(hWnd,buff);
 
@@ -106,9 +88,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine
 
 	CMiniDump::Clean();
 
-	VM_END
-
-	return msg.wParam;
+	return (int)msg.wParam;
 }
 
 ATOM MyRegisterClass(HINSTANCE hInstance) // OK

@@ -4,7 +4,7 @@
 
 #include "stdafx.h"
 #include "SkillManager.h"
-#include "..\\..\\..\\Util\\Math.h"
+#include "..\\..\\Util\\Math.h"
 #include "Attack.h"
 #include "CastleSiege.h"
 #include "CustomArena.h"
@@ -463,12 +463,12 @@ bool CSkillManager::CheckSkillDelay(LPOBJ lpObj,int index) // OK
 		return 1;
 	}
 
-	if((GetTickCount()-lpObj->SkillDelay[index]) < ((DWORD)SkillInfo.Delay))
+	if((GetTickCountEx()-lpObj->SkillDelay[index]) < ((DWORD)SkillInfo.Delay))
 	{
 		return 0;
 	}
 
-	lpObj->SkillDelay[index] = GetTickCount();
+	lpObj->SkillDelay[index] = GetTickCountEx();
 	return 1;
 }
 
@@ -538,24 +538,23 @@ bool CSkillManager::CheckSkillTarget(LPOBJ lpObj,int aIndex,int bIndex,int type)
 		return 1;
 	}
 
-	#if(GAMESERVER_TYPE==1)
-
-	if(gObj[SummonIndex].Map == MAP_CASTLE_SIEGE && gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE)
+	if (gServerInfo.m_ServerType == 1)
 	{
-		if(lpObj->Type == OBJECT_USER && gObj[SummonIndex].Type == OBJECT_USER)
+		if (gObj[SummonIndex].Map == MAP_CASTLE_SIEGE && gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE)
 		{
-			if(gServerInfo.m_CastleSiegeDamageRate2 != 0 || lpObj->CsJoinSide == 0 || gObj[SummonIndex].CsJoinSide == 0 || lpObj->CsJoinSide != gObj[SummonIndex].CsJoinSide)
+			if (lpObj->Type == OBJECT_USER && gObj[SummonIndex].Type == OBJECT_USER)
+			{
+				if (gServerInfo.m_CastleSiegeDamageRate2 != 0 || lpObj->CsJoinSide == 0 || gObj[SummonIndex].CsJoinSide == 0 || lpObj->CsJoinSide != gObj[SummonIndex].CsJoinSide)
+				{
+					return 1;
+				}
+			}
+			else
 			{
 				return 1;
 			}
 		}
-		else
-		{
-			return 1;
-		}
 	}
-
-	#endif
 
 	return 0;
 }
@@ -930,10 +929,10 @@ void CSkillManager::UseAttackSkill(int aIndex,int bIndex,CSkill* lpSkill) // OK
 
 	if(gQuest.CheckQuestListState(lpObj,3,QUEST_FINISH) != 0 && lpObj->ComboSkill.CheckCombo(lpSkill->m_skill) != 0)
 	{
-		if(gServerInfo.m_CheckAutoComboHack == 0 || (GetTickCount()-lpObj->ComboTime) > ((DWORD)gServerInfo.m_CheckAutoComboHackTolerance))
+		if(gServerInfo.m_CheckAutoComboHack == 0 || (GetTickCountEx()-lpObj->ComboTime) > ((XWORD)gServerInfo.m_CheckAutoComboHackTolerance))
 		{
 			combo = 1;
-			lpObj->ComboTime = GetTickCount();
+			lpObj->ComboTime = GetTickCountEx();
 		}
 	}
 
@@ -988,10 +987,10 @@ void CSkillManager::UseDurationSkillAttack(int aIndex,int bIndex,CSkill* lpSkill
 
 	if(gQuest.CheckQuestListState(lpObj,3,QUEST_FINISH) != 0 && lpObj->ComboSkill.CheckCombo(lpSkill->m_skill) != 0)
 	{
-		if(gServerInfo.m_CheckAutoComboHack == 0 || (GetTickCount()-lpObj->ComboTime) > ((DWORD)gServerInfo.m_CheckAutoComboHackTolerance))
+		if(gServerInfo.m_CheckAutoComboHack == 0 || (GetTickCountEx()-lpObj->ComboTime) > ((DWORD)gServerInfo.m_CheckAutoComboHackTolerance))
 		{
 			combo = 1;
-			lpObj->ComboTime = GetTickCount();
+			lpObj->ComboTime = GetTickCountEx();
 		}
 	}
 
@@ -1518,7 +1517,7 @@ bool CSkillManager::SkillDefense(int aIndex,int bIndex,CSkill* lpSkill) // OK
 		{
 			if(lpObj->Inventory[1].m_Option1 != 0)
 			{
-				lpObj->ShieldDamageReductionTime = GetTickCount();
+				lpObj->ShieldDamageReductionTime = GetTickCountEx();
 				GCActionSend(lpObj,SKILL_DEFENSE,lpObj->Index,bIndex);
 				return 1;
 			}
@@ -1920,7 +1919,7 @@ bool CSkillManager::SkillNova(int aIndex,int bIndex,CSkill* lpSkill) // OK
 
 		lpObj->SkillNovaState = 1;
 		lpObj->SkillNovaCount = 0;
-		lpObj->SkillNovaTime = GetTickCount();
+		lpObj->SkillNovaTime = GetTickCountEx();
 		this->GCSkillAttackSend(lpObj,bIndex,aIndex,1);
 		return 1;
 	}
@@ -2447,15 +2446,14 @@ bool CSkillManager::SkillSummonParty(int aIndex,int bIndex,CSkill* lpSkill) // O
 				continue;
 			}
 
-			#if(GAMESERVER_TYPE==1)
-
-			if(lpObj->Map == MAP_CASTLE_SIEGE && gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE && lpObj->CsJoinSide != gObj[index].CsJoinSide)
+			if (gServerInfo.m_ServerType == 1)
 			{
-				gNotice.GCNoticeSend(index,1,0,0,0,0,0,gMessage.GetMessage(272));
-				continue;
+				if (lpObj->Map == MAP_CASTLE_SIEGE && gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE && lpObj->CsJoinSide != gObj[index].CsJoinSide)
+				{
+					gNotice.GCNoticeSend(index, 1, 0, 0, 0, 0, 0, gMessage.GetMessage(272));
+					continue;
+				}
 			}
-
-			#endif
 
 			int px = lpObj->X;
 
@@ -6138,14 +6136,13 @@ void CSkillManager::CGSkillTeleportAllyRecv(PMSG_SKILL_TELEPORT_ALLY_RECV* lpMsg
 		return;
 	}
 
-	#if(GAMESERVER_TYPE==1)
-
-	if(lpObj->Map == MAP_CASTLE_SIEGE && gCastleSiege.CheckTeleportMagicAxisY(lpObj->Y,lpMsg->x,lpMsg->y) == 0)
+	if (gServerInfo.m_ServerType == 1)
 	{
-		lpMsg->y = (BYTE)lpObj->Y;
+		if (lpObj->Map == MAP_CASTLE_SIEGE && gCastleSiege.CheckTeleportMagicAxisY(lpObj->Y, lpMsg->x, lpMsg->y) == 0)
+		{
+			lpMsg->y = (BYTE)lpObj->Y;
+		}
 	}
-
-	#endif
 
 	CSkill* lpSkill = gSkillManager.GetSkill(lpObj,SKILL_TELEPORT_ALLY);
 

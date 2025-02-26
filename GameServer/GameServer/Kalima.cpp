@@ -192,7 +192,7 @@ bool CKalima::CreateKalimaGate(int aIndex,int level,int x,int y) // OK
 
 	lpMonster->MoveRange = 0;
 	lpMonster->DieRegen = 0;
-	lpMonster->RegenTime = GetTickCount();
+	lpMonster->RegenTime = GetTickCountEx();
 	lpMonster->MaxRegenTime = 0;
 	lpMonster->Attribute = 51+KalimaGateLevel;
 	lpMonster->SummonIndex = aIndex;
@@ -272,7 +272,7 @@ bool CKalima::CreateNextKalimaGate(int aIndex,int map,int x,int y) // OK
 
 	lpMonster->MoveRange = 0;
 	lpMonster->DieRegen = 0;
-	lpMonster->RegenTime = GetTickCount();
+	lpMonster->RegenTime = GetTickCountEx();
 	lpMonster->MaxRegenTime = 0;
 	lpMonster->Attribute = 58;
 	lpMonster->SummonIndex = aIndex;
@@ -361,7 +361,7 @@ void CKalima::KalimaGateAct(int aIndex) // OK
 		return;
 	}
 
-	if((GetTickCount()-lpObj->RegenTime) >= MAX_KALIMA_STAND)
+	if((GetTickCountEx()-lpObj->RegenTime) >= MAX_KALIMA_STAND)
 	{
 		this->DeleteKalimaGate(lpTarget->Index);
 		return;
@@ -475,7 +475,7 @@ void CKalima::KalimaNextGateAct(int aIndex) // OK
 		return;
 	}
 
-	if((GetTickCount()-lpObj->RegenTime) >= MAX_KALIMA_NEXT_STAND)
+	if((GetTickCountEx()-lpObj->RegenTime) >= MAX_KALIMA_NEXT_STAND)
 	{
 		this->DeleteKalimaGate(lpTarget->Index);
 		return;

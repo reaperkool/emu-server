@@ -528,7 +528,7 @@ bool CMuunSystem::CheckSpecialOption(LPOBJ lpObj,MUUN_SYSTEM_OPTION_INFO* lpInfo
 		return 0;
 	}
 
-	if(lpInfo->PlayTime != -1 && ((DWORD)(lpInfo->PlayTime*60000)) > (GetTickCount()-lpObj->ServerTickCount))
+	if(lpInfo->PlayTime != -1 && ((DWORD)(lpInfo->PlayTime*60000)) > (GetTickCountEx()-lpObj->ServerTickCount))
 	{
 		return 0;
 	}

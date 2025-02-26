@@ -207,7 +207,7 @@ struct DUEL_ARENA_INFO
 	int State;
 	int RemainTime;
 	int TargetTime;
-	int TickCount;
+	XWORD TickCount;
 	int Gladiator[MAX_DUEL_ARENA_GLADIATOR];
 	int Spectator[MAX_DUEL_ARENA_SPECTATOR];
 };

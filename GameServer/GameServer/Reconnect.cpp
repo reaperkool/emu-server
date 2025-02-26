@@ -26,7 +26,7 @@ void CReconnect::MainProc() // OK
 {
 	for(std::map<std::string,RECONNECT_INFO>::iterator it=this->m_ReconnectInfo.begin();it != this->m_ReconnectInfo.end();)
 	{
-		if((GetTickCount()-it->second.ReconnectTime) > (((DWORD)gServerInfo.m_PartyReconnectTime)*1000))
+		if((GetTickCountEx()-it->second.ReconnectTime) > (((DWORD)gServerInfo.m_PartyReconnectTime)*1000))
 		{
 			it = this->m_ReconnectInfo.erase(it);
 		}
@@ -43,7 +43,7 @@ void CReconnect::SetReconnectInfo(LPOBJ lpObj) // OK
 
 	memcpy(info.Name,lpObj->Name,sizeof(info.Name));
 
-	info.ReconnectTime = GetTickCount();
+	info.ReconnectTime = GetTickCountEx();
 
 	info.PartyNumber = lpObj->PartyNumber;
 

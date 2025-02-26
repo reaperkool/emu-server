@@ -54,7 +54,7 @@ BOOL CMonsterAIUnitInfo::RunAIUnitInfo(int aIndex) // OK
 		return 0;
 	}
 
-	if((GetTickCount()-lpObj->LastAutomataRuntime) < ((DWORD)lpObj->LastAutomataDelay))
+	if((GetTickCountEx()-lpObj->LastAutomataRuntime) < ((XWORD)lpObj->LastAutomataDelay))
 	{
 		return 0;
 	}
@@ -66,7 +66,7 @@ BOOL CMonsterAIUnitInfo::RunAIUnitInfo(int aIndex) // OK
 		return 0;
 	}
 
-	lpObj->LastAutomataRuntime = GetTickCount();
+	lpObj->LastAutomataRuntime = GetTickCountEx();
 
 	if(this->m_AIClassMap[lpMonsterAIState->m_NextState] == 0)
 	{

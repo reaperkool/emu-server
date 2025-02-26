@@ -309,9 +309,9 @@ struct SDHP_CASH_SHOP_RECIEVE_POINT_RECV
 	PSBMSG_HEAD header; // C1:18:06
 	WORD index;
 	char account[11];
-	DWORD CallbackFunc;
-	DWORD CallbackArg1;
-	DWORD CallbackArg2;
+	XWORD CallbackFunc;
+	XWORD CallbackArg1;
+	XWORD CallbackArg2;
 	DWORD WCoinC;
 	DWORD WCoinP;
 	DWORD GoblinPoint;
@@ -396,9 +396,9 @@ struct SDHP_CASH_SHOP_RECIEVE_POINT_SEND
 	PSBMSG_HEAD header; // C1:18:06
 	WORD index;
 	char account[11];
-	DWORD CallbackFunc;
-	DWORD CallbackArg1;
-	DWORD CallbackArg2;
+	XWORD CallbackFunc;
+	XWORD CallbackArg1;
+	XWORD CallbackArg2;
 };
 
 struct SDHP_CASH_SHOP_ADD_POINT_SAVE_SEND
@@ -551,7 +551,7 @@ public:
 	void DGCashShopPeriodicItemRecv(SDHP_CASH_SHOP_PERIODIC_ITEM_RECV* lpMsg);
 	void DGCashShopRecievePointRecv(SDHP_CASH_SHOP_RECIEVE_POINT_RECV* lpMsg);
 	void GDCashShopPeriodicItemSend(int aIndex);
-	void GDCashShopRecievePointSend(int aIndex,DWORD CallbackFunc,DWORD CallbackArg1,DWORD CallbackArg2);
+	void GDCashShopRecievePointSend(int aIndex,XWORD CallbackFunc,XWORD CallbackArg1,XWORD CallbackArg2);
 	void GDCashShopAddPointSaveSend(int aIndex,char* GiftAccount,DWORD AddWCoinC,DWORD AddWCoinP,DWORD AddGoblinPoint);
 	void GDCashShopSubPointSaveSend(int aIndex,char* GiftAccount,DWORD SubWCoinC,DWORD SubWCoinP,DWORD SubGoblinPoint);
 	void GDCashShopInsertItemSaveSend(int aIndex,char* GiftAccount,BYTE InventoryType,DWORD PackageMainIndex,DWORD ProductBaseIndex,DWORD ProductMainIndex,double CoinValue,BYTE ProductType,char* GiftName,char* GiftText);

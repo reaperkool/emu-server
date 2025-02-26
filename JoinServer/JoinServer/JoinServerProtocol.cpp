@@ -1,9 +1,8 @@
 #include "stdafx.h"
 #include "JoinServerProtocol.h"
-#include "..\\..\\..\\Util\\MD5.h"
+#include "..\\..\\Util\\MD5.h"
 #include "AccountManager.h"
 #include "Log.h"
-#include "Protect.h"
 #include "QueryManager.h"
 #include "ServerManager.h"
 #include "SocketManager.h"
@@ -11,9 +10,7 @@
 
 void JoinServerProtocolCore(int index,BYTE head,BYTE* lpMsg,int size) // OK
 {
-	PROTECT_START
-
-	gServerManager[index].m_PacketTime = GetTickCount();
+	gServerManager[index].m_PacketTime = GetTickCountEx();
 
 	switch(head)
 	{
@@ -48,8 +45,6 @@ void JoinServerProtocolCore(int index,BYTE head,BYTE* lpMsg,int size) // OK
 			GJExternalDisconnectAccountRecv((SDHP_EXTERNAL_DISCONNECT_ACCOUNT_RECV*)lpMsg,index);
 			break;
 	}
-
-	PROTECT_FINAL
 }
 
 void GJServerInfoRecv(SDHP_SERVER_INFO_RECV* lpMsg,int index) // OK
@@ -96,7 +91,7 @@ void GJConnectAccountRecv(SDHP_CONNECT_ACCOUNT_RECV* lpMsg,int index) // OK
 		return;
 	}
 
-	if(gAccountManager.GetAccountCount() >= gJoinServerMaxAccount[gProtect.m_AuthInfo.PackageType][gProtect.m_AuthInfo.PlanType])
+	if(gAccountManager.GetAccountCount() >= MAX_ACCOUNT)
 	{
 		pMsg.result = 4;
 		gSocketManager.DataSend(index,(BYTE*)&pMsg,pMsg.header.size);
@@ -246,7 +241,7 @@ void GJDisconnectAccountRecv(SDHP_DISCONNECT_ACCOUNT_RECV* lpMsg,int index) // O
 		return;
 	}
 
-	if(AccountInfo.MapServerMove != 0 && (GetTickCount()-AccountInfo.MapServerMoveTime) < 30000)
+	if(AccountInfo.MapServerMove != 0 && (GetTickCountEx()-AccountInfo.MapServerMoveTime) < 30000)
 	{
 		pMsg.result = 0;
 		gSocketManager.DataSend(index,(BYTE*)&pMsg,pMsg.header.size);
@@ -334,18 +329,18 @@ void GJMapServerMoveRecv(SDHP_MAP_SERVER_MOVE_RECV* lpMsg,int index) // OK
 
 	pMsg.y = lpMsg->y;
 
-	pMsg.AuthCode1 = GetTickCount();
+	pMsg.AuthCode1 = (DWORD)GetTickCountEx();
 
-	pMsg.AuthCode2 = GetTickCount()%10000;
+	pMsg.AuthCode2 = (DWORD)GetTickCountEx()%10000;
 
-	pMsg.AuthCode3 = GetTickCount()%777;
+	pMsg.AuthCode3 = (DWORD)GetTickCountEx()%777;
 
-	pMsg.AuthCode4 = GetTickCount()%8911;
+	pMsg.AuthCode4 = (DWORD)GetTickCountEx()%8911;
 
 	gSocketManager.DataSend(index,(BYTE*)&pMsg,pMsg.header.size);
 
 	AccountInfo.MapServerMove = 1;
-	AccountInfo.MapServerMoveTime = GetTickCount();
+	AccountInfo.MapServerMoveTime = (DWORD)GetTickCountEx();
 	AccountInfo.LastServerCode = pMsg.GameServerCode;
 	AccountInfo.NextServerCode = pMsg.NextServerCode;
 	AccountInfo.Map = pMsg.map;

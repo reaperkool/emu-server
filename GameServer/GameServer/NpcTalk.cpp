@@ -261,238 +261,238 @@ void CNpcTalk::NpcCrywolfAltar(LPOBJ lpNpc,LPOBJ lpObj) // OK
 
 void CNpcTalk::NpcCastleSiegeCrown(LPOBJ lpNpc,LPOBJ lpObj) // OK
 {
-	#if(GAMESERVER_TYPE==1)
-	if ( gObjIsConnected(lpObj->Index) == FALSE )
+	if (gServerInfo.m_ServerType == 1)
 	{
-		return;
-	}
-
-	if(gCastleSiege.GetCastleState() != CASTLESIEGE_STATE_STARTSIEGE)
-	{
-		return;
-	}
-	
-	if(lpObj->CsJoinSide < 2 || lpObj->CsGuildInvolved == FALSE )
-	{
-		return;
-	}
-
-	if(gCastleSiege.CheckUnionGuildMaster(lpObj->Index) == FALSE )
-	{
-		return;
-	}
-
-	if( (abs(lpObj->Y - lpNpc->Y)) > 3 || (abs(lpObj->X - lpNpc->X)) > 3)
-	{
-		return;
-	}
-
-	if(gCastleSiege.GetRegCrownAvailable() == FALSE )
-	{
-		return;
-	}
-
-	int iUserIndex = gCastleSiege.GetCrownUserIndex();
-
-	if(gObjIsConnected(iUserIndex) == FALSE )
-	{
-		int iSwitchIndex1 = gCastleSiege.GetCrownSwitchUserIndex(217);
-		int iSwitchIndex2 = gCastleSiege.GetCrownSwitchUserIndex(218);
-
-		if(gObjIsConnected(iSwitchIndex1) == FALSE || gObjIsConnected(iSwitchIndex2) == FALSE )
+		if (gObjIsConnected(lpObj->Index) == FALSE)
 		{
-			GCAnsCsAccessCrownState(lpObj->Index,4);
-			LogAdd(LOG_BLACK,"[CastleSiege] [%s][%s] Failed to Register Castle Crown (GUILD:%s)",lpObj->Account,lpObj->Name,lpObj->GuildName);
 			return;
 		}
 
-		if(lpObj->CsJoinSide != gObj[iSwitchIndex1].CsJoinSide || lpObj->CsJoinSide != gObj[iSwitchIndex2].CsJoinSide)
+		if (gCastleSiege.GetCastleState() != CASTLESIEGE_STATE_STARTSIEGE)
 		{
-			GCAnsCsAccessCrownState(lpObj->Index,4);
-			LogAdd(LOG_BLACK,"[CastleSiege] [%s][%s] Failed to Register Castle Crown (GUILD:%s) (S1:%s/%s)(S2:%s/%s)",lpObj->Account,lpObj->Name,lpObj->GuildName,gObj[iSwitchIndex1].Name,gObj[iSwitchIndex1].GuildName,gObj[iSwitchIndex2].Name,gObj[iSwitchIndex2].GuildName);
 			return;
 		}
-		else
+
+		if (lpObj->CsJoinSide < 2 || lpObj->CsGuildInvolved == FALSE)
 		{
-			GCAnsCsAccessCrownState(lpObj->Index,0);
-			gCastleSiege.SetCrownUserIndex(lpObj->Index);
-			gCastleSiege.SetCrownAccessUserX((BYTE)lpObj->X);
-			gCastleSiege.SetCrownAccessUserY((BYTE)lpObj->Y);
-			gCastleSiege.SetCrownAccessTickCount();
-			gCastleSiege.NotifyAllUserCsProgState(0,lpObj->GuildName);
-			LogAdd(LOG_BLACK,"[CastleSiege] [%s][%s] Start to Register Castle Crown (GUILD:%s)",lpObj->Account,lpObj->Name,lpObj->GuildName);
+			return;
+		}
+
+		if (gCastleSiege.CheckUnionGuildMaster(lpObj->Index) == FALSE)
+		{
+			return;
+		}
+
+		if ((abs(lpObj->Y - lpNpc->Y)) > 3 || (abs(lpObj->X - lpNpc->X)) > 3)
+		{
+			return;
+		}
+
+		if (gCastleSiege.GetRegCrownAvailable() == FALSE)
+		{
+			return;
+		}
+
+		int iUserIndex = gCastleSiege.GetCrownUserIndex();
+
+		if (gObjIsConnected(iUserIndex) == FALSE)
+		{
+			int iSwitchIndex1 = gCastleSiege.GetCrownSwitchUserIndex(217);
+			int iSwitchIndex2 = gCastleSiege.GetCrownSwitchUserIndex(218);
+
+			if (gObjIsConnected(iSwitchIndex1) == FALSE || gObjIsConnected(iSwitchIndex2) == FALSE)
+			{
+				GCAnsCsAccessCrownState(lpObj->Index, 4);
+				LogAdd(LOG_BLACK, "[CastleSiege] [%s][%s] Failed to Register Castle Crown (GUILD:%s)", lpObj->Account, lpObj->Name, lpObj->GuildName);
+				return;
+			}
+
+			if (lpObj->CsJoinSide != gObj[iSwitchIndex1].CsJoinSide || lpObj->CsJoinSide != gObj[iSwitchIndex2].CsJoinSide)
+			{
+				GCAnsCsAccessCrownState(lpObj->Index, 4);
+				LogAdd(LOG_BLACK, "[CastleSiege] [%s][%s] Failed to Register Castle Crown (GUILD:%s) (S1:%s/%s)(S2:%s/%s)", lpObj->Account, lpObj->Name, lpObj->GuildName, gObj[iSwitchIndex1].Name, gObj[iSwitchIndex1].GuildName, gObj[iSwitchIndex2].Name, gObj[iSwitchIndex2].GuildName);
+				return;
+			}
+			else
+			{
+				GCAnsCsAccessCrownState(lpObj->Index, 0);
+				gCastleSiege.SetCrownUserIndex(lpObj->Index);
+				gCastleSiege.SetCrownAccessUserX((BYTE)lpObj->X);
+				gCastleSiege.SetCrownAccessUserY((BYTE)lpObj->Y);
+				gCastleSiege.SetCrownAccessTickCount();
+				gCastleSiege.NotifyAllUserCsProgState(0, lpObj->GuildName);
+				LogAdd(LOG_BLACK, "[CastleSiege] [%s][%s] Start to Register Castle Crown (GUILD:%s)", lpObj->Account, lpObj->Name, lpObj->GuildName);
+			}
+		}
+		else if (lpObj->Index != iUserIndex)
+		{
+			GCAnsCsAccessCrownState(lpObj->Index, 3);
 		}
 	}
-	else if(lpObj->Index != iUserIndex)
-	{
-		GCAnsCsAccessCrownState(lpObj->Index,3);
-	}
-	#endif
 }
 
 void CNpcTalk::NpcCastleSiegeCrownSwitch(LPOBJ lpNpc,LPOBJ lpObj) // OK
 {
-	#if(GAMESERVER_TYPE==1)
-	if(gObjIsConnected(lpObj->Index) == FALSE )
+	if (gServerInfo.m_ServerType == 1)
 	{
-		return;
-	}
+		if (gObjIsConnected(lpObj->Index) == FALSE)
+		{
+			return;
+		}
 
-	if(gCastleSiege.GetCastleState() != CASTLESIEGE_STATE_STARTSIEGE)
-	{
-		return;
-	}
-	
-	if(lpObj->CsJoinSide < 2)
-	{
-		return;
-	}
+		if (gCastleSiege.GetCastleState() != CASTLESIEGE_STATE_STARTSIEGE)
+		{
+			return;
+		}
 
-	if( (abs(lpObj->Y - lpNpc->Y)) > 3 || (abs(lpObj->X - lpNpc->X)) > 3)
-	{
-		return;
-	}
+		if (lpObj->CsJoinSide < 2)
+		{
+			return;
+		}
 
-	if(gCastleSiege.CheckGuardianStatueExist() == TRUE)
-	{
-		gNotice.GCNoticeSend(lpObj->Index,1,0,0,0,0,0,gMessage.GetMessage(427));
-		return;
-	}
+		if ((abs(lpObj->Y - lpNpc->Y)) > 3 || (abs(lpObj->X - lpNpc->X)) > 3)
+		{
+			return;
+		}
 
-	int iUserIndex = gCastleSiege.GetCrownSwitchUserIndex(lpNpc->Class);
+		if (gCastleSiege.CheckGuardianStatueExist() == TRUE)
+		{
+			gNotice.GCNoticeSend(lpObj->Index, 1, 0, 0, 0, 0, 0, gMessage.GetMessage(427));
+			return;
+		}
 
-	if(!gObjIsConnected(iUserIndex))
-	{
-		GCAnsCsAccessSwitchState(lpObj->Index,lpNpc->Index,-1,1);
-		gCastleSiege.SetCrownSwitchUserIndex(lpNpc->Class,lpObj->Index);
-		LogAdd(LOG_BLACK,"[CastleSiege] [%s][%s] Start to Push Castle Crown Switch (GUILD:%s) - CS X:%d/Y:%d",lpObj->Account,lpObj->Name,lpObj->GuildName,lpNpc->X,lpNpc->Y);
-	}
-	else if(lpObj->Index != iUserIndex)
-	{
-		GCAnsCsAccessSwitchState(lpObj->Index,lpNpc->Index,iUserIndex,2);
-	}
+		int iUserIndex = gCastleSiege.GetCrownSwitchUserIndex(lpNpc->Class);
 
-	#endif
+		if (!gObjIsConnected(iUserIndex))
+		{
+			GCAnsCsAccessSwitchState(lpObj->Index, lpNpc->Index, -1, 1);
+			gCastleSiege.SetCrownSwitchUserIndex(lpNpc->Class, lpObj->Index);
+			LogAdd(LOG_BLACK, "[CastleSiege] [%s][%s] Start to Push Castle Crown Switch (GUILD:%s) - CS X:%d/Y:%d", lpObj->Account, lpObj->Name, lpObj->GuildName, lpNpc->X, lpNpc->Y);
+		}
+		else if (lpObj->Index != iUserIndex)
+		{
+			GCAnsCsAccessSwitchState(lpObj->Index, lpNpc->Index, iUserIndex, 2);
+		}
+	}
 }
 
 void CNpcTalk::NpcCastleSiegeGateSwitch(LPOBJ lpNpc,LPOBJ lpObj) // OK
 {
-	#if(GAMESERVER_TYPE==1)
-
-	if ( (lpObj->Interface.use) > 0 )
+	if (gServerInfo.m_ServerType == 1)
 	{
-		return;
-	}
+		if ((lpObj->Interface.use) > 0)
+		{
+			return;
+		}
 
-	BOOL bControlEnable = FALSE;
-	BYTE btResult = 0;
-	int iGateIndex = -1;
+		BOOL bControlEnable = FALSE;
+		BYTE btResult = 0;
+		int iGateIndex = -1;
 
-	if(gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE)
-	{
-		if(lpObj->CsJoinSide != TRUE)
+		if (gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE)
 		{
-			btResult = 4;
-			bControlEnable = FALSE;
-		}
-		else
-		{
-			bControlEnable = TRUE;
-		}
-	}
-	else
-	{
-		if(gCastleSiege.CheckCastleOwnerMember(lpObj->Index) == FALSE && gCastleSiege.CheckCastleOwnerUnionMember(lpObj->Index) == FALSE)
-		{
-			btResult = 4;
-			bControlEnable = FALSE;
-		}
-		else
-		{
-			bControlEnable = TRUE;
-		}
-	}
-
-	if(bControlEnable != FALSE)
-	{
-		if(gCastleSiege.CheckLeverAlive(lpNpc->Index) == TRUE)
-		{
-			if(gCastleSiege.CheckCsGateAlive(lpNpc->CsGateLeverLinkIndex) == TRUE)
+			if (lpObj->CsJoinSide != TRUE)
 			{
-				btResult = 1;
-				iGateIndex = lpNpc->CsGateLeverLinkIndex;
+				btResult = 4;
+				bControlEnable = FALSE;
 			}
 			else
 			{
-				btResult = 2;
+				bControlEnable = TRUE;
 			}
 		}
 		else
 		{
-			btResult = 3;
+			if (gCastleSiege.CheckCastleOwnerMember(lpObj->Index) == FALSE && gCastleSiege.CheckCastleOwnerUnionMember(lpObj->Index) == FALSE)
+			{
+				btResult = 4;
+				bControlEnable = FALSE;
+			}
+			else
+			{
+				bControlEnable = TRUE;
+			}
 		}
 
+		if (bControlEnable != FALSE)
+		{
+			if (gCastleSiege.CheckLeverAlive(lpNpc->Index) == TRUE)
+			{
+				if (gCastleSiege.CheckCsGateAlive(lpNpc->CsGateLeverLinkIndex) == TRUE)
+				{
+					btResult = 1;
+					iGateIndex = lpNpc->CsGateLeverLinkIndex;
+				}
+				else
+				{
+					btResult = 2;
+				}
+			}
+			else
+			{
+				btResult = 3;
+			}
+
+		}
+
+		GCAnsCsGateState(lpObj->Index, btResult, iGateIndex);
+
+		if (btResult != 1)
+		{
+			return;
+		}
+
+		lpObj->Interface.use = 1;
+		lpObj->Interface.type = 12;
 	}
-
-	GCAnsCsGateState(lpObj->Index,btResult,iGateIndex);
-
-	if(btResult != 1)
-	{
-		return;
-	}
-
-	lpObj->Interface.use = 1;
-	lpObj->Interface.type = 12;
-	#endif
 }
 
 void CNpcTalk::NpcCastleSiegeGuard(LPOBJ lpNpc,LPOBJ lpObj) // OK
 {
-	#if(GAMESERVER_TYPE==1)
-
-	if(gObjIsConnected(lpObj->Index) == FALSE )
+	if (gServerInfo.m_ServerType == 1)
 	{
-		return;
-	}
-
-	if ( (lpObj->Interface.use ) > 0 )
-	{
-		return;
-	}
-
-	PMSG_ANS_GUARD_IN_CASTLE_HUNTZONE pResult = {0};
-
-	pResult.h.set(0xB9,0x03,sizeof(PMSG_ANS_GUARD_IN_CASTLE_HUNTZONE));
-	pResult.btResult = 1;
-	pResult.iMaxPrice = 300000;
-	pResult.iUnitOfPrice = 10000;
-	pResult.btUsable = gCastleSiege.GetHuntZoneEnter();
-	pResult.iCurrentPrice = gCastleSiegeSync.GetTaxHuntZone(lpObj->Index,FALSE);
-
-	if(lpObj->Guild != NULL)
-	{
-		if(gCastleSiege.CheckCastleOwnerMember(lpObj->Index))
+		if (gObjIsConnected(lpObj->Index) == FALSE)
 		{
-			if(lpObj->GuildStatus == 0x80)
+			return;
+		}
+
+		if ((lpObj->Interface.use) > 0)
+		{
+			return;
+		}
+
+		PMSG_ANS_GUARD_IN_CASTLE_HUNTZONE pResult = { 0 };
+
+		pResult.h.set(0xB9, 0x03, sizeof(PMSG_ANS_GUARD_IN_CASTLE_HUNTZONE));
+		pResult.btResult = 1;
+		pResult.iMaxPrice = 300000;
+		pResult.iUnitOfPrice = 10000;
+		pResult.btUsable = gCastleSiege.GetHuntZoneEnter();
+		pResult.iCurrentPrice = gCastleSiegeSync.GetTaxHuntZone(lpObj->Index, FALSE);
+
+		if (lpObj->Guild != NULL)
+		{
+			if (gCastleSiege.CheckCastleOwnerMember(lpObj->Index))
 			{
-				pResult.btResult = 3;
+				if (lpObj->GuildStatus == 0x80)
+				{
+					pResult.btResult = 3;
+				}
+				else
+				{
+					pResult.btResult = 2;
+					pResult.btUsable = 0;
+				}
 			}
-			else
+			else if (gCastleSiege.CheckCastleOwnerUnionMember(lpObj->Index))
 			{
 				pResult.btResult = 2;
 				pResult.btUsable = 0;
 			}
 		}
-		else if(gCastleSiege.CheckCastleOwnerUnionMember(lpObj->Index))
-		{
-			pResult.btResult = 2;
-			pResult.btUsable = 0;
-		}
+
+		DataSend(lpObj->Index, (LPBYTE)&pResult, pResult.h.size);
 	}
-
-	DataSend(lpObj->Index,(LPBYTE)&pResult,pResult.h.size);
-
-	#endif
 }
 
 void CNpcTalk::NpcCastleSiegeWeaponOffense(LPOBJ lpNpc,LPOBJ lpObj) // OK
@@ -507,69 +507,67 @@ void CNpcTalk::NpcCastleSiegeWeaponDefense(LPOBJ lpNpc,LPOBJ lpObj) // OK
 
 void CNpcTalk::NpcCastleSiegeSenior(LPOBJ lpNpc,LPOBJ lpObj) // OK
 {
-	#if(GAMESERVER_TYPE==0)
-
-	GCChatTargetSend(lpObj,lpNpc->Index,gMessage.GetMessage(240));
-
-	#else
-
-	if(lpObj->PShopOpen != 0)
+	if (gServerInfo.m_ServerType != 1)
 	{
-		return;
+		GCChatTargetSend(lpObj, lpNpc->Index, gMessage.GetMessage(240));
 	}
-
-	if(gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE)
+	else
 	{
-		gNotice.GCNoticeSend(lpObj->Index,1,0,0,0,0,0,gMessage.GetMessage(241));
-		return;
+		if (lpObj->PShopOpen != 0)
+		{
+			return;
+		}
+
+		if (gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE)
+		{
+			gNotice.GCNoticeSend(lpObj->Index, 1, 0, 0, 0, 0, 0, gMessage.GetMessage(241));
+			return;
+		}
+
+		if (gCastleSiege.CheckGuildOwnCastle(lpObj->GuildName) == 0)
+		{
+			gNotice.GCNoticeSend(lpObj->Index, 1, 0, 0, 0, 0, 0, gMessage.GetMessage(242));
+			return;
+		}
+
+		if (lpObj->GuildStatus != 0x40 && lpObj->GuildStatus != 0x80)
+		{
+			gNotice.GCNoticeSend(lpObj->Index, 1, 0, 0, 0, 0, 0, gMessage.GetMessage(243));
+			return;
+		}
+
+		lpObj->Interface.use = 1;
+		lpObj->Interface.type = INTERFACE_CHAOS_BOX;
+		lpObj->Interface.state = 0;
+
+		PMSG_NPC_TALK_SEND pMsg;
+
+		pMsg.header.setE(0x30, sizeof(pMsg));
+
+		pMsg.result = 12;
+
+		DataSend(lpObj->Index, (BYTE*)&pMsg, pMsg.header.size);
+
+		GCTaxInfoSend(lpObj->Index, 1, gCastleSiegeSync.GetTaxRateChaos(lpObj->Index));
+
+		lpObj->IsChaosMixCompleted = 0;
+
+		lpObj->CsGuildInvolved = 0;
+
+		gObjInventoryTransaction(lpObj->Index);
 	}
-
-	if(gCastleSiege.CheckGuildOwnCastle(lpObj->GuildName) == 0)
-	{
-		gNotice.GCNoticeSend(lpObj->Index,1,0,0,0,0,0,gMessage.GetMessage(242));
-		return;
-	}
-
-	if(lpObj->GuildStatus != 0x40 && lpObj->GuildStatus != 0x80)
-	{
-		gNotice.GCNoticeSend(lpObj->Index,1,0,0,0,0,0,gMessage.GetMessage(243));
-		return;
-	}
-
-	lpObj->Interface.use = 1;
-	lpObj->Interface.type = INTERFACE_CHAOS_BOX;
-	lpObj->Interface.state = 0;
-
-	PMSG_NPC_TALK_SEND pMsg;
-
-	pMsg.header.setE(0x30,sizeof(pMsg));
-
-	pMsg.result = 12;
-
-	DataSend(lpObj->Index,(BYTE*)&pMsg,pMsg.header.size);
-
-	GCTaxInfoSend(lpObj->Index,1,gCastleSiegeSync.GetTaxRateChaos(lpObj->Index));
-
-	lpObj->IsChaosMixCompleted = 0;
-
-	lpObj->CsGuildInvolved = 0;
-
-	gObjInventoryTransaction(lpObj->Index);
-
-	#endif
 }
 
 void CNpcTalk::NpcCastleSiegeGuardsman(LPOBJ lpNpc,LPOBJ lpObj) // OK
 {
-	#if(GAMESERVER_TYPE==1)
-
-	if(gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE)
+	if (gServerInfo.m_ServerType == 1)
 	{
-		GCChatTargetSend(lpObj,lpNpc->Index,gMessage.GetMessage(244));
-		return;
+		if (gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE)
+		{
+			GCChatTargetSend(lpObj, lpNpc->Index, gMessage.GetMessage(244));
+			return;
+		}
 	}
-
-	#endif
 	
 	lpObj->Interface.use = 1;
 	lpObj->Interface.type = INTERFACE_COMMON;

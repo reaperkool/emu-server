@@ -69,22 +69,16 @@
     <ClInclude Include="Util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Protect.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ThemidaSDK.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Log.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AccountManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Util\MD5.h">
+    <ClInclude Include="..\..\Util\MD5.h">
       <Filter>Util Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Util\MD5_KEYVAL.H">
+    <ClInclude Include="..\..\Util\MD5_KEYVAL.H">
       <Filter>Util Files</Filter>
     </ClInclude>
     <ClInclude Include="MiniDump.h">
@@ -131,16 +125,13 @@
     <ClCompile Include="Util.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Protect.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Log.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="AccountManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Util\MD5.cpp">
+    <ClCompile Include="..\..\Util\MD5.cpp">
       <Filter>Util Files</Filter>
     </ClCompile>
     <ClCompile Include="MiniDump.cpp">

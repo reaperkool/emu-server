@@ -1,17 +1,13 @@
 #include "stdafx.h"
 #include "Util.h"
-#include "Protect.h"
 #include "QueryManager.h"
 #include "SocketManager.h"
 #include "SocketManagerUdp.h"
-#include "ThemidaSDK.h"
 
 int gServerCount = 0;
 
 void ErrorMessageBox(char* message,...) // OK
 {
-	VM_START
-
 	char buff[256];
 
 	memset(buff,0,sizeof(buff));
@@ -22,8 +18,6 @@ void ErrorMessageBox(char* message,...) // OK
 	va_end(arg);
 
 	MessageBox(0,buff,"Error",MB_OK | MB_ICONERROR);
-
-	VM_END
 
 	ExitProcess(0);
 }
@@ -57,22 +51,18 @@ void LogAdd(eLogColor color,char* text,...) // OK
 
 	wsprintf(log,"%.8s %s",&time[11],temp);
 
-	gServerDisplayer.LogAddText(color,log,strlen(log));
+	gServerDisplayer.LogAddText(color,log,(int)strlen(log));
 }
 
 void JoinServerLiveProc() // OK
 {
-	PROTECT_START
-
-	SDHP_JOIN_SERVER_LIVE_SEND pMsg;
+	SDHP_JOIN_SERVER_LIVE_SEND pMsg{};
 
 	pMsg.header.set(0x02,sizeof(pMsg));
 
 	pMsg.QueueSize = gSocketManager.GetQueueSize();
 
 	gSocketManagerUdp.DataSend((BYTE*)&pMsg,pMsg.header.size);
-
-	PROTECT_FINAL
 }
 
 bool CheckTextSyntax(char* text,int size) // OK
@@ -127,14 +117,14 @@ int GetFreeServerIndex() // OK
 
 int SearchFreeServerIndex(int* index,int MinIndex,int MaxIndex,DWORD MinTime) // OK
 {
-	DWORD CurOnlineTime = 0;
-	DWORD MaxOnlineTime = 0;
+	XWORD CurOnlineTime = 0;
+	XWORD MaxOnlineTime = 0;
 
 	for(int n=MinIndex;n < MaxIndex;n++)
 	{
 		if(gServerManager[n].CheckState() == 0 && gServerManager[n].CheckAlloc() != 0)
 		{
-			if((CurOnlineTime=(GetTickCount()-gServerManager[n].m_OnlineTime)) > MinTime && CurOnlineTime > MaxOnlineTime)
+			if((CurOnlineTime=(GetTickCountEx()-gServerManager[n].m_OnlineTime)) > MinTime && CurOnlineTime > MaxOnlineTime)
 			{
 				(*index) = n;
 				MaxOnlineTime = CurOnlineTime;
@@ -160,7 +150,7 @@ CServerManager* FindServerByCode(WORD ServerCode) // OK
 
 DWORD MakeAccountKey(char* account) // OK
 {
-	int size = strlen(account);
+	int size = (int)strlen(account);
 
 	DWORD key = 0;
 

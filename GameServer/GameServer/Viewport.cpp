@@ -13,6 +13,7 @@
 #include "Guild.h"
 #include "Map.h"
 #include "MapManager.h"
+#include "ServerInfo.h"
 #include "Util.h"
 
 CViewport gViewport;
@@ -785,24 +786,23 @@ void CViewport::GCViewportMonsterSend(int aIndex) // OK
 		info.type[0] = SET_NUMBERHB(lpTarget->Class);
 		info.type[1] = SET_NUMBERLB(lpTarget->Class);
 
-		#if(GAMESERVER_TYPE==1)
-
-		if(lpTarget->Class == 278)
+		if (gServerInfo.m_ServerType == 1)
 		{
-			if(gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE && lpObj->CsJoinSide == lpTarget->CsJoinSide)
+			if (lpTarget->Class == 278)
 			{
-				info.type[0] |= 0x80;
-			}
+				if (gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE && lpObj->CsJoinSide == lpTarget->CsJoinSide)
+				{
+					info.type[0] |= 0x80;
+				}
 
-			if(lpObj->Guild != 0 && lpTarget->Guild != 0 && lpObj->Guild == lpTarget->Guild)
-			{
-				info.type[0] |= 0x80;
-			}
+				if (lpObj->Guild != 0 && lpTarget->Guild != 0 && lpObj->Guild == lpTarget->Guild)
+				{
+					info.type[0] |= 0x80;
+				}
 
-			info.type[0] |= ((lpTarget->CreationState << 4) & 0x70);
+				info.type[0] |= ((lpTarget->CreationState << 4) & 0x70);
+			}
 		}
-
-		#endif
 
 		info.x = (BYTE)lpTarget->X;
 		info.y = (BYTE)lpTarget->Y;
@@ -831,33 +831,32 @@ void CViewport::GCViewportMonsterSend(int aIndex) // OK
 
 		#endif
 
-		#if(GAMESERVER_TYPE==1)
-
-		if(lpTarget->Class == 216)
+		if (gServerInfo.m_ServerType == 1)
 		{
-			if(gCastleSiege.GetRegCrownAvailable() == 0)
+			if (lpTarget->Class == 216)
 			{
-				gEffectManager.DelEffect(lpTarget,EFFECT_CASTLE_CROWN_STATE);
+				if (gCastleSiege.GetRegCrownAvailable() == 0)
+				{
+					gEffectManager.DelEffect(lpTarget, EFFECT_CASTLE_CROWN_STATE);
+				}
+				else
+				{
+					gEffectManager.AddEffect(lpTarget, 0, EFFECT_CASTLE_CROWN_STATE, 0, 0, 0, 0, 0);
+				}
 			}
-			else
+
+			if (lpTarget->Class == 277)
 			{
-				gEffectManager.AddEffect(lpTarget,0,EFFECT_CASTLE_CROWN_STATE,0,0,0,0,0);
+				if (lpTarget->CsGateOpen == 0)
+				{
+					gEffectManager.DelEffect(lpTarget, EFFECT_CASTLE_GATE_STATE);
+				}
+				else
+				{
+					gEffectManager.AddEffect(lpTarget, 0, EFFECT_CASTLE_GATE_STATE, 0, 0, 0, 0, 0);
+				}
 			}
 		}
-
-		if(lpTarget->Class == 277)
-		{
-			if(lpTarget->CsGateOpen == 0)
-			{
-				gEffectManager.DelEffect(lpTarget,EFFECT_CASTLE_GATE_STATE);
-			}
-			else
-			{
-				gEffectManager.AddEffect(lpTarget,0,EFFECT_CASTLE_GATE_STATE,0,0,0,0,0);
-			}
-		}
-
-		#endif
 
 		int InfoSize = sizeof(info);
 

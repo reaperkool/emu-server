@@ -8,7 +8,6 @@
 #include "IpManager.h"
 #include "Log.h"
 #include "PacketManager.h"
-#include "Protect.h"
 #include "Protocol.h"
 #include "SerialCheck.h"
 #include "User.h"
@@ -47,8 +46,6 @@ CSocketManager::~CSocketManager() // OK
 
 bool CSocketManager::Start(WORD port) // OK
 {
-	PROTECT_START
-
 	this->m_port = port;
 
 	if(this->CreateListenSocket() == 0)
@@ -80,8 +77,6 @@ bool CSocketManager::Start(WORD port) // OK
 		this->Clean();
 		return 0;
 	}
-
-	PROTECT_FINAL
 
 	gLog.Output(LOG_CONNECT,"[SocketManager] Server started at port [%d]",this->m_port);
 	return 1;
@@ -296,9 +291,14 @@ bool CSocketManager::DataRecv(int index,IO_MAIN_BUFFER* lpIoBuffer) // OK
 			{
 				if(header == 0xC3)
 				{
-					DecSize = gPacketManager.Decrypt(&DecBuff[1],&lpMsg[count+2],(size-2))+1;
-
+					#if(LEGACY_CRYPTO_ENABLE == 1)
+					DecSize = gPacketManager.Decrypt(&DecBuff[1], &lpMsg[count + 2], (size - 2)) + 1;
 					DecSerial = DecBuff[1];
+					#else
+					DecSize = size;
+					DecSerial = 0;
+					memcpy(&DecBuff[0], &lpMsg[count], size);
+					#endif
 
 					header = 0xC1;
 					head = DecBuff[2];
@@ -330,9 +330,14 @@ bool CSocketManager::DataRecv(int index,IO_MAIN_BUFFER* lpIoBuffer) // OK
 				}
 				else
 				{
-					DecSize = gPacketManager.Decrypt(&DecBuff[2],&lpMsg[count+3],(size-3))+2;
-
+					#if(LEGACY_CRYPTO_ENABLE == 1)
+					DecSize = gPacketManager.Decrypt(&DecBuff[2], &lpMsg[count + 3], (size - 3)) + 2;
 					DecSerial = DecBuff[2];
+					#else
+					DecSize = size;
+					DecSerial = 0;
+					memcpy(&DecBuff[0], &lpMsg[count], size);
+					#endif
 
 					header = 0xC2;
 					head = DecBuff[3];
@@ -438,6 +443,8 @@ bool CSocketManager::DataSend(int index,BYTE* lpMsg,int size) // OK
 
 	memcpy(send,lpMsg,size);
 
+	#if(LEGACY_CRYPTO_ENABLE == 1)
+
 	if(lpMsg[0] == 0xC3 || lpMsg[0] == 0xC4)
 	{
 		if(lpMsg[0] == 0xC3)
@@ -468,6 +475,8 @@ bool CSocketManager::DataSend(int index,BYTE* lpMsg,int size) // OK
 			send[2] = LOBYTE(size);
 		}
 	}
+
+	#endif
 
 	if(size > MAX_MAIN_PACKET_SIZE)
 	{
@@ -731,7 +740,7 @@ DWORD WINAPI CSocketManager::ServerAcceptThread(CSocketManager* lpSocketManager)
 
 	while(true)
 	{
-		SOCKET socket = WSAAccept(lpSocketManager->m_listen,(sockaddr*)&SocketAddr,&SocketAddrSize,(LPCONDITIONPROC)&lpSocketManager->ServerAcceptCondition,(DWORD)lpSocketManager);
+		SOCKET socket = WSAAccept(lpSocketManager->m_listen,(sockaddr*)&SocketAddr,&SocketAddrSize,(LPCONDITIONPROC)&lpSocketManager->ServerAcceptCondition,(XWORD)lpSocketManager);
 
 		if(socket == SOCKET_ERROR && WSAGetLastError() != WSAEWOULDBLOCK)
 		{
@@ -768,8 +777,6 @@ DWORD WINAPI CSocketManager::ServerAcceptThread(CSocketManager* lpSocketManager)
 			continue;
 		}
 
-		PROTECT_START
-
 		LPOBJ lpObj = &gObj[index];
 
 		lpObj->PerSocketContext->Socket = socket;
@@ -792,8 +799,6 @@ DWORD WINAPI CSocketManager::ServerAcceptThread(CSocketManager* lpSocketManager)
 		lpObj->PerSocketContext->IoSendContext.IoSize = 0;
 		lpObj->PerSocketContext->IoSendContext.IoMainBuffer.size = 0;
 		lpObj->PerSocketContext->IoSendContext.IoSideBuffer.size = 0;
-
-		PROTECT_FINAL
 
 		DWORD RecvSize=0,Flags=0;
 
@@ -819,7 +824,7 @@ DWORD WINAPI CSocketManager::ServerAcceptThread(CSocketManager* lpSocketManager)
 DWORD WINAPI CSocketManager::ServerWorkerThread(CSocketManager* lpSocketManager) // OK
 {
 	DWORD IoSize;
-	DWORD index;
+	XWORD index;
 	LPOVERLAPPED lpOverlapped;
 
 	while(true)
@@ -848,10 +853,10 @@ DWORD WINAPI CSocketManager::ServerWorkerThread(CSocketManager* lpSocketManager)
 		switch(lpIoContext->IoType)
 		{
 			case IO_RECV:
-				lpSocketManager->OnRecv(index,IoSize,(IO_RECV_CONTEXT*)lpIoContext);
+				lpSocketManager->OnRecv((int)index,IoSize,(IO_RECV_CONTEXT*)lpIoContext);
 				break;
 			case IO_SEND:
-				lpSocketManager->OnSend(index,IoSize,(IO_SEND_CONTEXT*)lpIoContext);
+				lpSocketManager->OnSend((int)index,IoSize,(IO_SEND_CONTEXT*)lpIoContext);
 				break;
 		}
 

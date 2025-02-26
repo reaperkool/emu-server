@@ -41,7 +41,7 @@ struct SERVER_LIST_INFO
 	WORD ServerPort;
 	bool ServerShow;
 	bool ServerState;
-	UINT ServerStateTime;
+	XWORD ServerStateTime;
 	BYTE UserTotal;
 	WORD UserCount;
 	WORD AccountCount;
@@ -64,7 +64,7 @@ public:
 	void JCJoinServerLiveRecv(SDHP_JOIN_SERVER_LIVE_RECV* lpMsg);
 private:
 	bool m_JoinServerState;
-	DWORD m_JoinServerStateTime;
+	XWORD m_JoinServerStateTime;
 	DWORD m_JoinServerQueueSize;
 	std::map<int,SERVER_LIST_INFO> m_ServerListInfo;
 };

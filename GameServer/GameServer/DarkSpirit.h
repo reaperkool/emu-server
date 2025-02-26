@@ -71,7 +71,7 @@ public:
 	int m_AttackSuccessRate;
 	int m_MasterIndex;
 	int m_TargetIndex;
-	DWORD m_LastAttackTime;
+	XWORD m_LastAttackTime;
 	eDarkSpiritMode m_ActionMode;
 	CItem* m_Item;
 };

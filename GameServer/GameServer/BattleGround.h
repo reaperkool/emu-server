@@ -16,7 +16,7 @@ public:
 	void  SetTeamName(int n, LPSTR szName);
 	LPSTR  GetTeamName(int n);
 	void  SetTimer(int g_time);
-	int   GetTimer();
+	XWORD   GetTimer();
 	int   GetScore(int team);
 	void  SetScore(int team,  int score);
 
@@ -35,6 +35,6 @@ public:
   int m_Used;	// 50
   int m_MapNumber;	// 54
   int m_nTimer;	// 58
-  DWORD m_dwCurTimer;	// 5C
+  XWORD m_dwCurTimer;	// 5C
 
 };

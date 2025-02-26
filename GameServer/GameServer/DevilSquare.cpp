@@ -36,7 +36,7 @@ CDevilSquare::CDevilSquare() // OK
 		lpLevel->Map = ((n<4)?MAP_DEVIL_SQUARE1:MAP_DEVIL_SQUARE2);
 		lpLevel->RemainTime = 0;
 		lpLevel->TargetTime = 0;
-		lpLevel->TickCount = GetTickCount();
+		lpLevel->TickCount = GetTickCountEx();
 		lpLevel->EnterEnabled = 0;
 		lpLevel->MinutesLeft = -1;
 		lpLevel->TimeCount = 0;
@@ -197,14 +197,14 @@ void CDevilSquare::MainProc() // OK
 	{
 		DEVIL_SQUARE_LEVEL* lpLevel = &this->m_DevilSquareLevel[n];
 
-		DWORD elapsed = GetTickCount()-lpLevel->TickCount;
+		XWORD elapsed = GetTickCountEx()-lpLevel->TickCount;
 
 		if(elapsed < 1000)
 		{
 			continue;
 		}
 
-		lpLevel->TickCount = GetTickCount();
+		lpLevel->TickCount = GetTickCountEx();
 
 		lpLevel->RemainTime = (int)difftime(lpLevel->TargetTime,time(0));
 

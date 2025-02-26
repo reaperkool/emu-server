@@ -60,7 +60,7 @@ private:
 	int m_State;
 	int m_RemainTime;
 	int m_TargetTime;
-	int m_TickCount;
+	XWORD m_TickCount;
 	int m_MossMerchantIndex;
 	std::vector<MOSS_MERCHANT_START_TIME> m_MossMerchantStartTime;
 	std::vector<MOSS_MERCHANT_ITEM_INFO> m_MossMerchantItemInfo;

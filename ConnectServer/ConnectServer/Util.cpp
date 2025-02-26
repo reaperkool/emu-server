@@ -8,8 +8,6 @@ int gClientCount = 0;
 
 void ErrorMessageBox(char* message,...) // OK
 {
-	VM_START
-
 	char buff[256];
 
 	memset(buff,0,sizeof(buff));
@@ -20,8 +18,6 @@ void ErrorMessageBox(char* message,...) // OK
 	va_end(arg);
 
 	MessageBox(0,buff,"Error",MB_OK | MB_ICONERROR);
-
-	VM_END
 
 	ExitProcess(0);
 }
@@ -55,7 +51,7 @@ void LogAdd(eLogColor color,char* text,...) // OK
 
 	wsprintf(log,"%.8s %s",&time[11],temp);
 
-	gServerDisplayer.LogAddText(color,log,strlen(log));
+	gServerDisplayer.LogAddText(color,log,(int)strlen(log));
 }
 
 void ConnectServerTimeoutProc() // OK
@@ -99,14 +95,14 @@ int GetFreeClientIndex() // OK
 
 int SearchFreeClientIndex(int* index,int MinIndex,int MaxIndex,DWORD MinTime) // OK
 {
-	DWORD CurOnlineTime = 0;
-	DWORD MaxOnlineTime = 0;
+	XWORD CurOnlineTime = 0;
+	XWORD MaxOnlineTime = 0;
 
 	for(int n=MinIndex;n < MaxIndex;n++)
 	{
 		if(gClientManager[n].CheckState() == 0 && gClientManager[n].CheckAlloc() != 0)
 		{
-			if((CurOnlineTime=(GetTickCount()-gClientManager[n].m_OnlineTime)) > MinTime && CurOnlineTime > MaxOnlineTime)
+			if((CurOnlineTime=(GetTickCountEx()-gClientManager[n].m_OnlineTime)) > MinTime && CurOnlineTime > MaxOnlineTime)
 			{
 				(*index) = n;
 				MaxOnlineTime = CurOnlineTime;

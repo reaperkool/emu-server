@@ -2,7 +2,6 @@
 #include "ESProtocol.h"
 #include "CharacterManager.h"
 #include "GuildManager.h"
-#include "Protect.h"
 #include "ServerManager.h"
 #include "SocketManager.h"
 #include "Util.h"
@@ -83,8 +82,6 @@ void ESDataRecv(int index,BYTE head,BYTE* lpMsg,int size) // OK
 
 void ExDBServerProtocolCore(int index,BYTE head,BYTE* lpMsg,int size) // OK
 {
-	PROTECT_START
-
 	switch(head)
 	{
 		case 0x02:
@@ -141,8 +138,6 @@ void ExDBServerProtocolCore(int index,BYTE head,BYTE* lpMsg,int size) // OK
 			}
 			break;
 	}
-
-	PROTECT_FINAL
 }
 
 void GDCharClose(SDHP_USERCLOSE* lpMsg,int index)

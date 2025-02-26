@@ -82,25 +82,24 @@ bool CAttack::Attack(LPOBJ lpObj,LPOBJ lpTarget,CSkill* lpSkill,bool send,BYTE f
 
 	#endif
 
-	#if(GAMESERVER_TYPE==1)
-
-	if(gCastleSiege.GetCastleState() != CASTLESIEGE_STATE_STARTSIEGE)
+	if (gServerInfo.m_ServerType == 1)
 	{
-		if(lpTarget->Type == OBJECT_MONSTER && lpTarget->Map == MAP_CASTLE_SIEGE && (lpTarget->Class == 277 || lpTarget->Class == 283 || lpTarget->Class == 288))
+		if (gCastleSiege.GetCastleState() != CASTLESIEGE_STATE_STARTSIEGE)
 		{
-			return 0;
+			if (lpTarget->Type == OBJECT_MONSTER && lpTarget->Map == MAP_CASTLE_SIEGE && (lpTarget->Class == 277 || lpTarget->Class == 283 || lpTarget->Class == 288))
+			{
+				return 0;
+			}
+		}
+
+		if (gCrywolf.GetCrywolfState() == CRYWOLF_STATE_READY || gCrywolf.GetCrywolfState() == CRYWOLF_STATE_END)
+		{
+			if (lpTarget->Type == OBJECT_MONSTER && lpTarget->Map == MAP_CRYWOLF)
+			{
+				return 0;
+			}
 		}
 	}
-
-	if(gCrywolf.GetCrywolfState() == CRYWOLF_STATE_READY || gCrywolf.GetCrywolfState() == CRYWOLF_STATE_END)
-	{
-		if(lpTarget->Type == OBJECT_MONSTER && lpTarget->Map == MAP_CRYWOLF)
-		{
-			return 0;
-		}
-	}
-
-	#endif
 
 	if(lpObj->GuildNumber > 0 && lpObj->Guild != 0 && lpObj->Guild->WarState != 0)
 	{
@@ -181,18 +180,18 @@ bool CAttack::Attack(LPOBJ lpObj,LPOBJ lpTarget,CSkill* lpSkill,bool send,BYTE f
 
 	if(lpObj->Type == OBJECT_USER)
 	{
-		lpObj->HPAutoRecuperationTime = GetTickCount();
-		lpObj->MPAutoRecuperationTime = GetTickCount();
-		lpObj->BPAutoRecuperationTime = GetTickCount();
-		lpObj->SDAutoRecuperationTime = GetTickCount();
+		lpObj->HPAutoRecuperationTime = GetTickCountEx();
+		lpObj->MPAutoRecuperationTime = GetTickCountEx();
+		lpObj->BPAutoRecuperationTime = GetTickCountEx();
+		lpObj->SDAutoRecuperationTime = GetTickCountEx();
 	}
 
 	if(lpTarget->Type == OBJECT_USER)
 	{
-		lpTarget->HPAutoRecuperationTime = GetTickCount();
-		lpTarget->MPAutoRecuperationTime = GetTickCount();
-		lpTarget->BPAutoRecuperationTime = GetTickCount();
-		lpTarget->SDAutoRecuperationTime = GetTickCount();
+		lpTarget->HPAutoRecuperationTime = GetTickCountEx();
+		lpTarget->MPAutoRecuperationTime = GetTickCountEx();
+		lpTarget->BPAutoRecuperationTime = GetTickCountEx();
+		lpTarget->SDAutoRecuperationTime = GetTickCountEx();
 	}
 
 	if(OBJECT_RANGE(lpObj->SummonIndex) != 0)
@@ -209,12 +208,12 @@ bool CAttack::Attack(LPOBJ lpObj,LPOBJ lpTarget,CSkill* lpSkill,bool send,BYTE f
 
 	if(lpObj->Type == OBJECT_USER && duel != 0)
 	{
-		lpObj->DuelTickCount = GetTickCount();
+		lpObj->DuelTickCount = GetTickCountEx();
 	}
 
 	if(lpTarget->Type == OBJECT_USER && duel != 0)
 	{
-		lpTarget->DuelTickCount = GetTickCount();
+		lpTarget->DuelTickCount = GetTickCountEx();
 	}
 
 	gEffectManager.DelEffect(lpObj,EFFECT_INVISIBILITY);
@@ -348,7 +347,7 @@ bool CAttack::Attack(LPOBJ lpObj,LPOBJ lpTarget,CSkill* lpSkill,bool send,BYTE f
 			damage -= (damage*lpTarget->EffectOption.AddDamageReduction)/100;
 		}
 
-		if((GetTickCount()-lpTarget->ShieldDamageReductionTime) < ((DWORD)(gServerInfo.m_DefenseTimeConstA*1000)))
+		if((GetTickCountEx()-lpTarget->ShieldDamageReductionTime) < ((XWORD)(gServerInfo.m_DefenseTimeConstA*1000)))
 		{
 			damage -= (damage*lpTarget->ShieldDamageReduction)/100;
 		}
@@ -518,8 +517,7 @@ bool CAttack::Attack(LPOBJ lpObj,LPOBJ lpTarget,CSkill* lpSkill,bool send,BYTE f
 			{
 				damage = (damage*gServerInfo.m_IllusionTempleDamageRate)/100;
 			}
-			#if(GAMESERVER_TYPE==1)
-			else if(gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE && lpObj->Map == MAP_CASTLE_SIEGE && lpTarget->Map == MAP_CASTLE_SIEGE)
+			else if(gServerInfo.m_ServerType == 1 && gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE && lpObj->Map == MAP_CASTLE_SIEGE && lpTarget->Map == MAP_CASTLE_SIEGE)
 			{
 				if(lpObj->CsJoinSide == 0 || lpTarget->CsJoinSide == 0 || lpObj->CsJoinSide != lpTarget->CsJoinSide)
 				{
@@ -530,7 +528,6 @@ bool CAttack::Attack(LPOBJ lpObj,LPOBJ lpTarget,CSkill* lpSkill,bool send,BYTE f
 					damage = (damage*gServerInfo.m_CastleSiegeDamageRate2)/100;
 				}
 			}
-			#endif
 		}
 		else
 		{
@@ -740,14 +737,13 @@ bool CAttack::Attack(LPOBJ lpObj,LPOBJ lpTarget,CSkill* lpSkill,bool send,BYTE f
 				CheckSelfDefense = 0;
 			}
 
-			#if(GAMESERVER_TYPE==1)
-
-			if(lpObj->Map == MAP_CASTLE_SIEGE && gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE && lpObj->CsJoinSide != 0)
+			if (gServerInfo.m_ServerType == 1)
 			{
-				CheckSelfDefense = 0;
+				if (lpObj->Map == MAP_CASTLE_SIEGE && gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE && lpObj->CsJoinSide != 0)
+				{
+					CheckSelfDefense = 0;
+				}
 			}
-
-			#endif
 
 			if(CA_MAP_RANGE(lpObj->Map) != 0 && CA_MAP_RANGE(lpTarget->Map) != 0)
 			{
@@ -958,8 +954,7 @@ bool CAttack::AttackElemental(LPOBJ lpObj,LPOBJ lpTarget,CSkill* lpSkill,bool se
 			{
 				damage = (damage*gServerInfo.m_IllusionTempleElementalDamageRate)/100;
 			}
-			#if(GAMESERVER_TYPE==1)
-			else if(gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE && lpObj->Map == MAP_CASTLE_SIEGE && lpTarget->Map == MAP_CASTLE_SIEGE)
+			else if(gServerInfo.m_ServerType == 1 && gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE && lpObj->Map == MAP_CASTLE_SIEGE && lpTarget->Map == MAP_CASTLE_SIEGE)
 			{
 				if(lpObj->CsJoinSide == 0 || lpTarget->CsJoinSide == 0 || lpObj->CsJoinSide != lpTarget->CsJoinSide)
 				{
@@ -970,7 +965,6 @@ bool CAttack::AttackElemental(LPOBJ lpObj,LPOBJ lpTarget,CSkill* lpSkill,bool se
 					damage = (damage*gServerInfo.m_CastleSiegeElementalDamageRate2)/100;
 				}
 			}
-			#endif
 		}
 		else
 		{
@@ -1655,27 +1649,26 @@ bool CAttack::CheckPlayerTarget(LPOBJ lpObj,LPOBJ lpTarget) // OK
 		return ((gChaosCastle.GetState(GET_CC_LEVEL(lpObj->Map))==CC_STATE_START)?1:0);
 	}
 
-	#if(GAMESERVER_TYPE==1)
-
-	if(lpObj->Map == MAP_CASTLE_SIEGE && lpTarget->Map == MAP_CASTLE_SIEGE)
+	if (gServerInfo.m_ServerType == 1)
 	{
-		if(gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE)
+		if (lpObj->Map == MAP_CASTLE_SIEGE && lpTarget->Map == MAP_CASTLE_SIEGE)
 		{
-			if(lpObj->CsJoinSide != 0 && lpTarget->CsJoinSide != 0)
+			if (gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE)
 			{
-				if(gServerInfo.m_CastleSiegeDamageRate2 == 0 && lpObj->CsJoinSide == lpTarget->CsJoinSide)
+				if (lpObj->CsJoinSide != 0 && lpTarget->CsJoinSide != 0)
 				{
-					return 0;
-				}
-				else
-				{
-					return 1;
+					if (gServerInfo.m_CastleSiegeDamageRate2 == 0 && lpObj->CsJoinSide == lpTarget->CsJoinSide)
+					{
+						return 0;
+					}
+					else
+					{
+						return 1;
+					}
 				}
 			}
 		}
 	}
-
-	#endif
 
 	if(lpObj->Map == MAP_KANTURU3 && lpTarget->Map == MAP_KANTURU3)
 	{

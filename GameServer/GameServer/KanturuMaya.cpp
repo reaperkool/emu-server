@@ -59,7 +59,7 @@ void CKanturuMaya::KanturuMayaAct_IceStorm(int rate) // OK
 
 void CKanturuMaya::KanturuMayaAct_Hands() // OK
 {
-	if((GetTickCount()-this->m_MayaSkillTime) < 20000)
+	if((GetTickCountEx()-this->m_MayaSkillTime) < 20000)
 	{
 		return;
 	}
@@ -69,7 +69,7 @@ void CKanturuMaya::KanturuMayaAct_Hands() // OK
 		return;
 	}
 
-	this->m_MayaSkillTime = GetTickCount();
+	this->m_MayaSkillTime = GetTickCountEx();
 
 	for(int n=OBJECT_START_USER;n < MAX_OBJECT;n++)
 	{

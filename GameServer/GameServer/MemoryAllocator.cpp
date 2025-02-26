@@ -24,14 +24,14 @@ bool CMemoryAllocator::GetMemoryAllocatorFree(int* index,int MinIndex,int MaxInd
 {
 	this->m_critical.lock();
 
-	DWORD CurActiveTime = 0;
-	DWORD MaxActiveTime = 0;
+	XWORD CurActiveTime = 0;
+	XWORD MaxActiveTime = 0;
 
 	for(int n=MinIndex;n < MaxIndex;n++)
 	{
 		if(OBJECT_RANGE(this->m_MemoryAllocatorInfo[n].m_Index) != 0)
 		{
-			if(this->m_MemoryAllocatorInfo[n].m_Active == 0 && (CurActiveTime=(GetTickCount()-this->m_MemoryAllocatorInfo[n].m_ActiveTime)) > MinTime && CurActiveTime > MaxActiveTime)
+			if(this->m_MemoryAllocatorInfo[n].m_Active == 0 && (CurActiveTime=(GetTickCountEx()-this->m_MemoryAllocatorInfo[n].m_ActiveTime)) > MinTime && CurActiveTime > MaxActiveTime)
 			{
 				(*index) = this->m_MemoryAllocatorInfo[n].m_Index;
 				MaxActiveTime = CurActiveTime;

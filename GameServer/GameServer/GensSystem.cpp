@@ -225,7 +225,7 @@ bool CGensSystem::VerifyGensVictimList(LPOBJ lpObj,LPOBJ lpTarget) // OK
 		return 1;
 	}
 
-	if((GetTickCount()-lpVictimList->Time) < ((DWORD)(gServerInfo.m_GensSystemContributionFloodTime*1000)))
+	if((GetTickCountEx()-lpVictimList->Time) < ((DWORD)(gServerInfo.m_GensSystemContributionFloodTime*1000)))
 	{
 		lpVictimList->KillCount++;
 		return 0;
@@ -249,7 +249,7 @@ bool CGensSystem::InsertGensVictimList(LPOBJ lpObj,LPOBJ lpTarget) // OK
 
 	for(int n=0;n < MAX_GENS_SYSTEM_VICTIM;n++)
 	{
-		if(lpTarget->GensVictimList[n].Time == 0 || (GetTickCount()-lpTarget->GensVictimList[n].Time) > ((DWORD)(gServerInfo.m_GensSystemContributionFloodTime*1000)))
+		if(lpTarget->GensVictimList[n].Time == 0 || (GetTickCountEx()-lpTarget->GensVictimList[n].Time) > ((DWORD)(gServerInfo.m_GensSystemContributionFloodTime*1000)))
 		{
 			lpTarget->GensVictimList[n].Set(lpObj->Name);
 			return 1;

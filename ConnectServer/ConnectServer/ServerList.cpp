@@ -102,7 +102,7 @@ void CServerList::Load(char* path) // OK
 
 void CServerList::MainProc() // OK
 {
-	if(this->m_JoinServerState != 0 && (GetTickCount()-this->m_JoinServerStateTime) > 10000)
+	if(this->m_JoinServerState != 0 && (GetTickCountEx()-this->m_JoinServerStateTime) > 10000)
 	{
 		this->m_JoinServerState = 0;
 		this->m_JoinServerStateTime = 0;
@@ -111,7 +111,7 @@ void CServerList::MainProc() // OK
 
 	for(std::map<int,SERVER_LIST_INFO>::iterator it=this->m_ServerListInfo.begin();it != this->m_ServerListInfo.end();it++)
 	{
-		if(it->second.ServerState != 0 && (GetTickCount()-it->second.ServerStateTime) > 10000)
+		if(it->second.ServerState != 0 && (GetTickCountEx()-it->second.ServerStateTime) > 10000)
 		{
 			it->second.ServerState = 0;
 			it->second.ServerStateTime = 0;
@@ -207,7 +207,7 @@ void CServerList::GCGameServerLiveRecv(SDHP_GAME_SERVER_LIVE_RECV* lpMsg) // OK
 
 	lpServerListInfo->ServerState = 1;
 
-	lpServerListInfo->ServerStateTime = GetTickCount();
+	lpServerListInfo->ServerStateTime = GetTickCountEx();
 
 	lpServerListInfo->UserTotal = lpMsg->UserTotal;
 
@@ -229,7 +229,7 @@ void CServerList::JCJoinServerLiveRecv(SDHP_JOIN_SERVER_LIVE_RECV* lpMsg) // OK
 
 	this->m_JoinServerState = 1;
 
-	this->m_JoinServerStateTime = GetTickCount();
+	this->m_JoinServerStateTime = GetTickCountEx();
 
 	this->m_JoinServerQueueSize = lpMsg->QueueSize;
 }

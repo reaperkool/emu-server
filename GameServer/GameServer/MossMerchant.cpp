@@ -29,7 +29,7 @@ CMossMerchant::CMossMerchant() // OK
 	this->m_State = MOSS_STATE_BLANK;
 	this->m_RemainTime = 0;
 	this->m_TargetTime = 0;
-	this->m_TickCount = GetTickCount();
+	this->m_TickCount = GetTickCountEx();
 	this->m_MossMerchantIndex = -1;
 
 	this->m_MossMerchantStartTime.clear();
@@ -173,14 +173,14 @@ void CMossMerchant::MainProc() // OK
 {
 	#if(GAMESERVER_UPDATE>=402)
 
-	DWORD elapsed = GetTickCount()-this->m_TickCount;
+	XWORD elapsed = GetTickCountEx()-this->m_TickCount;
 
 	if(elapsed < 1000)
 	{
 		return;
 	}
 
-	this->m_TickCount = GetTickCount();
+	this->m_TickCount = GetTickCountEx();
 
 	this->m_RemainTime = (int)difftime(this->m_TargetTime,time(0));
 
@@ -384,13 +384,13 @@ bool CMossMerchant::GambleItem(LPOBJ lpObj,int group) // OK
 	{
 		if(it->Group == group)
 		{
-			RandomManager.AddElement((int)(&(*it)),it->GambleRate);
+			RandomManager.AddElement((XWORD)(&(*it)),it->GambleRate);
 		}
 	}
 
 	MOSS_MERCHANT_ITEM_INFO* lpMossMerchantItemInfo = 0;
 
-	if(RandomManager.GetRandomElement((int*)&lpMossMerchantItemInfo) == 0)
+	if(RandomManager.GetRandomElement((XWORD*)&lpMossMerchantItemInfo) == 0)
 	{
 		return 0;
 	}

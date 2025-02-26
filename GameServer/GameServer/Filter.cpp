@@ -97,7 +97,7 @@ void CFilter::CheckSyntax(char* text) // OK
 				break;
 			}
 
-			int len = strlen(this->m_FilterInfo[n].label);
+			int len = (int)strlen(this->m_FilterInfo[n].label);
 
 			memset(temp,0x2A,len);
 

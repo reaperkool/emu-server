@@ -423,10 +423,10 @@ void CCustomStore::OnPShopSecondProc(LPOBJ lpObj) // OK
 			}
 		}
 
-		lpObj->CheckSumTime = GetTickCount();
-		lpObj->ConnectTickCount = GetTickCount();
-		lpObj->PcPointPointTime = ((this->m_CustomStoreOfflineGPGain==0)?GetTickCount():lpObj->PcPointPointTime);
-		lpObj->CashShopGoblinPointTime = ((this->m_CustomStoreOfflineGPGain==0)?GetTickCount():lpObj->CashShopGoblinPointTime);
+		lpObj->CheckSumTime = GetTickCountEx();
+		lpObj->ConnectTickCount = GetTickCountEx();
+		lpObj->PcPointPointTime = ((this->m_CustomStoreOfflineGPGain==0)?GetTickCountEx():lpObj->PcPointPointTime);
+		lpObj->CashShopGoblinPointTime = ((this->m_CustomStoreOfflineGPGain==0)?GetTickCountEx():lpObj->CashShopGoblinPointTime);
 	}
 }
 
@@ -543,7 +543,7 @@ bool CCustomStore::OnPShopBuyItemRecv(PMSG_PSHOP_BUY_ITEM_RECV* lpMsg,int aIndex
 
 	if(lpTarget->PShopCustomType == 3 || lpTarget->PShopCustomType == 4 || lpTarget->PShopCustomType == 5)
 	{
-		gCashShop.GDCashShopRecievePointSend(aIndex,(DWORD)&CCustomStore::OnPShopBuyItemCallbackRecv,(DWORD)&gObj[bIndex],lpMsg->slot);
+		gCashShop.GDCashShopRecievePointSend(aIndex,(XWORD)&CCustomStore::OnPShopBuyItemCallbackRecv,(XWORD)&gObj[bIndex],(XWORD)lpMsg->slot);
 		return 1;
 	}
 

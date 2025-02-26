@@ -109,7 +109,7 @@ long CCharacterManager::GetCharacterCount() // OK
 
 	this->m_critical.lock();
 
-	CharacterCount = this->m_CharacterInfo.size();
+	CharacterCount = (int)this->m_CharacterInfo.size();
 
 	this->m_critical.unlock();
 

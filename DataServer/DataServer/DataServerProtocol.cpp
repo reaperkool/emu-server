@@ -22,7 +22,6 @@
 #include "PcPoint.h"
 #include "PentagramSystem.h"
 #include "PersonalShop.h"
-#include "Protect.h"
 #include "QueryManager.h"
 #include "Quest.h"
 #include "QuestWorld.h"
@@ -33,9 +32,7 @@
 
 void DataServerProtocolCore(int index,BYTE head,BYTE* lpMsg,int size) // OK
 {
-	PROTECT_START
-
-	gServerManager[index].m_PacketTime = GetTickCount();
+	gServerManager[index].m_PacketTime = GetTickCountEx();
 
 	switch(head)
 	{
@@ -765,8 +762,6 @@ void DataServerProtocolCore(int index,BYTE head,BYTE* lpMsg,int size) // OK
 			CSDataRecv(index,head,lpMsg,size);
 			break;
 	}
-
-	PROTECT_FINAL
 }
 
 void GDServerInfoRecv(SDHP_SERVER_INFO_RECV* lpMsg,int index) // OK
@@ -2717,7 +2712,7 @@ void DS_GDReqCastleInitData(BYTE *lpRecv, int aIndex)
 	if ( iRES != 0)
     {
 		lpMsgSend->iResult = 0;
-		lpMsgSend->h.set(0x81, (sizeof(CSP_NPCDATA) * lpMsgSend->iCount) + sizeof(CSP_ANS_CSINITDATA));
+		lpMsgSend->h.set(0x81, (WORD)((sizeof(CSP_NPCDATA) * lpMsgSend->iCount) + sizeof(CSP_ANS_CSINITDATA)));
 		gSocketManager.DataSend(aIndex, (BYTE*)lpMsgSend, (sizeof(CSP_NPCDATA) * lpMsgSend->iCount) + sizeof(CSP_ANS_CSINITDATA));
     }
     else
@@ -2746,14 +2741,14 @@ void DS_GDReqCastleInitData(BYTE *lpRecv, int aIndex)
 		if ( iRES != 0)
 		{
 			lpMsgSend->iResult = 0;
-			lpMsgSend->h.set(0x81, (sizeof(CSP_NPCDATA) * lpMsgSend->iCount) + sizeof(CSP_ANS_CSINITDATA));
+			lpMsgSend->h.set(0x81, (WORD)((sizeof(CSP_NPCDATA) * lpMsgSend->iCount) + sizeof(CSP_ANS_CSINITDATA)));
 			gSocketManager.DataSend(aIndex, (BYTE*)lpMsgSend, (sizeof(CSP_NPCDATA) * lpMsgSend->iCount) + sizeof(CSP_ANS_CSINITDATA));
 		}
 		else
 		{
 			lpMsgSend->iResult = 1;
 			lpMsgSend->iCount = iDataCount;
-			lpMsgSend->h.set(0x81, (sizeof(CSP_NPCDATA) * lpMsgSend->iCount) + sizeof(CSP_ANS_CSINITDATA));
+			lpMsgSend->h.set(0x81, (WORD)((sizeof(CSP_NPCDATA) * lpMsgSend->iCount) + sizeof(CSP_ANS_CSINITDATA)));
 			gSocketManager.DataSend(aIndex, (BYTE*)lpMsgSend, (sizeof(CSP_NPCDATA) * lpMsgSend->iCount) + sizeof(CSP_ANS_CSINITDATA));
 		}
 	}
@@ -2784,14 +2779,14 @@ void DS_GDReqCastleNpcInfo(BYTE *lpRecv, int aIndex)
 	if (iRES != 0)
 	{
 		lpMsgSend->iResult = 0;
-		lpMsgSend->h.set(0x82, (sizeof(CSP_NPCDATA) * lpMsgSend->iCount) + sizeof(CSP_ANS_NPCDATA));
+		lpMsgSend->h.set(0x82, (WORD)((sizeof(CSP_NPCDATA) * lpMsgSend->iCount) + sizeof(CSP_ANS_NPCDATA)));
 		gSocketManager.DataSend(aIndex, (BYTE*)lpMsgSend, (sizeof(CSP_NPCDATA) * lpMsgSend->iCount) + sizeof(CSP_ANS_NPCDATA));
 	}
 	else
 	{
 		lpMsgSend->iResult = 1;
 		lpMsgSend->iCount = iDataCount;
-		lpMsgSend->h.set(0x82, (sizeof(CSP_NPCDATA) * lpMsgSend->iCount) + sizeof(CSP_ANS_NPCDATA));
+		lpMsgSend->h.set(0x82, (WORD)((sizeof(CSP_NPCDATA) * lpMsgSend->iCount) + sizeof(CSP_ANS_NPCDATA)));
 		gSocketManager.DataSend(aIndex, (BYTE*)lpMsgSend, (sizeof(CSP_NPCDATA) * lpMsgSend->iCount) + sizeof(CSP_ANS_NPCDATA));
 	}
 }
@@ -2822,14 +2817,14 @@ void DS_GDReqAllGuildMarkRegInfo(BYTE *lpRecv, int aIndex)
 	if (iRES != 0)
 	{
 		lpMsgSend->iResult = 0;
-		lpMsgSend->h.set(0x83, (sizeof(CSP_GUILDREGINFO) * lpMsgSend->iCount) + sizeof(CSP_ANS_ALLGUILDREGINFO));
+		lpMsgSend->h.set(0x83, (WORD)((sizeof(CSP_GUILDREGINFO) * lpMsgSend->iCount) + sizeof(CSP_ANS_ALLGUILDREGINFO)));
 		gSocketManager.DataSend(aIndex, (BYTE*)lpMsgSend, (sizeof(CSP_GUILDREGINFO) * lpMsgSend->iCount) + sizeof(CSP_ANS_ALLGUILDREGINFO));
 	}
 	else
 	{
 		lpMsgSend->iResult = 1;
 		lpMsgSend->iCount = iDataCount;
-		lpMsgSend->h.set(0x83, (sizeof(CSP_GUILDREGINFO) * lpMsgSend->iCount) + sizeof(CSP_ANS_ALLGUILDREGINFO));
+		lpMsgSend->h.set(0x83, (WORD)((sizeof(CSP_GUILDREGINFO) * lpMsgSend->iCount) + sizeof(CSP_ANS_ALLGUILDREGINFO)));
 		gSocketManager.DataSend(aIndex, (BYTE*)lpMsgSend, (sizeof(CSP_GUILDREGINFO) * lpMsgSend->iCount) + sizeof(CSP_ANS_ALLGUILDREGINFO));
 	}	
 }
@@ -2887,14 +2882,14 @@ void DS_GDReqCalcRegGuildList(BYTE *lpRecv, int aIndex)
 	if (iRES != 0)
 	{
 		lpMsgSend->iResult = 0;
-		lpMsgSend->h.set(0x85, (sizeof(CSP_CALCREGGUILDLIST) * lpMsgSend->iCount) + sizeof(CSP_ANS_CALCREGGUILDLIST));
+		lpMsgSend->h.set(0x85, (WORD)((sizeof(CSP_CALCREGGUILDLIST) * lpMsgSend->iCount) + sizeof(CSP_ANS_CALCREGGUILDLIST)));
 		gSocketManager.DataSend(aIndex, (BYTE*)lpMsgSend, (sizeof(CSP_CALCREGGUILDLIST) * lpMsgSend->iCount) + sizeof(CSP_ANS_CALCREGGUILDLIST));
 	}
 	else
 	{
 		lpMsgSend->iResult = 1;
 		lpMsgSend->iCount = iDataCount;
-		lpMsgSend->h.set(0x85, (sizeof(CSP_CALCREGGUILDLIST) * lpMsgSend->iCount) + sizeof(CSP_ANS_CALCREGGUILDLIST));
+		lpMsgSend->h.set(0x85, (WORD)((sizeof(CSP_CALCREGGUILDLIST) * lpMsgSend->iCount) + sizeof(CSP_ANS_CALCREGGUILDLIST)));
 		gSocketManager.DataSend(aIndex, (BYTE*)lpMsgSend, (sizeof(CSP_CALCREGGUILDLIST) * lpMsgSend->iCount) + sizeof(CSP_ANS_CALCREGGUILDLIST));
 	}		
 }
@@ -2934,7 +2929,7 @@ void DS_GDReqCsGuildUnionInfo(BYTE *lpRecv, int aIndex)
 		{
 			lpMsgSend->iResult = 0;
 			lpMsgSend->iCount = 0;
-			lpMsgSend->h.set(0x86, (sizeof(CSP_CSGUILDUNIONINFO) * lpMsgSend->iCount) + sizeof(CSP_ANS_CSGUILDUNIONINFO));
+			lpMsgSend->h.set(0x86, (WORD)((sizeof(CSP_CSGUILDUNIONINFO) * lpMsgSend->iCount) + sizeof(CSP_ANS_CSGUILDUNIONINFO)));
 			gSocketManager.DataSend(aIndex, (BYTE*)lpMsgSend, (sizeof(CSP_CSGUILDUNIONINFO) * lpMsgSend->iCount) + sizeof(CSP_ANS_CSGUILDUNIONINFO));
 			return;
 		}
@@ -2942,7 +2937,7 @@ void DS_GDReqCsGuildUnionInfo(BYTE *lpRecv, int aIndex)
 
 	lpMsgSend->iResult = 1;
 	lpMsgSend->iCount = iRET_COUNT;	
-	lpMsgSend->h.set(0x86, (sizeof(CSP_CSGUILDUNIONINFO) * lpMsgSend->iCount) + sizeof(CSP_ANS_CSGUILDUNIONINFO));
+	lpMsgSend->h.set(0x86, (WORD)((sizeof(CSP_CSGUILDUNIONINFO) * lpMsgSend->iCount) + sizeof(CSP_ANS_CSGUILDUNIONINFO)));
 	gSocketManager.DataSend(aIndex, (BYTE*)lpMsgSend, (sizeof(CSP_CSGUILDUNIONINFO) * lpMsgSend->iCount) + sizeof(CSP_ANS_CSGUILDUNIONINFO));
 }
 
@@ -3031,14 +3026,14 @@ void DS_GDReqCsLoadTotalGuildInfo(BYTE *lpRecv, int aIndex)
 	if (iRES != 0)
 	{
 		lpMsgSend->iResult = 0;
-		lpMsgSend->h.set(0x88, (sizeof(CSP_CSLOADTOTALGUILDINFO) * lpMsgSend->iCount) + sizeof(CSP_ANS_CSLOADTOTALGUILDINFO));
+		lpMsgSend->h.set(0x88, (WORD)((sizeof(CSP_CSLOADTOTALGUILDINFO) * lpMsgSend->iCount) + sizeof(CSP_ANS_CSLOADTOTALGUILDINFO)));
 		gSocketManager.DataSend(aIndex, (BYTE*)lpMsgSend, (sizeof(CSP_CSLOADTOTALGUILDINFO) * lpMsgSend->iCount) + sizeof(CSP_ANS_CSLOADTOTALGUILDINFO));
 	}
 	else
 	{
 		lpMsgSend->iResult = 1;
 		lpMsgSend->iCount = iDataCount;
-		lpMsgSend->h.set(0x88, (sizeof(CSP_CSLOADTOTALGUILDINFO) * lpMsgSend->iCount) + sizeof(CSP_ANS_CSLOADTOTALGUILDINFO));
+		lpMsgSend->h.set(0x88, (WORD)((sizeof(CSP_CSLOADTOTALGUILDINFO) * lpMsgSend->iCount) + sizeof(CSP_ANS_CSLOADTOTALGUILDINFO)));
 		gSocketManager.DataSend(aIndex, (BYTE*)lpMsgSend, (sizeof(CSP_CSLOADTOTALGUILDINFO) * lpMsgSend->iCount) + sizeof(CSP_ANS_CSLOADTOTALGUILDINFO));
 	}	
 }

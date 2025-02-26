@@ -32,7 +32,7 @@ CBonusManager::CBonusManager() // OK
 		lpInfo->State = BONUS_STATE_BLANK;
 		lpInfo->RemainTime = 0;
 		lpInfo->TargetTime = 0;
-		lpInfo->TickCount = GetTickCount();
+		lpInfo->TickCount = GetTickCountEx();
 
 		lpInfo->StartTime.clear();
 
@@ -197,11 +197,11 @@ void CBonusManager::MainProc() // OK
 	{
 		BONUS_INFO* lpInfo = &this->m_BonusInfo[n];
 
-		DWORD elapsed = GetTickCount()-lpInfo->TickCount;
+		XWORD elapsed = GetTickCountEx()-lpInfo->TickCount;
 
 		if(elapsed >= 1000)
 		{
-			lpInfo->TickCount = GetTickCount();
+			lpInfo->TickCount = GetTickCountEx();
 
 			lpInfo->RemainTime = (int)difftime(lpInfo->TargetTime,time(0));
 

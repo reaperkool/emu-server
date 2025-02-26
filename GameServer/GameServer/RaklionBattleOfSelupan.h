@@ -86,8 +86,8 @@ private:
 	int m_IsUsed;
 	int m_BattleOfSelupanState;
 	int m_PatternCondition[6];
-	DWORD m_SkillDelay;
-	DWORD m_SkillDelayTick;
+	XWORD m_SkillDelay;
+	XWORD m_SkillDelayTick;
 	int m_IsUseFirstSkill;
 	int m_IsSucccess;
 	CRaklionSelupan m_RaklionSelupan;

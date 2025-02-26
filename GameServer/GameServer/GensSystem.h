@@ -244,14 +244,14 @@ struct GENS_SYSTEM_VICTIM_LIST
 
 	void Set(char* name) // OK
 	{
-		this->Time = GetTickCount();
+		this->Time = GetTickCountEx();
 
 		this->KillCount = 1;
 
 		memcpy(this->Name,name,sizeof(this->Name));
 	}
 
-	UINT Time;
+	XWORD Time;
 	char Name[11];
 	UINT KillCount;
 };

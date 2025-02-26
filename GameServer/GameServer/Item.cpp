@@ -999,7 +999,7 @@ void CItem::Value() // OK
 				price *= 2;
 			}
 
-			price *= (LONGLONG)(1 << this->m_Level);
+			price *= (LONGLONG)(1ULL << this->m_Level);
 
 			price *= (LONGLONG)this->m_Durability;
 

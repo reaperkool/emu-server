@@ -318,7 +318,7 @@ void CKanturuBattleOfMaya::ProcState_MAYA1() // OK
 
 			this->SetSceneSuccessValue(1);
 
-			this->m_MayaHandDieTimeCounter = GetTickCount();
+			this->m_MayaHandDieTimeCounter = GetTickCountEx();
 
 			gKanturuUtil.NotifyKanturuObjectCount(0,gKanturuBattleUserMng.GetUserCount());
 
@@ -326,7 +326,7 @@ void CKanturuBattleOfMaya::ProcState_MAYA1() // OK
 		}
 		else
 		{
-			if((GetTickCount()-this->m_MayaHandDieTimeCounter) >= 3000)
+			if((GetTickCountEx()-this->m_MayaHandDieTimeCounter) >= 3000)
 			{
 				this->SetState(KANTURU_MAYA_END1);
 			}
@@ -385,7 +385,7 @@ void CKanturuBattleOfMaya::ProcState_MAYA2()
 
 			this->SetSceneSuccessValue(1);
 
-			this->m_MayaHandDieTimeCounter = GetTickCount();
+			this->m_MayaHandDieTimeCounter = GetTickCountEx();
 
 			gKanturuUtil.NotifyKanturuObjectCount(0,gKanturuBattleUserMng.GetUserCount());
 
@@ -393,7 +393,7 @@ void CKanturuBattleOfMaya::ProcState_MAYA2()
 		}
 		else
 		{
-			if((GetTickCount()-this->m_MayaHandDieTimeCounter) >= 3000)
+			if((GetTickCountEx()-this->m_MayaHandDieTimeCounter) >= 3000)
 			{
 				this->SetState(KANTURU_MAYA_END2);
 			}
@@ -452,7 +452,7 @@ void CKanturuBattleOfMaya::ProcState_MAYA3() // OK
 
 			this->SetSceneSuccessValue(1);
 
-			this->m_MayaHandDieTimeCounter = GetTickCount();
+			this->m_MayaHandDieTimeCounter = GetTickCountEx();
 
 			gKanturuUtil.NotifyKanturuObjectCount(0,gKanturuBattleUserMng.GetUserCount());
 
@@ -460,7 +460,7 @@ void CKanturuBattleOfMaya::ProcState_MAYA3() // OK
 		}
 		else
 		{
-			if((GetTickCount()-this->m_MayaHandDieTimeCounter) >= 3000)
+			if((GetTickCountEx()-this->m_MayaHandDieTimeCounter) >= 3000)
 			{
 				this->SetState(KANTURU_MAYA_END3);
 			}
@@ -959,18 +959,18 @@ void CKanturuBattleOfMaya::SetAIMonsterGroup(int GroupNumber) // OK
 
 	CMonsterAIGroup::ChangeAIOrder(GroupNumber,0);
 
-	this->m_MayaHandAIAppliedTime = GetTickCount();
+	this->m_MayaHandAIAppliedTime = GetTickCountEx();
 }
 
 void CKanturuBattleOfMaya::ChangeAI(int GroupNumber) // OK
 {
-	if((GetTickCount()-this->m_MayaHandAIAppliedTime) >= ((DWORD)this->m_MayaHandAIChangeTime[this->m_MayaHandCurrentAI]))
+	if((GetTickCountEx()-this->m_MayaHandAIAppliedTime) >= ((XWORD)this->m_MayaHandAIChangeTime[this->m_MayaHandCurrentAI]))
 	{
 		CMonsterAIGroup::ChangeAIOrder(GroupNumber,((this->m_MayaHandCurrentAI==KANTURU_MAYA_GROUP_NUMBER)?this->m_MayaHandCurrentAI:(this->m_MayaHandCurrentAI+1)));
 
 		this->m_MayaHandCurrentAI = ((this->m_MayaHandCurrentAI==KANTURU_MAYA_GROUP_NUMBER)?this->m_MayaHandCurrentAI:(this->m_MayaHandCurrentAI+1));
 
-		this->m_MayaHandAIAppliedTime = GetTickCount();
+		this->m_MayaHandAIAppliedTime = GetTickCountEx();
 	}
 }
 

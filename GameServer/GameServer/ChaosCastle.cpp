@@ -36,7 +36,7 @@ CChaosCastle::CChaosCastle() // OK
 		lpLevel->Map = ((n<6)?(MAP_CHAOS_CASTLE1+n):MAP_CHAOS_CASTLE7);
 		lpLevel->RemainTime = 0;
 		lpLevel->TargetTime = 0;
-		lpLevel->TickCount = GetTickCount();
+		lpLevel->TickCount = GetTickCountEx();
 		lpLevel->EnterEnabled = 0;
 		lpLevel->MinutesLeft = -1;
 		lpLevel->TimeCount = 0;
@@ -180,14 +180,14 @@ void CChaosCastle::MainProc() // OK
 	{
 		CHAOS_CASTLE_LEVEL* lpLevel = &this->m_ChaosCastleLevel[n];
 
-		DWORD elapsed = GetTickCount()-lpLevel->TickCount;
+		XWORD elapsed = GetTickCountEx()-lpLevel->TickCount;
 
 		if(elapsed < 1000)
 		{
 			continue;
 		}
 
-		lpLevel->TickCount = GetTickCount();
+		lpLevel->TickCount = GetTickCountEx();
 
 		lpLevel->RemainTime = (int)difftime(lpLevel->TargetTime,time(0));
 
@@ -1243,7 +1243,7 @@ void CChaosCastle::CheckUserPosition(CHAOS_CASTLE_LEVEL* lpLevel) // OK
 			gObj[lpLevel->User[n].Index].Life = 0;
 			gObj[lpLevel->User[n].Index].State = OBJECT_DYING;
 			gObj[lpLevel->User[n].Index].KillerType = 1;
-			gObj[lpLevel->User[n].Index].RegenTime = GetTickCount();
+			gObj[lpLevel->User[n].Index].RegenTime = GetTickCountEx();
 			gObj[lpLevel->User[n].Index].DieRegen = 1;
 			gObj[lpLevel->User[n].Index].PathCount = 0;
 
@@ -1277,7 +1277,7 @@ void CChaosCastle::CheckMonsterPosition(CHAOS_CASTLE_LEVEL* lpLevel) // OK
 			{
 				gObjSetPosition(lpLevel->MonsterIndex[n],x,y);
 
-				gObj[lpLevel->MonsterIndex[n]].ChaosCastleBlowTime = GetTickCount();
+				gObj[lpLevel->MonsterIndex[n]].ChaosCastleBlowTime = GetTickCountEx();
 			}
 		}
 	}
@@ -1348,7 +1348,7 @@ void CChaosCastle::BlowUserFromPoint(CHAOS_CASTLE_LEVEL* lpLevel,int aIndex,int 
 
 	gObjSetPosition(aIndex,tx,ty);
 
-	gObj[aIndex].ChaosCastleBlowTime = GetTickCount();
+	gObj[aIndex].ChaosCastleBlowTime = GetTickCountEx();
 }
 
 bool CChaosCastle::GetFreePosition(CHAOS_CASTLE_LEVEL* lpLevel,int* ox,int* oy) // OK
@@ -1465,7 +1465,7 @@ void CChaosCastle::CheckDelayScore(CHAOS_CASTLE_LEVEL* lpLevel) // OK
 {
 	for(std::vector<CHAOS_CASTLE_DELAY_SCORE>::iterator it=lpLevel->DelayScore.begin();it != lpLevel->DelayScore.end();)
 	{
-		if((GetTickCount()-it->Delay) < 8000)
+		if((GetTickCountEx()-it->Delay) < 8000)
 		{
 			it++;
 			continue;
@@ -1707,7 +1707,7 @@ void CChaosCastle::CGChaosCastlePositionRecv(PMSG_CHAOS_CASTLE_POSITION_RECV* lp
 
 	gObjSetPosition(lpUser->Index,lpMsg->x,lpMsg->y);
 
-	lpObj->ChaosCastleBlowTime = GetTickCount();
+	lpObj->ChaosCastleBlowTime = GetTickCountEx();
 }
 
 void CChaosCastle::GCChaosCastleScoreSend(CHAOS_CASTLE_LEVEL* lpLevel,int aIndex,int type) // OK
@@ -1749,7 +1749,7 @@ void CChaosCastle::GCChaosCastleDelayScoreSend(CHAOS_CASTLE_LEVEL* lpLevel,int a
 
 	CHAOS_CASTLE_DELAY_SCORE DelayScore;
 
-	DelayScore.Delay = GetTickCount();
+	DelayScore.Delay = GetTickCountEx();
 
 	DelayScore.Index = lpUser->Index;
 

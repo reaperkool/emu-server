@@ -26,7 +26,7 @@ public:
 	int m_WeekDay;
 	int m_Hour;
 	int m_Minute;
-	int m_AppliedTime;
+	XWORD m_AppliedTime;
 	int m_ApplyingTime;
 	char m_RuleDesc[100];
 };

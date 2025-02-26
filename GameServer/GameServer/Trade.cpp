@@ -167,13 +167,13 @@ void CTrade::CGTradeRequestRecv(PMSG_TRADE_REQUEST_RECV* lpMsg,int aIndex) // OK
 	lpObj->Interface.use = 1;
 	lpObj->Interface.type = INTERFACE_TRADE;
 	lpObj->Interface.state = 0;
-	lpObj->InterfaceTime = GetTickCount();
+	lpObj->InterfaceTime = GetTickCountEx();
 	lpObj->TargetNumber = bIndex;
 
 	lpTarget->Interface.use = 1;
 	lpTarget->Interface.type = INTERFACE_TRADE;
 	lpTarget->Interface.state = 0;
-	lpTarget->InterfaceTime = GetTickCount();
+	lpTarget->InterfaceTime = GetTickCountEx();
 	lpTarget->TargetNumber = aIndex;
 
 	this->GCTradeRequestSend(bIndex,lpObj->Name);
@@ -328,11 +328,11 @@ void CTrade::CGTradeMoneyRecv(PMSG_TRADE_MONEY_RECV* lpMsg,int aIndex) // OK
 	DataSend(aIndex,(BYTE*)&pMsg,pMsg.header.size);
 
 	lpObj->TradeOk = 0;
-	lpObj->TradeOkTime = GetTickCount();
+	lpObj->TradeOkTime = GetTickCountEx();
 	this->GCTradeOkButtonSend(aIndex,0);
 
 	lpTarget->TradeOk = 0;
-	lpTarget->TradeOkTime = GetTickCount();
+	lpTarget->TradeOkTime = GetTickCountEx();
 	this->GCTradeOkButtonSend(bIndex,2);
 
 	lpObj->TradeMoney = lpMsg->money;
@@ -367,7 +367,7 @@ void CTrade::CGTradeOkButtonRecv(PMSG_TRADE_OK_BUTTON_RECV* lpMsg,int aIndex) //
 		return;
 	}
 
-	if((GetTickCount()-lpObj->TradeOkTime) < 6000)
+	if((GetTickCountEx()-lpObj->TradeOkTime) < 6000)
 	{
 		return;
 	}

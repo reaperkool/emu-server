@@ -35,7 +35,7 @@ CDuel::CDuel() // OK
 		lpInfo->State = DA_STATE_EMPTY;
 		lpInfo->RemainTime = 0;
 		lpInfo->TargetTime = 0;
-		lpInfo->TickCount = GetTickCount();
+		lpInfo->TickCount = GetTickCountEx();
 
 		memset(lpInfo->Gladiator,-1,sizeof(lpInfo->Gladiator));
 		memset(lpInfo->Spectator,-1,sizeof(lpInfo->Spectator));
@@ -57,9 +57,9 @@ void CDuel::MainProc() // OK
 	{
 		DUEL_ARENA_INFO* lpInfo = &this->m_DuelArenaInfo[n];
 
-		if((GetTickCount()-lpInfo->TickCount) >= 1000)
+		if((GetTickCountEx()-lpInfo->TickCount) >= 1000)
 		{
-			lpInfo->TickCount = GetTickCount();
+			lpInfo->TickCount = GetTickCountEx();
 
 			lpInfo->RemainTime = (int)difftime(lpInfo->TargetTime,time(0));
 
@@ -745,7 +745,7 @@ void CDuel::CheckDuelUser() // OK
 
 		if(OBJECT_RANGE(lpObj->DuelUserReserved) != 0)
 		{
-			if((GetTickCount()-lpObj->DuelTickCount) > 30000)
+			if((GetTickCountEx()-lpObj->DuelTickCount) > 30000)
 			{
 				this->ResetDuel(&gObj[lpObj->DuelUserReserved]);
 				this->GCDuelStartSend(lpObj->Index,0,lpObj->DuelUserReserved);
@@ -755,7 +755,7 @@ void CDuel::CheckDuelUser() // OK
 
 		if(OBJECT_RANGE(lpObj->DuelUserRequested) != 0)
 		{
-			if((GetTickCount()-lpObj->DuelTickCount) > 30000)
+			if((GetTickCountEx()-lpObj->DuelTickCount) > 30000)
 			{
 				this->ResetDuel(&gObj[lpObj->DuelUserRequested]);
 				this->GCDuelStartSend(lpObj->DuelUserRequested,0,lpObj->Index);
@@ -765,7 +765,7 @@ void CDuel::CheckDuelUser() // OK
 
 		if(OBJECT_RANGE(lpObj->DuelUser) != 0)
 		{
-			if((GetTickCount()-lpObj->DuelTickCount) > 60000)
+			if((GetTickCountEx()-lpObj->DuelTickCount) > 60000)
 			{
 				this->ResetDuel(&gObj[lpObj->DuelUser]);
 				this->GCDuelEndSend(lpObj->DuelUser,0);
@@ -926,15 +926,14 @@ void CDuel::CGDuelStartRecv(PMSG_DUEL_START_RECV* lpMsg,int aIndex) // OK
 		return;
 	}
 
-	#if(GAMESERVER_TYPE==1)
-
-	if(gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_NOTIFY || gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_READYSIEGE || gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE)
+	if (gServerInfo.m_ServerType == 1)
 	{
-		gNotice.GCNoticeSend(aIndex,1,0,0,0,0,0,gMessage.GetMessage(168));
-		return;
+		if (gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_NOTIFY || gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_READYSIEGE || gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE)
+		{
+			gNotice.GCNoticeSend(aIndex, 1, 0, 0, 0, 0, 0, gMessage.GetMessage(168));
+			return;
+		}
 	}
-
-	#endif
 
 	char name[11] = {0};
 
@@ -965,13 +964,13 @@ void CDuel::CGDuelStartRecv(PMSG_DUEL_START_RECV* lpMsg,int aIndex) // OK
 	lpObj->DuelUserRequested = -1;
 	lpObj->DuelScore = 0;
 	lpObj->DuelUser = -1;
-	lpObj->DuelTickCount = GetTickCount();
+	lpObj->DuelTickCount = GetTickCountEx();
 	
 	lpTarget->DuelUserReserved = -1;
 	lpTarget->DuelUserRequested = aIndex;
 	lpTarget->DuelScore = 0;
 	lpTarget->DuelUser = -1;
-	lpTarget->DuelTickCount = GetTickCount();
+	lpTarget->DuelTickCount = GetTickCountEx();
 
 	this->GCDuelOkSend(bIndex,aIndex);
 }
@@ -1052,18 +1051,17 @@ void CDuel::CGDuelOkRecv(PMSG_DUEL_OK_RECV* lpMsg,int aIndex) // OK
 		return;
 	}
 
-	#if(GAMESERVER_TYPE==1)
-
-	if(gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_NOTIFY || gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_READYSIEGE || gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE)
+	if (gServerInfo.m_ServerType == 1)
 	{
-		gNotice.GCNoticeSend(aIndex,1,0,0,0,0,0,gMessage.GetMessage(168));
-		this->ResetDuel(lpObj);
-		this->ResetDuel(lpTarget);
-		this->GCDuelStartSend(bIndex,0,aIndex);
-		return;
+		if (gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_NOTIFY || gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_READYSIEGE || gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE)
+		{
+			gNotice.GCNoticeSend(aIndex, 1, 0, 0, 0, 0, 0, gMessage.GetMessage(168));
+			this->ResetDuel(lpObj);
+			this->ResetDuel(lpTarget);
+			this->GCDuelStartSend(bIndex, 0, aIndex);
+			return;
+		}
 	}
-
-	#endif
 
 	char name[11] = {0};
 
@@ -1095,13 +1093,13 @@ void CDuel::CGDuelOkRecv(PMSG_DUEL_OK_RECV* lpMsg,int aIndex) // OK
 	lpObj->DuelUserRequested = -1;
 	lpObj->DuelScore = 0;
 	lpObj->DuelUser = bIndex;
-	lpObj->DuelTickCount = GetTickCount();
+	lpObj->DuelTickCount = GetTickCountEx();
 	
 	lpTarget->DuelUserReserved = -1;
 	lpTarget->DuelUserRequested = -1;
 	lpTarget->DuelScore = 0;
 	lpTarget->DuelUser = aIndex;
-	lpTarget->DuelTickCount = GetTickCount();
+	lpTarget->DuelTickCount = GetTickCountEx();
 
 	this->GCDuelStartSend(aIndex,1,bIndex);
 

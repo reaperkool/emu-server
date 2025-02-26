@@ -107,12 +107,12 @@ private:
 	int m_IsSucccess;
 	int m_IsSceneSuccess;
 	CKanturuMaya m_KanturuMaya;
-	int m_MayaHandDieTimeCounter;
+	XWORD m_MayaHandDieTimeCounter;
 	int m_MayaLeftHandObjIndex;
 	int m_MayaRightHandObjIndex;
 	int m_MayaHandAIChangeTime[KANTURU_MAYA_AI_CHANGE_TIME];
 	int m_MayaHandAIChangeTimeCount;
-	int m_MayaHandAIAppliedTime;
+	XWORD m_MayaHandAIAppliedTime;
 	int m_MayaHandCurrentAI;
 	int m_MayaHandGroupNumber[KANTURU_MAYA_GROUP_NUMBER];
 	int m_MayaHAndGroupNumberCount;

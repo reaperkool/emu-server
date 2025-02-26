@@ -66,12 +66,6 @@
     <ClInclude Include="MemScript.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Protect.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ThemidaSDK.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Log.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -192,9 +186,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Util.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Protect.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Log.cpp">

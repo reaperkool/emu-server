@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "HackCheck.h"
 #include "ServerInfo.h"
-#include "ThemidaSDK.h"
 
 BYTE EncDecKey1;
 BYTE EncDecKey2;
@@ -53,8 +52,6 @@ void MHPEncryptData(BYTE* lpMsg,int size) // OK
 
 void InitHackCheck() // OK
 {
-	VM_START
-
 	WORD EncDecKey = 0;
 
 	for(int n=0;n < sizeof(gServerInfo.m_CustomerName);n++)
@@ -86,6 +83,4 @@ void InitHackCheck() // OK
 		MHPEncDecKey1 += LOBYTE(MHPEncDecKey);
 		MHPEncDecKey2 += HIBYTE(MHPEncDecKey);
 	}
-
-	VM_END
 }

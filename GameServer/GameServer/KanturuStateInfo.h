@@ -17,13 +17,13 @@ public:
 	void SetConditionAppliedTime();
 	int GetCondition();
 	int GetValue();
-	int GetAppliedTime();
-	int GetElapsedTime();
+	XWORD GetAppliedTime();
+	XWORD GetElapsedTime();
 	int GetRemainTime();
 	int IsTimeOut();
 private:
 	int m_State;
 	int m_Condition;
 	int m_Value;
-	DWORD m_AppliedTickCount;
+	XWORD m_AppliedTickCount;
 };

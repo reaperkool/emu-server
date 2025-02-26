@@ -46,7 +46,7 @@ bool CComboSkill::CheckCombo(WORD skill) // OK
 
 	if(type == 0)
 	{
-		this->m_time = GetTickCount()+3000;
+		this->m_time = GetTickCountEx()+3000;
 		this->m_skill[0] = skill;
 		this->m_index = 0;
 		return 0;
@@ -54,7 +54,7 @@ bool CComboSkill::CheckCombo(WORD skill) // OK
 
 	if(type == 1)
 	{
-		if(this->m_time < GetTickCount())
+		if(this->m_time < GetTickCountEx())
 		{
 			this->Init();
 			return 0;
@@ -68,7 +68,7 @@ bool CComboSkill::CheckCombo(WORD skill) // OK
 
 		if(this->m_index == 0)
 		{
-			this->m_time = GetTickCount()+3000;
+			this->m_time = GetTickCountEx()+3000;
 			this->m_skill[1] = skill;
 			this->m_index = 1;
 			return 0;

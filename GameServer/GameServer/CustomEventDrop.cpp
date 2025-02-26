@@ -29,7 +29,7 @@ CCustomEventDrop::CCustomEventDrop() // OK
 		lpInfo->State = CUSTOM_EVENT_DROP_STATE_BLANK;
 		lpInfo->RemainTime = 0;
 		lpInfo->TargetTime = 0;
-		lpInfo->TickCount = GetTickCount();
+		lpInfo->TickCount = GetTickCountEx();
 		lpInfo->AlarmMinSave = -1;
 		lpInfo->AlarmMinLeft = -1;
 	}
@@ -196,9 +196,9 @@ void CCustomEventDrop::MainProc() // OK
 	{
 		CUSTOM_EVENT_DROP_INFO* lpInfo = &this->m_CustomEventDropInfo[n];
 
-		if((GetTickCount()-lpInfo->TickCount) >= 1000)
+		if((GetTickCountEx()-lpInfo->TickCount) >= 1000)
 		{
-			lpInfo->TickCount = GetTickCount();
+			lpInfo->TickCount = GetTickCountEx();
 
 			lpInfo->RemainTime = (int)difftime(lpInfo->TargetTime,time(0));
 

@@ -111,8 +111,8 @@ void CMemoryAllocatorInfo::Alloc() // OK
 		this->m_QuestKillCount = new QUEST_KILL_COUNT[MAX_QUEST_KILL_COUNT];
 		this->m_QuestWorldList = new QUEST_WORLD_LIST[MAX_QUEST_WORLD_LIST];
 		this->m_GensVictimList = new GENS_SYSTEM_VICTIM_LIST[MAX_GENS_SYSTEM_VICTIM];
-		this->m_SkillDelay = new DWORD[MAX_SKILL];
-		this->m_HackPacketDelay = new DWORD[MAX_HACK_PACKET_INFO];
+		this->m_SkillDelay = new XWORD[MAX_SKILL];
+		this->m_HackPacketDelay = new XWORD[MAX_HACK_PACKET_INFO];
 		this->m_HackPacketCount = new DWORD[MAX_HACK_PACKET_INFO];
 		#if(GAMESERVER_UPDATE>=701)
 		this->m_PentagramJewelInfo_Inventory = new PENTAGRAM_JEWEL_INFO[MAX_PENTAGRAM_JEWEL_INFO];

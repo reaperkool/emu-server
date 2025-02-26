@@ -34,7 +34,7 @@ DWORD CQueue::GetQueueSize() // OK
 
 	this->m_critical.lock();
 
-	size = this->m_QueueInfo.size();
+	size = (int)this->m_QueueInfo.size();
 
 	this->m_critical.unlock();
 

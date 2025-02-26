@@ -82,179 +82,187 @@ void CCrywolf::DelAllData() // OK
 
 void CCrywolf::Load(char* path) // OK
 {
-	CMemScript* lpMemScript = new CMemScript;
-
-	if(lpMemScript == 0)
+	if (gServerInfo.m_ServerType == 1)
 	{
-		ErrorMessageBox(MEM_SCRIPT_ALLOC_ERROR,path);
-		return;
-	}
+		CMemScript* lpMemScript = new CMemScript;
 
-	if(lpMemScript->SetBuffer(path) == 0)
-	{
-		ErrorMessageBox(lpMemScript->GetLastError());
-		delete lpMemScript;
-		return;
-	}
-
-	this->DelAllData();
-
-	try
-	{
-		while(true)
+		if (lpMemScript == 0)
 		{
-			if(lpMemScript->GetToken() == TOKEN_END)
+			ErrorMessageBox(MEM_SCRIPT_ALLOC_ERROR, path);
+			return;
+		}
+
+		if (lpMemScript->SetBuffer(path) == 0)
+		{
+			ErrorMessageBox(lpMemScript->GetLastError());
+			delete lpMemScript;
+			return;
+		}
+
+		this->DelAllData();
+
+		try
+		{
+			while (true)
 			{
-				break;
-			}
-
-			int section = lpMemScript->GetNumber();
-
-			while(true)
-			{
-				if(section == 0)
-				{
-					if(strcmp("end",lpMemScript->GetAsString()) == 0)
-					{
-						break;
-					}
-
-					this->m_ScheduleMode = lpMemScript->GetNumber();
-					this->m_StartTimeInfo[this->m_StartTimeInfoCount].m_StateNumber = lpMemScript->GetAsNumber();
-					this->m_StartTimeInfo[this->m_StartTimeInfoCount].m_Month = lpMemScript->GetAsNumber();
-					this->m_StartTimeInfo[this->m_StartTimeInfoCount].m_Day = lpMemScript->GetAsNumber();
-					this->m_StartTimeInfo[this->m_StartTimeInfoCount].m_DayOfWeek = lpMemScript->GetAsNumber();
-					this->m_StartTimeInfo[this->m_StartTimeInfoCount].m_Hour = lpMemScript->GetAsNumber();
-					this->m_StartTimeInfo[this->m_StartTimeInfoCount].m_Minute = lpMemScript->GetAsNumber();
-					this->m_StartTimeInfo[this->m_StartTimeInfoCount].m_ContinuanceTime = lpMemScript->GetAsNumber();
-					this->m_StartTimeInfo[this->m_StartTimeInfoCount].m_Used = 1;
-					this->m_StartTimeInfoCount++;
-				}
-				else if(section == 1)
-				{
-					if(strcmp("end",lpMemScript->GetAsString()) == 0)
-					{
-						break;
-					}
-
-					int state = lpMemScript->GetNumber();
-
-					int hour = lpMemScript->GetAsNumber();
-
-					int minute = lpMemScript->GetAsNumber();
-
-					int second = lpMemScript->GetAsNumber();
-
-					this->m_StateTimeInfo[state].m_StateNumber = state;
-					this->m_StateTimeInfo[state].m_Hour = hour;
-					this->m_StateTimeInfo[state].m_Minute = minute;
-					this->m_StateTimeInfo[state].m_Second = second;
-					this->m_StateTimeInfo[state].m_ContinuanceTime = (((hour*60)*60)*1000)+((minute*60)*1000)+(second*1000);
-					this->m_StateTimeInfo[state].m_Used = 1;
-				}
-				else if(section == 2)
-				{
-					if(strcmp("end",lpMemScript->GetAsString()) == 0)
-					{
-						break;
-					}
-
-					this->m_MonsterGroupNumberArray[this->m_MonsterGroupNumberCount++] = lpMemScript->GetNumber();
-				}
-				else if(section == 3)
-				{
-					if(strcmp("end",lpMemScript->GetAsString()) == 0)
-					{
-						break;
-					}
-
-					this->m_BossGroupNumber = lpMemScript->GetNumber();
-
-					this->m_BossTurnUpTime = lpMemScript->GetAsNumber();
-				}
-				else if(section == 4)
-				{
-					if(strcmp("end",lpMemScript->GetAsString()) == 0)
-					{
-						break;
-					}
-
-					this->m_MonsterGroupChangeAITime = lpMemScript->GetNumber();
-				}
-				else if(section == 5)
-				{
-					if(strcmp("end",lpMemScript->GetAsString()) == 0)
-					{
-						break;
-					}
-
-					this->m_MVPScoreTable[0] = lpMemScript->GetNumber();
-
-					this->m_MVPScoreTable[1] = lpMemScript->GetAsNumber();
-
-					this->m_MVPScoreTable[2] = lpMemScript->GetAsNumber();
-
-					this->m_MVPScoreTable[3] = lpMemScript->GetAsNumber();
-
-					this->m_MVPScoreTable[4] = lpMemScript->GetAsNumber();
-
-					this->m_MVPScoreTable[5] = lpMemScript->GetAsNumber();
-
-					this->m_MVPScoreTable[6] = lpMemScript->GetAsNumber();
-				}
-				else if(section == 6)
-				{
-					if(strcmp("end",lpMemScript->GetAsString()) == 0)
-					{
-						break;
-					}
-
-					this->m_MVPRankScoreTable[0] = lpMemScript->GetNumber();
-
-					this->m_MVPRankScoreTable[1] = lpMemScript->GetAsNumber();
-
-					this->m_MVPRankScoreTable[2] = lpMemScript->GetAsNumber();
-
-					this->m_MVPRankScoreTable[3] = lpMemScript->GetAsNumber();
-
-					this->m_MVPRankScoreTable[4] = lpMemScript->GetAsNumber();
-				}
-				else if(section == 7)
-				{
-					if(strcmp("end",lpMemScript->GetAsString()) == 0)
-					{
-						break;
-					}
-
-					this->m_MVPRankExpTable[0] = lpMemScript->GetNumber();
-
-					this->m_MVPRankExpTable[1] = lpMemScript->GetAsNumber();
-
-					this->m_MVPRankExpTable[2] = lpMemScript->GetAsNumber();
-
-					this->m_MVPRankExpTable[3] = lpMemScript->GetAsNumber();
-
-					this->m_MVPRankExpTable[4] = lpMemScript->GetAsNumber();
-				}
-				else
+				if (lpMemScript->GetToken() == TOKEN_END)
 				{
 					break;
 				}
+
+				int section = lpMemScript->GetNumber();
+
+				while (true)
+				{
+					if (section == 0)
+					{
+						if (strcmp("end", lpMemScript->GetAsString()) == 0)
+						{
+							break;
+						}
+
+						this->m_ScheduleMode = lpMemScript->GetNumber();
+						this->m_StartTimeInfo[this->m_StartTimeInfoCount].m_StateNumber = lpMemScript->GetAsNumber();
+						this->m_StartTimeInfo[this->m_StartTimeInfoCount].m_Month = lpMemScript->GetAsNumber();
+						this->m_StartTimeInfo[this->m_StartTimeInfoCount].m_Day = lpMemScript->GetAsNumber();
+						this->m_StartTimeInfo[this->m_StartTimeInfoCount].m_DayOfWeek = lpMemScript->GetAsNumber();
+						this->m_StartTimeInfo[this->m_StartTimeInfoCount].m_Hour = lpMemScript->GetAsNumber();
+						this->m_StartTimeInfo[this->m_StartTimeInfoCount].m_Minute = lpMemScript->GetAsNumber();
+						this->m_StartTimeInfo[this->m_StartTimeInfoCount].m_ContinuanceTime = lpMemScript->GetAsNumber();
+						this->m_StartTimeInfo[this->m_StartTimeInfoCount].m_Used = 1;
+						this->m_StartTimeInfoCount++;
+					}
+					else if (section == 1)
+					{
+						if (strcmp("end", lpMemScript->GetAsString()) == 0)
+						{
+							break;
+						}
+
+						int state = lpMemScript->GetNumber();
+
+						int hour = lpMemScript->GetAsNumber();
+
+						int minute = lpMemScript->GetAsNumber();
+
+						int second = lpMemScript->GetAsNumber();
+
+						this->m_StateTimeInfo[state].m_StateNumber = state;
+						this->m_StateTimeInfo[state].m_Hour = hour;
+						this->m_StateTimeInfo[state].m_Minute = minute;
+						this->m_StateTimeInfo[state].m_Second = second;
+						this->m_StateTimeInfo[state].m_ContinuanceTime = (((hour * 60) * 60) * 1000) + ((minute * 60) * 1000) + (second * 1000);
+						this->m_StateTimeInfo[state].m_Used = 1;
+					}
+					else if (section == 2)
+					{
+						if (strcmp("end", lpMemScript->GetAsString()) == 0)
+						{
+							break;
+						}
+
+						this->m_MonsterGroupNumberArray[this->m_MonsterGroupNumberCount++] = lpMemScript->GetNumber();
+					}
+					else if (section == 3)
+					{
+						if (strcmp("end", lpMemScript->GetAsString()) == 0)
+						{
+							break;
+						}
+
+						this->m_BossGroupNumber = lpMemScript->GetNumber();
+
+						this->m_BossTurnUpTime = lpMemScript->GetAsNumber();
+					}
+					else if (section == 4)
+					{
+						if (strcmp("end", lpMemScript->GetAsString()) == 0)
+						{
+							break;
+						}
+
+						this->m_MonsterGroupChangeAITime = lpMemScript->GetNumber();
+					}
+					else if (section == 5)
+					{
+						if (strcmp("end", lpMemScript->GetAsString()) == 0)
+						{
+							break;
+						}
+
+						this->m_MVPScoreTable[0] = lpMemScript->GetNumber();
+
+						this->m_MVPScoreTable[1] = lpMemScript->GetAsNumber();
+
+						this->m_MVPScoreTable[2] = lpMemScript->GetAsNumber();
+
+						this->m_MVPScoreTable[3] = lpMemScript->GetAsNumber();
+
+						this->m_MVPScoreTable[4] = lpMemScript->GetAsNumber();
+
+						this->m_MVPScoreTable[5] = lpMemScript->GetAsNumber();
+
+						this->m_MVPScoreTable[6] = lpMemScript->GetAsNumber();
+					}
+					else if (section == 6)
+					{
+						if (strcmp("end", lpMemScript->GetAsString()) == 0)
+						{
+							break;
+						}
+
+						this->m_MVPRankScoreTable[0] = lpMemScript->GetNumber();
+
+						this->m_MVPRankScoreTable[1] = lpMemScript->GetAsNumber();
+
+						this->m_MVPRankScoreTable[2] = lpMemScript->GetAsNumber();
+
+						this->m_MVPRankScoreTable[3] = lpMemScript->GetAsNumber();
+
+						this->m_MVPRankScoreTable[4] = lpMemScript->GetAsNumber();
+					}
+					else if (section == 7)
+					{
+						if (strcmp("end", lpMemScript->GetAsString()) == 0)
+						{
+							break;
+						}
+
+						this->m_MVPRankExpTable[0] = lpMemScript->GetNumber();
+
+						this->m_MVPRankExpTable[1] = lpMemScript->GetAsNumber();
+
+						this->m_MVPRankExpTable[2] = lpMemScript->GetAsNumber();
+
+						this->m_MVPRankExpTable[3] = lpMemScript->GetAsNumber();
+
+						this->m_MVPRankExpTable[4] = lpMemScript->GetAsNumber();
+					}
+					else
+					{
+						break;
+					}
+				}
 			}
 		}
-	}
-	catch(...)
-	{
-		ErrorMessageBox(lpMemScript->GetLastError());
-	}
+		catch (...)
+		{
+			ErrorMessageBox(lpMemScript->GetLastError());
+		}
 
-	this->m_FileDataLoad = 1;
+		this->m_FileDataLoad = 1;
 
-	delete lpMemScript;
+		delete lpMemScript;
+	}
 }
 
 void CCrywolf::MainProc() // OK
 {
+	if (gServerInfo.m_ServerType != 1)
+	{
+		return;
+	}
+
 	if(gCrywolfSync.CheckEnableCrywolf() == 0)
 	{
 		return;
@@ -300,16 +308,16 @@ void CCrywolf::ProcState_NONE() // OK
 
 void CCrywolf::ProcState_NOTIFY1() // OK
 {
-	if((GetTickCount()-this->m_CrywolfNotifyMsgStartTick) > 70000)
+	if((GetTickCountEx()-this->m_CrywolfNotifyMsgStartTick) > 70000)
 	{
 		gCrywolfUtil.SendMapServerGroupMsg(gMessage.GetMessage(368));
-		this->m_CrywolfNotifyMsgStartTick = GetTickCount();
+		this->m_CrywolfNotifyMsgStartTick = GetTickCountEx();
 	}
 }
 
 void CCrywolf::ProcState_NOTIFY2() // OK
 {
-	if((GetTickCount()-this->m_CrywolfNotifyMsgStartTick) > 70000)
+	if((GetTickCountEx()-this->m_CrywolfNotifyMsgStartTick) > 70000)
 	{
 		if(((this->m_StateTimeInfo[this->GetCrywolfState()].GetLeftTime()/1000)/60) == 0)
 		{
@@ -320,7 +328,7 @@ void CCrywolf::ProcState_NOTIFY2() // OK
 			gCrywolfUtil.SendMapServerGroupMsg(gMessage.GetMessage(377),((this->m_StateTimeInfo[this->GetCrywolfState()].GetLeftTime()/1000)/60));
 		}
 
-		this->m_CrywolfNotifyMsgStartTick = GetTickCount();
+		this->m_CrywolfNotifyMsgStartTick = GetTickCountEx();
 	}
 }
 
@@ -328,7 +336,7 @@ void CCrywolf::ProcState_READY() // OK
 {
 	this->NotifyCrywolfStatueAndAltarInfo();
 
-	if((GetTickCount()-this->m_CrywolfNotifyMsgStartTick) > 70000)
+	if((GetTickCountEx()-this->m_CrywolfNotifyMsgStartTick) > 70000)
 	{
 		if(((this->m_StateTimeInfo[this->GetCrywolfState()].GetLeftTime()/1000)/60) == 0)
 		{
@@ -339,7 +347,7 @@ void CCrywolf::ProcState_READY() // OK
 			gCrywolfUtil.SendMapServerGroupMsg(gMessage.GetMessage(379),((this->m_StateTimeInfo[this->GetCrywolfState()].GetLeftTime()/1000)/60));
 		}
 
-		this->m_CrywolfNotifyMsgStartTick = GetTickCount();
+		this->m_CrywolfNotifyMsgStartTick = GetTickCountEx();
 	}
 }
 
@@ -359,7 +367,7 @@ void CCrywolf::ProcState_START()
 
 	this->NotifyCrywolfStateLeftTime();
 
-	if((GetTickCount()-this->m_CrywolfStartProcTick) > ((DWORD)(this->m_BossTurnUpTime*1000)) && this->m_TurnUpBoss == 0)
+	if((GetTickCountEx()-this->m_CrywolfStartProcTick) > ((XWORD)(this->m_BossTurnUpTime*1000)) && this->m_TurnUpBoss == 0)
 	{
 		this->m_TurnUpBoss = 1;
 		gCrywolfUtil.SendCrywolfUserAnyMsg(0,gMessage.GetMessage(381));
@@ -367,7 +375,7 @@ void CCrywolf::ProcState_START()
 		LogAdd(LOG_BLACK,"[ Crywolf ][MVP] Barlgars TurnUp !!!");
 	}
 
-	if((GetTickCount()-this->m_CrywolfStartProcTick) > ((DWORD)(this->m_MonsterGroupChangeAITime*1000)) && this->m_ChangeAI == 0)
+	if((GetTickCountEx()-this->m_CrywolfStartProcTick) > ((XWORD)(this->m_MonsterGroupChangeAITime*1000)) && this->m_ChangeAI == 0)
 	{
 		this->m_ChangeAI = 1;
 		gCrywolfUtil.SendCrywolfUserAnyMsg(0,gMessage.GetMessage(382));
@@ -444,7 +452,7 @@ void CCrywolf::SetState_NOTIFY1() // OK
 
 	this->SetCrywolfStateAppliedTime(CRYWOLF_STATE_NOTIFY1);
 
-	this->m_CrywolfNotifyMsgStartTick = GetTickCount();
+	this->m_CrywolfNotifyMsgStartTick = GetTickCountEx();
 }
 
 void CCrywolf::SetState_NOTIFY2() // OK
@@ -465,7 +473,7 @@ void CCrywolf::SetState_NOTIFY2() // OK
 
 	this->RemoveCrywolfCommonMonster();
 
-	this->m_CrywolfNotifyMsgStartTick = GetTickCount();
+	this->m_CrywolfNotifyMsgStartTick = GetTickCountEx();
 }
 
 void CCrywolf::SetState_READY() // OK
@@ -495,7 +503,7 @@ void CCrywolf::SetState_READY() // OK
 		CMonsterAIGroup::Init(this->m_MonsterGroupNumberArray[n]);
 	}
 
-	this->m_CrywolfNotifyMsgStartTick = GetTickCount();
+	this->m_CrywolfNotifyMsgStartTick = GetTickCountEx();
 
 	this->ResetAllUserMVPScore();
 }
@@ -520,7 +528,7 @@ void CCrywolf::SetState_START() // OK
 
 	this->ChangeAI(1);
 
-	this->m_CrywolfStartProcTick = GetTickCount();
+	this->m_CrywolfStartProcTick = GetTickCountEx();
 
 	this->m_TurnUpBoss = 0;
 
@@ -651,6 +659,11 @@ void CCrywolf::CheckStateTimeSync() // OK
 
 void CCrywolf::CrywolfSecondAct() // OK
 {
+	if (gServerInfo.m_ServerType != 1)
+	{
+		return;
+	}
+
 	this->CrywolfServerGroupSync();
 
 	if(this->m_DBDataLoadOK == 0 && this->m_DBDataLoading == 0)
@@ -817,14 +830,14 @@ void CCrywolf::NotifyCrywolfCurrentState() // OK
 
 void CCrywolf::NotifyCrywolfStateLeftTime() // OK
 {
-	static DWORD CrywolfLeftTimeTickCount = 0;
+	static XWORD CrywolfLeftTimeTickCount = 0;
 
-	if((GetTickCount()-CrywolfLeftTimeTickCount) < 20000)
+	if((GetTickCountEx()-CrywolfLeftTimeTickCount) < 20000)
 	{
 		return;
 	}
 
-	CrywolfLeftTimeTickCount = GetTickCount();
+	CrywolfLeftTimeTickCount = GetTickCountEx();
 
 	PMSG_CRYWOLF_LEFT_TIME_SEND pMsg;
 
@@ -841,14 +854,14 @@ void CCrywolf::NotifyCrywolfStateLeftTime() // OK
 
 void CCrywolf::NotifyCrywolfStatueAndAltarInfo() // OK
 {
-	static DWORD CrywolfStatueAndAltarInfoTickCount = 0;
+	static XWORD CrywolfStatueAndAltarInfoTickCount = 0;
 
-	if((GetTickCount()-CrywolfStatueAndAltarInfoTickCount) < 2000)
+	if((GetTickCountEx()-CrywolfStatueAndAltarInfoTickCount) < 2000)
 	{
 		return;
 	}
 
-	CrywolfStatueAndAltarInfoTickCount = GetTickCount();
+	CrywolfStatueAndAltarInfoTickCount = GetTickCountEx();
 
 	PMSG_CRYWOLF_STATUE_ALTAR_INFO_SEND pMsg;
 
@@ -881,14 +894,14 @@ void CCrywolf::NotifyCrywolfStatueAndAltarInfo() // OK
 
 void CCrywolf::NotifyCrywolfBossMonsterInfo() // OK
 {
-	static DWORD CrywolfBossMonsterInfoTickCount = 0;
+	static XWORD CrywolfBossMonsterInfoTickCount = 0;
 
-	if((GetTickCount()-CrywolfBossMonsterInfoTickCount) < 5000)
+	if((GetTickCountEx()-CrywolfBossMonsterInfoTickCount) < 5000)
 	{
 		return;
 	}
 
-	CrywolfBossMonsterInfoTickCount = GetTickCount();
+	CrywolfBossMonsterInfoTickCount = GetTickCountEx();
 
 	PMSG_CRYWOLF_BOSS_MONSTER_INFO_SEND pMsg;
 

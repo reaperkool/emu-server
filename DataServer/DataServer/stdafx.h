@@ -1,17 +1,12 @@
 #pragma once
 
 #define WIN32_LEAN_AND_MEAN
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
 
-#define _WIN32_WINNT _WIN32_WINNT_WINXP
-
-#define DATASERVER_VERSION "PREMIUM"
+#define DATASERVER_VERSION "ALPHA"
 
 #ifndef DATASERVER_UPDATE
 #define DATASERVER_UPDATE 803
-#endif
-
-#ifndef PROTECT_STATE
-#define PROTECT_STATE 1
 #endif
 
 // System Include
@@ -47,3 +42,11 @@ extern char CustomerName[32];
 extern char CustomerHardwareId[36];
 
 typedef unsigned __int64 QWORD;
+
+#if (_WIN64)
+typedef unsigned __int64 XWORD;
+#define GetTickCountEx GetTickCount64
+#else
+typedef unsigned int XWORD;
+#define GetTickCountEx GetTickCount
+#endif

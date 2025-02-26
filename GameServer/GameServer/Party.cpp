@@ -374,14 +374,14 @@ void CParty::CGPartyRequestRecv(PMSG_PARTY_REQUEST_RECV* lpMsg,int aIndex) // OK
 	lpObj->Interface.use = 1;
 	lpObj->Interface.type = INTERFACE_PARTY;
 	lpObj->Interface.state = 0;
-	lpObj->InterfaceTime = GetTickCount();
+	lpObj->InterfaceTime = GetTickCountEx();
 	lpObj->TargetNumber = bIndex;
 	lpObj->PartyTargetUser = bIndex;
 
 	lpTarget->Interface.use = 1;
 	lpTarget->Interface.type = INTERFACE_PARTY;
 	lpTarget->Interface.state = 0;
-	lpTarget->InterfaceTime = GetTickCount();
+	lpTarget->InterfaceTime = GetTickCountEx();
 	lpTarget->TargetNumber = aIndex;
 
 	PMSG_PARTY_REQUEST_SEND pMsg;

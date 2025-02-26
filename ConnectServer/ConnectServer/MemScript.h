@@ -49,6 +49,6 @@ private:
 	DWORD m_count;
 	float m_number;
 	char m_string[256];
-	DWORD m_tick;
+	XWORD m_tick;
 	char m_LastError[256];
 };

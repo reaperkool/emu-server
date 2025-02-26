@@ -11,7 +11,7 @@ public:
 	int GetSkillType(WORD skill);
 	bool CheckCombo(WORD skill);
 public:
-	DWORD m_time;
+	XWORD m_time;
 	WORD m_skill[2];
 	int m_index;
 };

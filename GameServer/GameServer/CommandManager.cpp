@@ -123,7 +123,7 @@ long CCommandManager::GetNumber(char* arg,int pos) // OK
 
 	char buffer[60] = {0};
 
-	int len = strlen(arg);
+	int len = (int)strlen(arg);
 
 	len = ((len>=sizeof(buffer))?(sizeof(buffer)-1):len);
 
@@ -149,7 +149,7 @@ void CCommandManager::GetString(char* arg,char* out,int size,int pos) // OK
 
 	char buffer[60] = {0};
 
-	int len = strlen(arg);
+	int len = (int)strlen(arg);
 
 	len = ((len>=sizeof(buffer))?(sizeof(buffer)-1):len);
 
@@ -348,7 +348,7 @@ void CCommandManager::CommandPost(LPOBJ lpObj,char* arg) // OK
 		return;
 	}
 
-	DWORD tick = (GetTickCount()-lpObj->PostTime)/1000;
+	XWORD tick = (GetTickCountEx()-lpObj->PostTime)/1000;
 
 	if(tick < ((DWORD)gServerInfo.m_CommandPostDelay[lpObj->AccountLevel]))
 	{
@@ -356,7 +356,7 @@ void CCommandManager::CommandPost(LPOBJ lpObj,char* arg) // OK
 		return;
 	}
 
-	lpObj->PostTime = GetTickCount();
+	lpObj->PostTime = GetTickCountEx();
 
 	lpObj->Money -= gServerInfo.m_CommandPostMoney[lpObj->AccountLevel];
 
@@ -726,7 +726,7 @@ void CCommandManager::CommandReset(LPOBJ lpObj,char* arg) // OK
 		return;
 	}
 
-	if(lpObj->Interface.use != 0 || lpObj->State == OBJECT_DELCMD || lpObj->DieRegen != 0 || lpObj->Teleport != 0 || lpObj->PShopOpen != 0 || lpObj->SkillSummonPartyTime != 0)
+	if(lpObj->Interface.use != 0 || lpObj->State == (int)OBJECT_DELCMD || lpObj->DieRegen != 0 || lpObj->Teleport != 0 || lpObj->PShopOpen != 0 || lpObj->SkillSummonPartyTime != 0)
 	{
 		gNotice.GCNoticeSend(lpObj->Index,1,0,0,0,0,0,gMessage.GetMessage(90));
 		return;
@@ -1132,7 +1132,7 @@ void CCommandManager::CommandMasterReset(LPOBJ lpObj,char* arg) // OK
 		return;
 	}
 
-	if(lpObj->Interface.use != 0 || lpObj->State == OBJECT_DELCMD || lpObj->DieRegen != 0 || lpObj->Teleport != 0 || lpObj->PShopOpen != 0 || lpObj->SkillSummonPartyTime != 0)
+	if(lpObj->Interface.use != 0 || lpObj->State == (int)OBJECT_DELCMD || lpObj->DieRegen != 0 || lpObj->Teleport != 0 || lpObj->PShopOpen != 0 || lpObj->SkillSummonPartyTime != 0)
 	{
 		gNotice.GCNoticeSend(lpObj->Index,1,0,0,0,0,0,gMessage.GetMessage(119));
 		return;
@@ -1344,7 +1344,7 @@ void CCommandManager::CommandAddPointAutoProc(LPOBJ lpObj) // OK
 
 void CCommandManager::CommandResetAutoProc(LPOBJ lpObj) // OK
 {
-	if(lpObj->Interface.use != 0 || lpObj->State == OBJECT_DELCMD || lpObj->DieRegen != 0 || lpObj->Teleport != 0 || lpObj->PShopOpen != 0 || lpObj->SkillSummonPartyTime != 0)
+	if(lpObj->Interface.use != 0 || lpObj->State == (int)OBJECT_DELCMD || lpObj->DieRegen != 0 || lpObj->Teleport != 0 || lpObj->PShopOpen != 0 || lpObj->SkillSummonPartyTime != 0)
 	{
 		return;
 	}

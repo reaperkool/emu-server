@@ -96,7 +96,7 @@ struct CHAOS_CASTLE_START_TIME
 
 struct CHAOS_CASTLE_DELAY_SCORE
 {
-	int Delay;
+	XWORD Delay;
 	int Index;
 	PMSG_CHAOS_CASTLE_SCORE_SEND Score;
 };
@@ -117,7 +117,7 @@ struct CHAOS_CASTLE_LEVEL
 	int Map;
 	int RemainTime;
 	int TargetTime;
-	int TickCount;
+	XWORD TickCount;
 	int EnterEnabled;
 	int MinutesLeft;
 	int TimeCount;

@@ -15,7 +15,7 @@ struct ACCOUNT_INFO
 	WORD UserIndex;
 	WORD GameServerCode;
 	bool MapServerMove;
-	DWORD MapServerMoveTime;
+	XWORD MapServerMoveTime;
 	WORD LastServerCode;
 	WORD NextServerCode;
 	WORD Map;
@@ -44,5 +44,3 @@ private:
 };
 
 extern CAccountManager gAccountManager;
-
-static const int gJoinServerMaxAccount[4][6] = {{0,0,0,0,0,0},{0,100,150,200,200,200},{0,250,350,450,450,450},{0,500,1000,MAX_ACCOUNT,MAX_ACCOUNT,MAX_ACCOUNT}};

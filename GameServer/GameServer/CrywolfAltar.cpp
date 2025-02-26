@@ -120,7 +120,7 @@ void CCrywolfAltar::ResetAltarUserIndex(int AltarObjIndex,int Class) // OK
 	lpAltarInfo->m_UserIndex = -1;
 	lpAltarInfo->m_AppliedContractTime = 0;
 	lpAltarInfo->m_ValidContractTime = 0;
-	lpAltarInfo->m_LastValidContractTime = GetTickCount();
+	lpAltarInfo->m_LastValidContractTime = GetTickCountEx();
 }
 
 void CCrywolfAltar::SetAllAltarObjectIndex() // OK
@@ -160,7 +160,7 @@ bool CCrywolfAltar::SetAltarUserIndex(int AltarObjIndex,int Class,int UserIndex)
 
 	CCrywolfAltarInfo* lpAltarInfo = &this->m_AltarInfo[AltarNumber];
 
-	DWORD CurrentTime = GetTickCount();
+	XWORD CurrentTime = GetTickCountEx();
 
 	if(gObj[lpAltarInfo->m_UserIndex].Connected == OBJECT_ONLINE)
 	{
@@ -229,7 +229,7 @@ void CCrywolfAltar::SetAltarValidContract(int AltarObjIndex,int Class) // OK
 		return;
 	}
 
-	if(((DWORD)lpAltarInfo->m_ValidContractTime) < GetTickCount())
+	if(((XWORD)lpAltarInfo->m_ValidContractTime) < GetTickCountEx())
 	{
 		gNotice.GCNoticeSend(lpAltarInfo->m_UserIndex,1,0,0,0,0,0,gMessage.GetMessage(390),AltarNumber);
 

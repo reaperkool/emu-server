@@ -31,7 +31,7 @@ CCustomArena::CCustomArena() // OK
 		lpInfo->State = CUSTOM_ARENA_STATE_BLANK;
 		lpInfo->RemainTime = 0;
 		lpInfo->TargetTime = 0;
-		lpInfo->TickCount = GetTickCount();
+		lpInfo->TickCount = GetTickCountEx();
 		lpInfo->EnterEnabled = 0;
 		lpInfo->AlarmMinSave = -1;
 		lpInfo->AlarmMinLeft = -1;
@@ -237,9 +237,9 @@ void CCustomArena::MainProc() // OK
 	{
 		CUSTOM_ARENA_INFO* lpInfo = &this->m_CustomArenaInfo[n];
 
-		if((GetTickCount()-lpInfo->TickCount) >= 1000)
+		if((GetTickCountEx()-lpInfo->TickCount) >= 1000)
 		{
-			lpInfo->TickCount = GetTickCount();
+			lpInfo->TickCount = GetTickCountEx();
 
 			lpInfo->RemainTime = (int)difftime(lpInfo->TargetTime,time(0));
 

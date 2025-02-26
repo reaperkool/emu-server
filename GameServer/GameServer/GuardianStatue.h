@@ -4,8 +4,6 @@
 
 #pragma once
 
-#if(GAMESERVER_TYPE==1)
-
 class CGuardianStatue
 {
 public:
@@ -15,5 +13,3 @@ public:
 };
 
 extern CGuardianStatue gGuardianStatue;
-
-#endif

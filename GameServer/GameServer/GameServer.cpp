@@ -6,13 +6,11 @@
 #include "Message.h"
 #include "MiniDump.h"
 #include "Notice.h"
-#include "Protect.h"
 #include "QueueTimer.h"
 #include "ServerDisplayer.h"
 #include "ServerInfo.h"
 #include "SocketManager.h"
 #include "SocketManagerUdp.h"
-#include "ThemidaSDK.h"
 #include "Util.h"
 
 HINSTANCE hInst;
@@ -22,8 +20,6 @@ HWND hWnd;
 
 int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,int nCmdShow) // OK
 {
-	VM_START
-
 	CMiniDump::Start();
 
 	LoadString(hInstance,IDS_APP_TITLE,szTitle,MAX_LOADSTRING);
@@ -39,20 +35,6 @@ int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine
 	SetLargeRand();
 
 	gServerInfo.ReadStartupInfo("GameServerInfo",".\\Data\\GameServerInfo - Common.dat");
-
-	#if(PROTECT_STATE==1)
-
-	#if(GAMESERVER_UPDATE>=801)
-	gProtect.StartAuth(AUTH_SERVER_TYPE_S8_GAME_SERVER);
-	#elif(GAMESERVER_UPDATE>=601)
-	gProtect.StartAuth(AUTH_SERVER_TYPE_S6_GAME_SERVER);
-	#elif(GAMESERVER_UPDATE>=401)
-	gProtect.StartAuth(AUTH_SERVER_TYPE_S4_GAME_SERVER);
-	#else
-	gProtect.StartAuth(AUTH_SERVER_TYPE_S2_GAME_SERVER);
-	#endif
-
-	#endif
 
 	char buff[256];
 
@@ -129,9 +111,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine
 
 	CMiniDump::Clean();
 
-	VM_END
-
-	return msg.wParam;
+	return (int)msg.wParam;
 }
 
 ATOM MyRegisterClass(HINSTANCE hInstance) // OK

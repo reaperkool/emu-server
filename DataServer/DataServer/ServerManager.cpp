@@ -99,7 +99,7 @@ void CServerManager::AddServer(int index,char* ip,SOCKET socket) // OK
 
 	this->m_ServerCode = 0xFFFF;
 
-	this->m_OnlineTime = GetTickCount();
+	this->m_OnlineTime = GetTickCountEx();
 
 	this->m_PacketTime = 0;
 
@@ -126,7 +126,7 @@ void CServerManager::DelServer() // OK
 
 	this->m_ServerCode = 0xFFFF;
 
-	this->m_OnlineTime = GetTickCount();
+	this->m_OnlineTime = GetTickCountEx();
 
 	this->m_PacketTime = 0;
 

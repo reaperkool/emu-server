@@ -39,7 +39,6 @@
 #include "PartyMatching.h"
 #include "PcPoint.h"
 #include "PersonalShop.h"
-#include "Protect.h"
 #include "Quest.h"
 #include "QuestWorld.h"
 #include "Reconnect.h"
@@ -50,8 +49,6 @@
 
 void DataServerProtocolCore(BYTE head,BYTE* lpMsg,int size) // OK
 {
-	PROTECT_START
-
 	switch(head)
 	{
 		case 0x00:
@@ -577,8 +574,6 @@ void DataServerProtocolCore(BYTE head,BYTE* lpMsg,int size) // OK
 			CSDataRecv(head,lpMsg,size);
 			break;
 	}
-
-	PROTECT_FINAL
 }
 
 void DGServerInfoRecv(SDHP_DATA_SERVER_INFO_RECV* lpMsg) // OK
@@ -3275,374 +3270,359 @@ void GS_GDReqCsLoadTotalGuildInfo(int iMapSvrGroup)
 
 void GS_DGAnsCastleTotalInfo(LPBYTE lpRecv)
 {
-#if(GAMESERVER_TYPE==1)
-	CSP_ANS_CASTLEDATA* lpMsg = (CSP_ANS_CASTLEDATA*)lpRecv;
+	if (gServerInfo.m_ServerType == 1)
+	{
+		CSP_ANS_CASTLEDATA* lpMsg = (CSP_ANS_CASTLEDATA*)lpRecv;
 
-	if(lpMsg == NULL)
-		return;
+		if (lpMsg == NULL)
+			return;
 
-	if(lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
-		LogAdd(LOG_RED,"[CastleSiege] PACKET-ERROR [0x80][0x00] GS_DGAnsCastleTotalInfo() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()");
-#else
-	return;
-#endif
+		if (lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+			LogAdd(LOG_RED, "[CastleSiege] PACKET-ERROR [0x80][0x00] GS_DGAnsCastleTotalInfo() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()");
+	}
 }
 
 void GS_DGAnsOwnerGuildMaster(LPBYTE lpRecv)
 {
-#if(GAMESERVER_TYPE==1)
-	CSP_ANS_OWNERGUILDMASTER* lpMsg = (CSP_ANS_OWNERGUILDMASTER*)lpRecv;
-
-	if(lpMsg == NULL)
-		return;
-
-	if(lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+	if (gServerInfo.m_ServerType == 1)
 	{
-		LogAdd(LOG_RED,"[CastleSiege] PACKET-ERROR [0x80][0x00] GS_DGAnsCastleTotalInfo() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()") ;
-		return;
-	}
+		CSP_ANS_OWNERGUILDMASTER* lpMsg = (CSP_ANS_OWNERGUILDMASTER*)lpRecv;
 
-	GCAnsCastleSiegeState(lpMsg->iIndex,lpMsg->iResult,lpMsg->szCastleOwnGuild,lpMsg->szCastleOwnGuildMaster);
-#else
-	return;
-#endif
+		if (lpMsg == NULL)
+			return;
+
+		if (lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+		{
+			LogAdd(LOG_RED, "[CastleSiege] PACKET-ERROR [0x80][0x00] GS_DGAnsCastleTotalInfo() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()");
+			return;
+		}
+
+		GCAnsCastleSiegeState(lpMsg->iIndex, lpMsg->iResult, lpMsg->szCastleOwnGuild, lpMsg->szCastleOwnGuildMaster);
+	}
 }
 
 void GS_DGAnsCastleNpcBuy(LPBYTE lpRecv)
 {
-#if(GAMESERVER_TYPE==1)
-	CSP_ANS_NPCBUY* lpMsg = (CSP_ANS_NPCBUY*)lpRecv;
-
-	if(lpMsg == NULL)
-		return;
-
-	if(lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+	if (gServerInfo.m_ServerType == 1)
 	{
-		LogAdd(LOG_RED,"[CastleSiege] PACKET-ERROR [0x80][0x03] GS_DGAnsCastleNpcBuy() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()") ;
-		return;
-	}
+		CSP_ANS_NPCBUY* lpMsg = (CSP_ANS_NPCBUY*)lpRecv;
 
-	if (lpMsg->iResult == 1)
-	{
-		BOOL bAddResult = gCastleSiege.AddDbNPC(lpMsg->iNpcNumber,lpMsg->iNpcIndex);
-	
-		if ( bAddResult == TRUE)
+		if (lpMsg == NULL)
+			return;
+
+		if (lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
 		{
-			if(gObjIsConnected(lpMsg->iIndex))
-			{
-				gObj[lpMsg->iIndex].Money -= lpMsg->iBuyCost;
+			LogAdd(LOG_RED, "[CastleSiege] PACKET-ERROR [0x80][0x03] GS_DGAnsCastleNpcBuy() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()");
+			return;
+		}
 
-				if(gObj[lpMsg->iIndex].Money < 0 )
+		if (lpMsg->iResult == 1)
+		{
+			BOOL bAddResult = gCastleSiege.AddDbNPC(lpMsg->iNpcNumber, lpMsg->iNpcIndex);
+
+			if (bAddResult == TRUE)
+			{
+				if (gObjIsConnected(lpMsg->iIndex))
 				{
-					gObj[lpMsg->iIndex].Money = 0;
+					gObj[lpMsg->iIndex].Money -= lpMsg->iBuyCost;
+
+					if (gObj[lpMsg->iIndex].Money < 0)
+					{
+						gObj[lpMsg->iIndex].Money = 0;
+					}
+
+					GCMoneySend(lpMsg->iIndex, gObj[lpMsg->iIndex].Money);
 				}
 
-				GCMoneySend(lpMsg->iIndex,gObj[lpMsg->iIndex].Money);
+				LogAdd(LOG_BLACK, "[CastleSiege] GS_DGAnsCastleNpcBuy() - CCastleSiege::AddDbNPC() OK - Npc:(CLS:%d, IDX:%d)", lpMsg->iNpcNumber, lpMsg->iNpcIndex);
 			}
-
-			LogAdd(LOG_BLACK,"[CastleSiege] GS_DGAnsCastleNpcBuy() - CCastleSiege::AddDbNPC() OK - Npc:(CLS:%d, IDX:%d)",lpMsg->iNpcNumber,lpMsg->iNpcIndex);
+			else
+			{
+				LogAdd(LOG_BLACK, "[CastleSiege] GS_DGAnsCastleNpcBuy() - CCastleSiege::AddDbNPC() FAILED - Npc:(CLS:%d, IDX:%d)", lpMsg->iNpcNumber, lpMsg->iNpcIndex);
+			}
 		}
 		else
 		{
-			LogAdd(LOG_BLACK,"[CastleSiege] GS_DGAnsCastleNpcBuy() - CCastleSiege::AddDbNPC() FAILED - Npc:(CLS:%d, IDX:%d)",lpMsg->iNpcNumber,lpMsg->iNpcIndex);
+			LogAdd(LOG_BLACK, "[CastleSiege] GS_DGAnsCastleNpcBuy() FAILED - Result:(%d), Npc:(CLS:%d, IDX:%d)", lpMsg->iResult, lpMsg->iNpcNumber, lpMsg->iNpcIndex);
 		}
-	}
-	else
-	{
-		LogAdd(LOG_BLACK,"[CastleSiege] GS_DGAnsCastleNpcBuy() FAILED - Result:(%d), Npc:(CLS:%d, IDX:%d)",lpMsg->iResult,lpMsg->iNpcNumber,lpMsg->iNpcIndex); 
-	}
 
-	GCAnsNpcBuy(lpMsg->iIndex,lpMsg->iResult,lpMsg->iNpcNumber,lpMsg->iNpcIndex);
-#else
-	return;
-#endif
+		GCAnsNpcBuy(lpMsg->iIndex, lpMsg->iResult, lpMsg->iNpcNumber, lpMsg->iNpcIndex);
+	}
 }
 
 void GS_DGAnsCastleNpcRepair(LPBYTE lpRecv)
 {
-#if(GAMESERVER_TYPE==1)
-	CSP_ANS_NPCREPAIR* lpMsg = (CSP_ANS_NPCREPAIR*) lpRecv;
-
-	if(lpMsg == NULL)
-		return;
-
-	if(lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+	if (gServerInfo.m_ServerType == 1)
 	{
-		LogAdd(LOG_RED,"[CastleSiege] PACKET-ERROR [0x80][0x04] GS_DGAnsCastleNpcRepair() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()") ;
-		return;
-	}
+		CSP_ANS_NPCREPAIR* lpMsg = (CSP_ANS_NPCREPAIR*)lpRecv;
 
-	if(lpMsg->iResult == 1)
-	{
-		BOOL bRepairResult =  gCastleSiege.RepairDbNPC(lpMsg->iNpcNumber,lpMsg->iNpcIndex,lpMsg->iNpcHp,lpMsg->iNpcMaxHp);
-		if( bRepairResult == TRUE)
+		if (lpMsg == NULL)
+			return;
+
+		if (lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
 		{
-			if(gObjIsConnected(lpMsg->iIndex))
-			{
-				gObj[lpMsg->iIndex].Money -= lpMsg->iRepairCost;
+			LogAdd(LOG_RED, "[CastleSiege] PACKET-ERROR [0x80][0x04] GS_DGAnsCastleNpcRepair() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()");
+			return;
+		}
 
-				if(gObj[lpMsg->iIndex].Money < 0 )
+		if (lpMsg->iResult == 1)
+		{
+			BOOL bRepairResult = gCastleSiege.RepairDbNPC(lpMsg->iNpcNumber, lpMsg->iNpcIndex, lpMsg->iNpcHp, lpMsg->iNpcMaxHp);
+			if (bRepairResult == TRUE)
+			{
+				if (gObjIsConnected(lpMsg->iIndex))
 				{
-					gObj[lpMsg->iIndex].Money = 0;
+					gObj[lpMsg->iIndex].Money -= lpMsg->iRepairCost;
+
+					if (gObj[lpMsg->iIndex].Money < 0)
+					{
+						gObj[lpMsg->iIndex].Money = 0;
+					}
+
+					GCMoneySend(lpMsg->iIndex, gObj[lpMsg->iIndex].Money);
 				}
 
-				GCMoneySend(lpMsg->iIndex,gObj[lpMsg->iIndex].Money);
+				LogAdd(LOG_BLACK, "[CastleSiege] GS_DGAnsCastleNpcRepair() - CCastleSiege::RepairDbNPC() OK - Npc:(CLS:%d, IDX:%d)", lpMsg->iNpcNumber, lpMsg->iNpcIndex);
 			}
-
-			LogAdd(LOG_BLACK,"[CastleSiege] GS_DGAnsCastleNpcRepair() - CCastleSiege::RepairDbNPC() OK - Npc:(CLS:%d, IDX:%d)",lpMsg->iNpcNumber,lpMsg->iNpcIndex);
+			else
+			{
+				LogAdd(LOG_BLACK, "[CastleSiege] GS_DGAnsCastleNpcRepair() - CCastleSiege::RepairDbNPC() FAILED - Npc:(CLS:%d, IDX:%d)", lpMsg->iNpcNumber, lpMsg->iNpcIndex);
+			}
 		}
 		else
 		{
-			LogAdd(LOG_BLACK,"[CastleSiege] GS_DGAnsCastleNpcRepair() - CCastleSiege::RepairDbNPC() FAILED - Npc:(CLS:%d, IDX:%d)",lpMsg->iNpcNumber,lpMsg->iNpcIndex);
+			LogAdd(LOG_BLACK, "[CastleSiege] GS_DGAnsCastleNpcRepair() FAILED - Result:(%d), Npc:(CLS:%d, IDX:%d)", lpMsg->iResult, lpMsg->iNpcNumber, lpMsg->iNpcIndex);
 		}
-	}
-	else
-	{
-		LogAdd(LOG_BLACK,"[CastleSiege] GS_DGAnsCastleNpcRepair() FAILED - Result:(%d), Npc:(CLS:%d, IDX:%d)",lpMsg->iResult,lpMsg->iNpcNumber,lpMsg->iNpcIndex);
-	}
 
-	GCAnsNpcRepair(lpMsg->iIndex,lpMsg->iResult,lpMsg->iNpcNumber,lpMsg->iNpcIndex,lpMsg->iNpcHp,lpMsg->iNpcMaxHp);
-#else
-	return;
-#endif
+		GCAnsNpcRepair(lpMsg->iIndex, lpMsg->iResult, lpMsg->iNpcNumber, lpMsg->iNpcIndex, lpMsg->iNpcHp, lpMsg->iNpcMaxHp);
+
+	}
 }
 
 void GS_DGAnsCastleNpcUpgrade(LPBYTE lpRecv)
 {
-#if (GAMESERVER_TYPE==1)
-	CSP_ANS_NPCUPGRADE* lpMsg = (CSP_ANS_NPCUPGRADE*)lpRecv;
-
-	if(lpMsg == NULL)
-		return;
-
-	if(lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+	if (gServerInfo.m_ServerType == 1)
 	{
-		LogAdd(LOG_RED,"[CastleSiege] PACKET-ERROR [0x80][0x05] GS_DGAnsCastleNpcUpgrade() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()") ;
-		return;
-	}
+		CSP_ANS_NPCUPGRADE* lpMsg = (CSP_ANS_NPCUPGRADE*)lpRecv;
 
-	if(lpMsg->iResult == 0)
-	{
-		LogAdd(LOG_RED,"[CastleSiege] ERROR - Castle NPC Upgrade Fail() (CLS:%d, IDX:%d, UPTYPE:%d, UPVAL:%d)",lpMsg->iNpcNumber,lpMsg->iNpcIndex,lpMsg->iNpcUpType,lpMsg->iNpcUpValue);
-	}
-	else
-	{
-		gCastleSiege.UpgradeDbNPC(lpMsg->iIndex,lpMsg->iNpcNumber,lpMsg->iNpcIndex,lpMsg->iNpcUpType,lpMsg->iNpcUpValue,lpMsg->iNpcUpIndex);
-		LogAdd(LOG_BLACK,"[CastleSiege] [0x80][0x06] GS_DGAnsTaxInfo() - Npc Upgrade OK (CLS:%d, IDX:%d, UPTYPE:%d, UPVAL:%d)",lpMsg->iNpcNumber, lpMsg->iNpcIndex,lpMsg->iNpcUpType,lpMsg->iNpcUpValue);
-	}
+		if (lpMsg == NULL)
+			return;
 
-	GCAnsNpcUpgrade(lpMsg->iIndex,lpMsg->iResult,lpMsg->iNpcNumber,lpMsg->iNpcIndex,lpMsg->iNpcUpType,lpMsg->iNpcUpValue);
+		if (lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+		{
+			LogAdd(LOG_RED, "[CastleSiege] PACKET-ERROR [0x80][0x05] GS_DGAnsCastleNpcUpgrade() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()");
+			return;
+		}
 
-#else
-	return;
-#endif
+		if (lpMsg->iResult == 0)
+		{
+			LogAdd(LOG_RED, "[CastleSiege] ERROR - Castle NPC Upgrade Fail() (CLS:%d, IDX:%d, UPTYPE:%d, UPVAL:%d)", lpMsg->iNpcNumber, lpMsg->iNpcIndex, lpMsg->iNpcUpType, lpMsg->iNpcUpValue);
+		}
+		else
+		{
+			gCastleSiege.UpgradeDbNPC(lpMsg->iIndex, lpMsg->iNpcNumber, lpMsg->iNpcIndex, lpMsg->iNpcUpType, lpMsg->iNpcUpValue, lpMsg->iNpcUpIndex);
+			LogAdd(LOG_BLACK, "[CastleSiege] [0x80][0x06] GS_DGAnsTaxInfo() - Npc Upgrade OK (CLS:%d, IDX:%d, UPTYPE:%d, UPVAL:%d)", lpMsg->iNpcNumber, lpMsg->iNpcIndex, lpMsg->iNpcUpType, lpMsg->iNpcUpValue);
+		}
+
+		GCAnsNpcUpgrade(lpMsg->iIndex, lpMsg->iResult, lpMsg->iNpcNumber, lpMsg->iNpcIndex, lpMsg->iNpcUpType, lpMsg->iNpcUpValue);
+	}
 }
 
 void GS_DGAnsTaxInfo(LPBYTE lpRecv)
 {
-#if(GAMESERVER_TYPE==1)
-	CSP_ANS_TAXINFO* lpMsg = (CSP_ANS_TAXINFO*)lpRecv;
-
-	if(lpMsg == NULL)
-		return;
-	
-	if(lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+	if (gServerInfo.m_ServerType == 1)
 	{
-		LogAdd(LOG_RED,"[CastleSiege] PACKET-ERROR [0x80][0x06] GS_DGAnsTaxInfo() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()") ;
-		return;
-	}
+		CSP_ANS_TAXINFO* lpMsg = (CSP_ANS_TAXINFO*)lpRecv;
 
-	if(lpMsg->iResult == TRUE)
-	{
-		GCAnsTaxMoneyInfo(lpMsg->iIndex,lpMsg->iResult,lpMsg->iTaxRateChaos,lpMsg->iTaxRateStore,lpMsg->i64CastleMoney);
-		gCastleSiege.SetCastleMoney(lpMsg->i64CastleMoney);
+		if (lpMsg == NULL)
+			return;
+
+		if (lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+		{
+			LogAdd(LOG_RED, "[CastleSiege] PACKET-ERROR [0x80][0x06] GS_DGAnsTaxInfo() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()");
+			return;
+		}
+
+		if (lpMsg->iResult == TRUE)
+		{
+			GCAnsTaxMoneyInfo(lpMsg->iIndex, lpMsg->iResult, lpMsg->iTaxRateChaos, lpMsg->iTaxRateStore, lpMsg->i64CastleMoney);
+			gCastleSiege.SetCastleMoney(lpMsg->i64CastleMoney);
+		}
 	}
-#else
-	return;
-#endif
 }
 
 void GS_DGAnsTaxRateChange(LPBYTE lpRecv)
 {
-#if(GAMESERVER_TYPE==1)
-	CSP_ANS_TAXRATECHANGE* lpMsg = (CSP_ANS_TAXRATECHANGE*)lpRecv;
-
-	if(lpMsg == NULL)
-		return;
-
-	if(lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+	if (gServerInfo.m_ServerType == 1)
 	{
-		LogAdd(LOG_RED,"[CastleSiege] PACKET-ERROR [0x80][0x07] GS_DGAnsTaxRateChange() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()") ;
-		return;
-	}
+		CSP_ANS_TAXRATECHANGE* lpMsg = (CSP_ANS_TAXRATECHANGE*)lpRecv;
 
-	if(lpMsg->iResult == 1)
-	{
-		gCastleSiege.SetTaxRate(lpMsg->iTaxKind,lpMsg->iTaxRate);
-		GCAnsTaxRateChange(lpMsg->iIndex,lpMsg->iResult,lpMsg->iTaxKind,lpMsg->iTaxRate);
+		if (lpMsg == NULL)
+			return;
+
+		if (lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+		{
+			LogAdd(LOG_RED, "[CastleSiege] PACKET-ERROR [0x80][0x07] GS_DGAnsTaxRateChange() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()");
+			return;
+		}
+
+		if (lpMsg->iResult == 1)
+		{
+			gCastleSiege.SetTaxRate(lpMsg->iTaxKind, lpMsg->iTaxRate);
+			GCAnsTaxRateChange(lpMsg->iIndex, lpMsg->iResult, lpMsg->iTaxKind, lpMsg->iTaxRate);
+		}
 	}
-#else
-	return;
-#endif
 }
 
 void GS_DGAnsCastleMoneyChange(LPBYTE lpRecv)
 {
-#if(GAMESERVER_TYPE==1)
-	CSP_ANS_MONEYCHANGE* lpMsg = (CSP_ANS_MONEYCHANGE*)lpRecv;
-
-	if(lpMsg == NULL)
-		return;
-
-	if(lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+	if (gServerInfo.m_ServerType == 1)
 	{
-		LogAdd(LOG_RED,"[CastleSiege] PACKET-ERROR [0x80][0x08] GS_DGAnsCastleMoneyChange() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()") ;
-		return;
-	}
+		CSP_ANS_MONEYCHANGE* lpMsg = (CSP_ANS_MONEYCHANGE*)lpRecv;
 
-	if(lpMsg->iResult == TRUE)
-	{
-		if(gObjIsConnected(lpMsg->iIndex))
+		if (lpMsg == NULL)
+			return;
+
+		if (lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
 		{
-			if(lpMsg->iMoneyChanged < 0)
-			{
-				gObj[lpMsg->iIndex].Money -= lpMsg->iMoneyChanged;
-
-				if(gObj[lpMsg->iIndex].Money > MAX_MONEY)
-				{
-					gObj[lpMsg->iIndex].Money = MAX_MONEY;
-				}
-				GCMoneySend(lpMsg->iIndex,gObj[lpMsg->iIndex].Money);
-
-				LogAdd(LOG_BLACK,"[CastleSiege] [0x80][0x08] GS_DGAnsCastleMoneyChange() - Withdraw Request OK [%s][%s] (ReqMoney:%d, TotMoney:%I64d)",gObj[lpMsg->iIndex].Account,
-				gObj[lpMsg->iIndex].Name,lpMsg->iMoneyChanged,lpMsg->i64CastleMoney);
-			}
+			LogAdd(LOG_RED, "[CastleSiege] PACKET-ERROR [0x80][0x08] GS_DGAnsCastleMoneyChange() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()");
+			return;
 		}
-		gCastleSiege.SetCastleMoney(lpMsg->i64CastleMoney);
+
+		if (lpMsg->iResult == TRUE)
+		{
+			if (gObjIsConnected(lpMsg->iIndex))
+			{
+				if (lpMsg->iMoneyChanged < 0)
+				{
+					gObj[lpMsg->iIndex].Money -= lpMsg->iMoneyChanged;
+
+					if (gObj[lpMsg->iIndex].Money > MAX_MONEY)
+					{
+						gObj[lpMsg->iIndex].Money = MAX_MONEY;
+					}
+					GCMoneySend(lpMsg->iIndex, gObj[lpMsg->iIndex].Money);
+
+					LogAdd(LOG_BLACK, "[CastleSiege] [0x80][0x08] GS_DGAnsCastleMoneyChange() - Withdraw Request OK [%s][%s] (ReqMoney:%d, TotMoney:%I64d)", gObj[lpMsg->iIndex].Account,
+						gObj[lpMsg->iIndex].Name, lpMsg->iMoneyChanged, lpMsg->i64CastleMoney);
+				}
+			}
+			gCastleSiege.SetCastleMoney(lpMsg->i64CastleMoney);
+		}
+
+		GCAnsMoneyDrawOut(lpMsg->iIndex, lpMsg->iResult, lpMsg->i64CastleMoney);
 	}
-	
-	GCAnsMoneyDrawOut(lpMsg->iIndex,lpMsg->iResult,lpMsg->i64CastleMoney);
-#else
-	return;
-#endif
 }
 
 void GS_DGAnsSiegeDateChange(LPBYTE lpRecv)
 {
-#if(GAMESERVER_TYPE==1)
-	CSP_ANS_SDEDCHANGE* lpMsg = (CSP_ANS_SDEDCHANGE*)lpRecv;
-
-	if(lpMsg == NULL)
-		return;
-
-	if(lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+	if (gServerInfo.m_ServerType == 1)
 	{
-		LogAdd(LOG_RED,"[CastleSiege] PACKET-ERROR [0x80][0x09] GS_DGAnsSiegeDateChange() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()") ;
-		return;
+		CSP_ANS_SDEDCHANGE* lpMsg = (CSP_ANS_SDEDCHANGE*)lpRecv;
+
+		if (lpMsg == NULL)
+			return;
+
+		if (lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+		{
+			LogAdd(LOG_RED, "[CastleSiege] PACKET-ERROR [0x80][0x09] GS_DGAnsSiegeDateChange() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()");
+			return;
+		}
 	}
-#else
-	return;
-#endif
 }
 
 void GS_DGAnsGuildMarkRegInfo(LPBYTE lpRecv)
 {
-#if(GAMESERVER_TYPE==1)
-	CSP_ANS_GUILDREGINFO* lpMsg = (CSP_ANS_GUILDREGINFO*)lpRecv;
-
-	if(lpMsg == NULL)
-		return;
-	
-	if(lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+	if (gServerInfo.m_ServerType == 1)
 	{
-		LogAdd(LOG_RED,"[CastleSiege] PACKET-ERROR [0x80][0x0A] GS_DGAnsGuildMarkRegInfo() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()") ;
-		return;
-	}
+		CSP_ANS_GUILDREGINFO* lpMsg = (CSP_ANS_GUILDREGINFO*)lpRecv;
 
-	GCAnsGuildRegInfo(lpMsg->iIndex,lpMsg->iResult,lpMsg);
-#else
-	return;
-#endif
+		if (lpMsg == NULL)
+			return;
+
+		if (lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+		{
+			LogAdd(LOG_RED, "[CastleSiege] PACKET-ERROR [0x80][0x0A] GS_DGAnsGuildMarkRegInfo() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()");
+			return;
+		}
+
+		GCAnsGuildRegInfo(lpMsg->iIndex, lpMsg->iResult, lpMsg);
+	}
 
 }
 
 void GS_DGAnsSiegeEndedChange(LPBYTE lpRecv)
 {
-#if(GAMESERVER_TYPE==1)
-	CSP_ANS_SIEGEENDCHANGE* lpMsg = (CSP_ANS_SIEGEENDCHANGE*)lpRecv;
-
-	if(lpMsg == NULL)
-		return;
-
-	if(lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+	if (gServerInfo.m_ServerType == 1)
 	{
-		LogAdd(LOG_RED,"[CastleSiege] PACKET-ERROR [0x80][0x0B] GS_DGAnsSiegeEndedChange() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()") ;
-		return;
-	}
-#else
-	return;
-#endif
+		CSP_ANS_SIEGEENDCHANGE* lpMsg = (CSP_ANS_SIEGEENDCHANGE*)lpRecv;
 
+		if (lpMsg == NULL)
+			return;
+
+		if (lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+		{
+			LogAdd(LOG_RED, "[CastleSiege] PACKET-ERROR [0x80][0x0B] GS_DGAnsSiegeEndedChange() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()");
+			return;
+		}
+	}
 }
 
 void GS_DGAnsCastleOwnerChange(LPBYTE lpRecv)
 {
-#if(GAMESERVER_TYPE==1)
-	CSP_ANS_CASTLEOWNERCHANGE* lpMsg = (CSP_ANS_CASTLEOWNERCHANGE*)lpRecv;
-
-	if(lpMsg == NULL)
-		return;
-
-	if(lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+	if (gServerInfo.m_ServerType == 1)
 	{
-		LogAdd(LOG_RED,"[CastleSiege] PACKET-ERROR [0x80][0x0C] GS_DGAnsCastleOwnerChange() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()") ;
-		return;
+		CSP_ANS_CASTLEOWNERCHANGE* lpMsg = (CSP_ANS_CASTLEOWNERCHANGE*)lpRecv;
+
+		if (lpMsg == NULL)
+			return;
+
+		if (lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+		{
+			LogAdd(LOG_RED, "[CastleSiege] PACKET-ERROR [0x80][0x0C] GS_DGAnsCastleOwnerChange() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()");
+			return;
+		}
 	}
-#else
-	return;
-#endif
 }
 
 void GS_DGAnsRegAttackGuild(LPBYTE lpRecv)
 {
-#if(GAMESERVER_TYPE==1)
-	CSP_ANS_REGATTACKGUILD* lpMsg = (CSP_ANS_REGATTACKGUILD*)lpRecv;
-
-	if(lpMsg == NULL)
-		return;
-
-	if(lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+	if (gServerInfo.m_ServerType == 1)
 	{
-		LogAdd(LOG_RED,"[CastleSiege] PACKET-ERROR [0x80][0x0D] GS_DGAnsRegAttackGuild() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()") ;
-		return;
-	}
+		CSP_ANS_REGATTACKGUILD* lpMsg = (CSP_ANS_REGATTACKGUILD*)lpRecv;
 
-	GCAnsRegCastleSiege(lpMsg->iIndex,lpMsg->iResult,lpMsg->szEnemyGuildName);
-#else
-	return;
-#endif
+		if (lpMsg == NULL)
+			return;
+
+		if (lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+		{
+			LogAdd(LOG_RED, "[CastleSiege] PACKET-ERROR [0x80][0x0D] GS_DGAnsRegAttackGuild() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()");
+			return;
+		}
+
+		GCAnsRegCastleSiege(lpMsg->iIndex, lpMsg->iResult, lpMsg->szEnemyGuildName);
+	}
 }
 
 void GS_DGAnsRestartCastleState(LPBYTE lpRecv)
 {
-#if(GAMESERVER_TYPE==1)
-	CSP_ANS_CASTLESIEGEEND* lpMsg = (CSP_ANS_CASTLESIEGEEND*)lpRecv;
-
-	if(lpMsg == NULL)
-		return;
-
-	if(lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+	if (gServerInfo.m_ServerType == 1)
 	{
-		LogAdd(LOG_RED,"[CastleSiege] PACKET-ERROR [0x80][0x0E] GS_DGAnsRestartCastleState() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()") ;
-		return;
+		CSP_ANS_CASTLESIEGEEND* lpMsg = (CSP_ANS_CASTLESIEGEEND*)lpRecv;
+
+		if (lpMsg == NULL)
+			return;
+
+		if (lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+		{
+			LogAdd(LOG_RED, "[CastleSiege] PACKET-ERROR [0x80][0x0E] GS_DGAnsRestartCastleState() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()");
+			return;
+		}
+		else
+		{
+			gCastleSiege.ResetCastleCycle();
+		}
 	}
-	else
-	{
-		gCastleSiege.ResetCastleCycle();
-	}
-#else
-	return;
-#endif
 }
 
 void GS_DGAnsMapSvrMsgMultiCast(LPBYTE lpRecv)
@@ -3672,88 +3652,84 @@ void GS_DGAnsMapSvrMsgMultiCast(LPBYTE lpRecv)
 
 void GS_DGAnsRegGuildMark(LPBYTE lpRecv)
 {
-#if(GAMESERVER_TYPE==1)
-	CSP_ANS_GUILDREGMARK* lpMsg = (CSP_ANS_GUILDREGMARK*)lpRecv;
-		
-	if ( lpMsg == NULL )
+	if (gServerInfo.m_ServerType == 1)
 	{
-		return;
-	}
+		CSP_ANS_GUILDREGMARK* lpMsg = (CSP_ANS_GUILDREGMARK*)lpRecv;
 
-	if ( lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup() )
-	{
-		LogAdd(LOG_RED, "[CastleSiege] PACKET-ERROR [0x80][0x10] GS_DGAnsRegGuildMark() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()");
-		return;
+		if (lpMsg == NULL)
+		{
+			return;
+		}
+
+		if (lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+		{
+			LogAdd(LOG_RED, "[CastleSiege] PACKET-ERROR [0x80][0x10] GS_DGAnsRegGuildMark() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()");
+			return;
+		}
+		else
+		{
+			GCAnsRegGuildMark(lpMsg->iIndex, lpMsg->iResult, lpMsg);
+		}
 	}
-	else
-	{
-		GCAnsRegGuildMark(lpMsg->iIndex,lpMsg->iResult,lpMsg);
-	}
-#else
-	return;
-#endif
 }
 
 void GS_DGAnsGuildMarkReset(LPBYTE lpRecv)
 {
-#if(GAMESERVER_TYPE==1)
-	CSP_ANS_GUILDRESETMARK* lpMsg = (CSP_ANS_GUILDRESETMARK*)lpRecv;
-	
-	if ( lpMsg == NULL )
+	if (gServerInfo.m_ServerType == 1)
 	{
-		return;
-	}
+		CSP_ANS_GUILDRESETMARK* lpMsg = (CSP_ANS_GUILDRESETMARK*)lpRecv;
 
-	if ( lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup() )
-	{
-		LogAdd(LOG_RED, "[CastleSiege] PACKET-ERROR [0x80][0x11] GS_DGAnsGuildMarkReset() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()");
-		return;
+		if (lpMsg == NULL)
+		{
+			return;
+		}
+
+		if (lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+		{
+			LogAdd(LOG_RED, "[CastleSiege] PACKET-ERROR [0x80][0x11] GS_DGAnsGuildMarkReset() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()");
+			return;
+		}
 	}
-#else
-	return;
-#endif
 }
 
 void GS_DGAnsGuildSetGiveUp(LPBYTE lpRecv)
 {
-#if(GAMESERVER_TYPE==1)
-	CSP_ANS_GUILDSETGIVEUP* lpMsg = (CSP_ANS_GUILDSETGIVEUP*)lpRecv;
-
-	if ( lpMsg == NULL )
+	if (gServerInfo.m_ServerType == 1)
 	{
-		return;
-	}
+		CSP_ANS_GUILDSETGIVEUP* lpMsg = (CSP_ANS_GUILDSETGIVEUP*)lpRecv;
 
-	if ( lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup() )
-	{
-		LogAdd(LOG_RED, "[CastleSiege] PACKET-ERROR [0x80][0x12] GS_DGAnsGuildSetGiveUp() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()");
-		return;
+		if (lpMsg == NULL)
+		{
+			return;
+		}
+
+		if (lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+		{
+			LogAdd(LOG_RED, "[CastleSiege] PACKET-ERROR [0x80][0x12] GS_DGAnsGuildSetGiveUp() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()");
+			return;
+		}
+
+		GCAnsGiveUpCastleSiege(lpMsg->iIndex, lpMsg->iResult, lpMsg->bIsGiveUp, lpMsg->iRegMarkCount, lpMsg->szGuildName);
 	}
-	
-	GCAnsGiveUpCastleSiege(lpMsg->iIndex,lpMsg->iResult,lpMsg->bIsGiveUp,lpMsg->iRegMarkCount,lpMsg->szGuildName);
-#else
-	return;
-#endif
 }
 
 void GS_DGAnsNpcRemove(LPBYTE lpRecv)
 {
-#if(GAMESERVER_TYPE==1)
-	CSP_ANS_NPCREMOVE* lpMsg = (CSP_ANS_NPCREMOVE*)lpRecv;
-	
-	if ( lpMsg == NULL )
+	if (gServerInfo.m_ServerType == 1)
 	{
-		return;
-	}
+		CSP_ANS_NPCREMOVE* lpMsg = (CSP_ANS_NPCREMOVE*)lpRecv;
 
-	if ( lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup() )
-	{
-		LogAdd(LOG_RED, "[CastleSiege] PACKET-ERROR [0x80][0x16] GS_DGAnsNpcRemove() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()");
-		return;
+		if (lpMsg == NULL)
+		{
+			return;
+		}
+
+		if (lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+		{
+			LogAdd(LOG_RED, "[CastleSiege] PACKET-ERROR [0x80][0x16] GS_DGAnsNpcRemove() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()");
+			return;
+		}
 	}
-#else
-	return;
-#endif
 }
 
 void GS_DGAnsCastleStateSync(LPBYTE lpRecv) //Identical gs-cs 56
@@ -3799,353 +3775,341 @@ void GS_DGAnsCastleTributeMoney(LPBYTE lpRecv)
 
 void GS_DGAnsResetCastleTaxInfo(LPBYTE lpRecv)
 {
-#if(GAMESERVER_TYPE==1)
-	CSP_ANS_RESETCASTLETAXINFO* lpMsg = (CSP_ANS_RESETCASTLETAXINFO*)lpRecv;
-
-	if(lpMsg == NULL)
-		return;
-
-	if(lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+	if (gServerInfo.m_ServerType == 1)
 	{
-		LogAdd(LOG_RED,"[CastleSiege] PACKET-ERROR [0x80][0x19] GS_DGAnsResetCastleTaxInfo() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()") ;
-		return;
-	}
-	else
-	{
-		if(lpMsg->iResult == 1)
+		CSP_ANS_RESETCASTLETAXINFO* lpMsg = (CSP_ANS_RESETCASTLETAXINFO*)lpRecv;
+
+		if (lpMsg == NULL)
+			return;
+
+		if (lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
 		{
-			gCastleSiege.ResetCastleTaxInfo();
+			LogAdd(LOG_RED, "[CastleSiege] PACKET-ERROR [0x80][0x19] GS_DGAnsResetCastleTaxInfo() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()");
+			return;
+		}
+		else
+		{
+			if (lpMsg->iResult == 1)
+			{
+				gCastleSiege.ResetCastleTaxInfo();
+			}
 		}
 	}
-#else
-	return;
-#endif
 }
 
 void GS_DGAnsResetSiegeGuildInfo(LPBYTE lpRecv)
 {
-#if(GAMESERVER_TYPE==1)
-	CSP_ANS_RESETSIEGEGUILDINFO* lpMsg = (CSP_ANS_RESETSIEGEGUILDINFO*)lpRecv;
-
-	if(lpMsg == NULL)
-		return;
-
-	if(lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+	if (gServerInfo.m_ServerType == 1)
 	{
-		LogAdd(LOG_RED,"[CastleSiege] PACKET-ERROR [0x80][0x1A] GS_DGAnsResetSiegeGuildInfo() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()") ;
-		return;
+		CSP_ANS_RESETSIEGEGUILDINFO* lpMsg = (CSP_ANS_RESETSIEGEGUILDINFO*)lpRecv;
+
+		if (lpMsg == NULL)
+			return;
+
+		if (lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+		{
+			LogAdd(LOG_RED, "[CastleSiege] PACKET-ERROR [0x80][0x1A] GS_DGAnsResetSiegeGuildInfo() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()");
+			return;
+		}
 	}
-#else
-	return;
-#endif
 }
 
 void GS_DGAnsResetRegSiegeInfo(LPBYTE lpRecv)
 {
-#if(GAMESERVER_TYPE==1)
-	CSP_ANS_RESETREGSIEGEINFO* lpMsg = (CSP_ANS_RESETREGSIEGEINFO*)lpRecv;
-
-	if(lpMsg == NULL)
-		return;
-
-	if(lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+	if (gServerInfo.m_ServerType == 1)
 	{
-		LogAdd(LOG_RED,"[CastleSiege] PACKET-ERROR [0x80][0x1B] GS_DGAnsResetRegSiegeInfo() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()") ;
-		return;
+		CSP_ANS_RESETREGSIEGEINFO* lpMsg = (CSP_ANS_RESETREGSIEGEINFO*)lpRecv;
+
+		if (lpMsg == NULL)
+			return;
+
+		if (lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+		{
+			LogAdd(LOG_RED, "[CastleSiege] PACKET-ERROR [0x80][0x1B] GS_DGAnsResetRegSiegeInfo() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()");
+			return;
+		}
 	}
-#else
-	return;
-#endif
 }
 
 void GS_DGAnsCastleInitData(LPBYTE lpRecv)
 {
-#if(GAMESERVER_TYPE==1)
-	CSP_ANS_CSINITDATA* lpMsg = (CSP_ANS_CSINITDATA*)lpRecv;
-	CSP_CSINITDATA* lpMsgBody = (CSP_CSINITDATA*)(lpRecv + sizeof(CSP_ANS_CSINITDATA));
-
-	if(lpMsg == NULL)
-		return;
-
-	if(lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+	if (gServerInfo.m_ServerType == 1)
 	{
-		LogAdd(LOG_RED,"[CastleSiege] PACKET-ERROR [0x81] GS_DGAnsCastleInitData() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()") ;
-		return;
+		CSP_ANS_CSINITDATA* lpMsg = (CSP_ANS_CSINITDATA*)lpRecv;
+		CSP_CSINITDATA* lpMsgBody = (CSP_CSINITDATA*)(lpRecv + sizeof(CSP_ANS_CSINITDATA));
+
+		if (lpMsg == NULL)
+			return;
+
+		if (lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+		{
+			LogAdd(LOG_RED, "[CastleSiege] PACKET-ERROR [0x81] GS_DGAnsCastleInitData() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()");
+			return;
+		}
+
+		if (gCastleSiege.GetDataLoadState() != 2)
+		{
+			LogAdd(LOG_RED, "[CastleSiege] CASTLE SIEGE DATA SETTING FAILED [0x81] - m_iCastleDataLoadState != CASTLESIEGE_DATALOAD_2 (%d)", gCastleSiege.GetDataLoadState());
+			return;
+		}
+
+		gCastleSiege.SetDataLoadState(3);
+
+		if (lpMsg->iResult == FALSE)
+		{
+			LogAdd(LOG_RED, "[CastleSiege] CASTLE SIEGE DATA SETTING FAILED [0x81] - lpMsg->iResult == 0");
+			return;
+		}
+
+		BOOL bRET_VAL = FALSE;
+
+		bRET_VAL = gCastleSiege.SetCastleInitData(lpMsg);
+
+		if (bRET_VAL == FALSE)
+		{
+			LogAdd(LOG_RED, "[CastleSiege] CASTLE SIEGE DATA SETTING FAILED [0x81] - g_CastleSiege.SetCastleInitData() == FALSE");
+			return;
+		}
+
+		bRET_VAL = gCastleSiege.SetCastleNpcData(lpMsgBody, lpMsg->iCount);
+
+		if (bRET_VAL == FALSE)
+		{
+			LogAdd(LOG_RED, "[CastleSiege] CASTLE SIEGE DATA SETTING FAILED [0x81] - g_CastleSiege.SetCastleNpcData() == FALSE");
+			return;
+		}
+
+		gCastleSiege.SetDbDataLoadOK(TRUE);
+
+		gCastleSiege.SetDataLoadState(4);
+
+		if (lpMsg->iFirstCreate == 1)
+		{
+			gCastleSiege.FirstCreateDbNPC();
+		}
+
+		gCastleSiege.Init();
 	}
-
-	if(gCastleSiege.GetDataLoadState() != 2)
-	{
-		LogAdd(LOG_RED,"[CastleSiege] CASTLE SIEGE DATA SETTING FAILED [0x81] - m_iCastleDataLoadState != CASTLESIEGE_DATALOAD_2 (%d)",gCastleSiege.GetDataLoadState()) ;
-		return;
-	}
-
-	gCastleSiege.SetDataLoadState(3);
-
-	if(lpMsg->iResult == FALSE)
-	{
-		LogAdd(LOG_RED,"[CastleSiege] CASTLE SIEGE DATA SETTING FAILED [0x81] - lpMsg->iResult == 0");
-		return;
-	}
-	
-	BOOL bRET_VAL = FALSE;
-
-	bRET_VAL = gCastleSiege.SetCastleInitData(lpMsg);
-
-	if(bRET_VAL == FALSE)
-	{
-		LogAdd(LOG_RED,"[CastleSiege] CASTLE SIEGE DATA SETTING FAILED [0x81] - g_CastleSiege.SetCastleInitData() == FALSE");
-		return;
-	}
-
-	bRET_VAL = gCastleSiege.SetCastleNpcData(lpMsgBody,lpMsg->iCount);
-	
-	if(bRET_VAL == FALSE)
-	{
-		LogAdd(LOG_RED,"[CastleSiege] CASTLE SIEGE DATA SETTING FAILED [0x81] - g_CastleSiege.SetCastleNpcData() == FALSE");
-		return;
-	}
-
-	gCastleSiege.SetDbDataLoadOK(TRUE);
-
-	gCastleSiege.SetDataLoadState(4);
-
-	if(lpMsg->iFirstCreate == 1)
-	{
-		gCastleSiege.FirstCreateDbNPC();
-	}
-
-	gCastleSiege.Init();
-#else
-	return;
-#endif
 }
 
 void GS_DGAnsCastleNpcInfo(LPBYTE lpRecv)
 {
-#if(GAMESERVER_TYPE==1)
-	CSP_ANS_NPCDATA* lpMsg = (CSP_ANS_NPCDATA*)lpRecv;
-	CSP_NPCDATA* lpMsgBody = (CSP_NPCDATA*)(lpRecv+sizeof(CSP_ANS_NPCDATA));
-
-	if(lpMsg == NULL)
-		return;
-
-	if(lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+	if (gServerInfo.m_ServerType == 1)
 	{
-		LogAdd(LOG_RED,"[CastleSiege] PACKET-ERROR [0x82] GS_DGAnsCastleNpcInfo() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()") ;
-		return;
+		CSP_ANS_NPCDATA* lpMsg = (CSP_ANS_NPCDATA*)lpRecv;
+		CSP_NPCDATA* lpMsgBody = (CSP_NPCDATA*)(lpRecv + sizeof(CSP_ANS_NPCDATA));
+
+		if (lpMsg == NULL)
+			return;
+
+		if (lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+		{
+			LogAdd(LOG_RED, "[CastleSiege] PACKET-ERROR [0x82] GS_DGAnsCastleNpcInfo() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()");
+			return;
+		}
 	}
-#else
-	return;
-#endif
 }
 
 void GS_DGAnsAllGuildMarkRegInfo(LPBYTE lpRecv)
 {
-#if(GAMESERVER_TYPE==1)
-	CSP_ANS_ALLGUILDREGINFO* lpMsg = (CSP_ANS_ALLGUILDREGINFO*)lpRecv;
-	CSP_GUILDREGINFO* lpMsgBody = (CSP_GUILDREGINFO*)(lpRecv+sizeof(CSP_ANS_ALLGUILDREGINFO));
-	char cBUFFER[1668];
-	PMSG_ANS_CSREGGUILDLIST* lpMsgSend;
-	PMSG_CSREGGUILDLIST* lpMsgSendBody;
-
-	if(lpMsg == NULL)
-		return;
-
-	if(lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+	if (gServerInfo.m_ServerType == 1)
 	{
-		LogAdd(LOG_RED,"[CastleSiege] PACKET-ERROR [0x83] GS_DGAnsAllGuildMarkRegInfo() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()") ;
-		return;
-	}
+		CSP_ANS_ALLGUILDREGINFO* lpMsg = (CSP_ANS_ALLGUILDREGINFO*)lpRecv;
+		CSP_GUILDREGINFO* lpMsgBody = (CSP_GUILDREGINFO*)(lpRecv + sizeof(CSP_ANS_ALLGUILDREGINFO));
+		char cBUFFER[1668];
+		PMSG_ANS_CSREGGUILDLIST* lpMsgSend;
+		PMSG_CSREGGUILDLIST* lpMsgSendBody;
 
-	if(!gObjIsConnected(lpMsg->iIndex))
-		return;
+		if (lpMsg == NULL)
+			return;
 
-	lpMsgSend = (PMSG_ANS_CSREGGUILDLIST*)cBUFFER;
-	lpMsgSendBody = (PMSG_CSREGGUILDLIST*)&cBUFFER[12];
-
-	lpMsgSend->iCount = 0;
-	lpMsgSend->btResult = lpMsg->iResult;
-	
-	if(lpMsg->iResult == TRUE)
-	{
-		lpMsgSend->iCount = lpMsg->iCount;
-
-		for(int i=0;i< lpMsg->iCount;i++)
+		if (lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
 		{
-			lpMsgSendBody[i].btSeqNum = lpMsgBody[i].btRegRank;
-			lpMsgSendBody[i].btIsGiveUp = lpMsgBody[i].bIsGiveUp;
-			lpMsgSendBody[i].btRegMarks1 = SET_NUMBERHB(SET_NUMBERHW(lpMsgBody[i].iRegMarkCount));
-			lpMsgSendBody[i].btRegMarks2 = SET_NUMBERLB(SET_NUMBERHW(lpMsgBody[i].iRegMarkCount));
-			lpMsgSendBody[i].btRegMarks3 = SET_NUMBERHB(SET_NUMBERLW(lpMsgBody[i].iRegMarkCount));
-			lpMsgSendBody[i].btRegMarks4 = SET_NUMBERLB(SET_NUMBERLW(lpMsgBody[i].iRegMarkCount));
-			memcpy(&lpMsgSendBody[i].szGuildName,lpMsgBody[i].szGuildName,sizeof(lpMsgSendBody[i].szGuildName));
+			LogAdd(LOG_RED, "[CastleSiege] PACKET-ERROR [0x83] GS_DGAnsAllGuildMarkRegInfo() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()");
+			return;
 		}
-	}
-	
-	lpMsgSend->h.set(0xB4,(lpMsgSend->iCount*sizeof(PMSG_CSREGGUILDLIST)+sizeof(PMSG_ANS_CSREGGUILDLIST)));
 
-	DataSend(lpMsg->iIndex,(LPBYTE)lpMsgSend,(lpMsgSend->iCount*sizeof(PMSG_CSREGGUILDLIST)+sizeof(PMSG_ANS_CSREGGUILDLIST)));
-#else
-	return;
-#endif
+		if (!gObjIsConnected(lpMsg->iIndex))
+			return;
+
+		lpMsgSend = (PMSG_ANS_CSREGGUILDLIST*)cBUFFER;
+		lpMsgSendBody = (PMSG_CSREGGUILDLIST*)&cBUFFER[12];
+
+		lpMsgSend->iCount = 0;
+		lpMsgSend->btResult = lpMsg->iResult;
+
+		if (lpMsg->iResult == TRUE)
+		{
+			lpMsgSend->iCount = lpMsg->iCount;
+
+			for (int i = 0; i < lpMsg->iCount; i++)
+			{
+				lpMsgSendBody[i].btSeqNum = lpMsgBody[i].btRegRank;
+				lpMsgSendBody[i].btIsGiveUp = lpMsgBody[i].bIsGiveUp;
+				lpMsgSendBody[i].btRegMarks1 = SET_NUMBERHB(SET_NUMBERHW(lpMsgBody[i].iRegMarkCount));
+				lpMsgSendBody[i].btRegMarks2 = SET_NUMBERLB(SET_NUMBERHW(lpMsgBody[i].iRegMarkCount));
+				lpMsgSendBody[i].btRegMarks3 = SET_NUMBERHB(SET_NUMBERLW(lpMsgBody[i].iRegMarkCount));
+				lpMsgSendBody[i].btRegMarks4 = SET_NUMBERLB(SET_NUMBERLW(lpMsgBody[i].iRegMarkCount));
+				memcpy(&lpMsgSendBody[i].szGuildName, lpMsgBody[i].szGuildName, sizeof(lpMsgSendBody[i].szGuildName));
+			}
+		}
+
+		lpMsgSend->h.set(0xB4, (WORD)(lpMsgSend->iCount * sizeof(PMSG_CSREGGUILDLIST) + sizeof(PMSG_ANS_CSREGGUILDLIST)));
+
+		DataSend(lpMsg->iIndex, (LPBYTE)lpMsgSend, (lpMsgSend->iCount * sizeof(PMSG_CSREGGUILDLIST) + sizeof(PMSG_ANS_CSREGGUILDLIST)));
+	}
 }
 
 void GS_DGAnsFirstCreateNPC(LPBYTE lpRecv)
 {
-#if(GAMESERVER_TYPE==1)
-	CSP_ANS_NPCSAVEDATA* lpMsg = (CSP_ANS_NPCSAVEDATA*)lpRecv;
-
-	if(lpMsg == NULL)
-	return;
-
-	if(lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+	if (gServerInfo.m_ServerType == 1)
 	{
-		LogAdd(LOG_RED,"[CastleSiege] PACKET-ERROR [0x84] GS_DGAnsFirstCreateNPC() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()") ;
-		return;
-	}
+		CSP_ANS_NPCSAVEDATA* lpMsg = (CSP_ANS_NPCSAVEDATA*)lpRecv;
 
-	if(lpMsg->iResult == TRUE)
-	{
-		if(gCastleSiege.GetDbNpcCreated() == FALSE)
+		if (lpMsg == NULL)
+			return;
+
+		if (lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
 		{
-			gCastleSiege.CreateDbNPC();
-			gCastleSiege.SetDbNpcCreated(1);
+			LogAdd(LOG_RED, "[CastleSiege] PACKET-ERROR [0x84] GS_DGAnsFirstCreateNPC() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()");
+			return;
+		}
+
+		if (lpMsg->iResult == TRUE)
+		{
+			if (gCastleSiege.GetDbNpcCreated() == FALSE)
+			{
+				gCastleSiege.CreateDbNPC();
+				gCastleSiege.SetDbNpcCreated(1);
+			}
 		}
 	}
-#else
-	return;
-#endif
 }
 
 void GS_DGAnsCalcREgGuildList(LPBYTE lpRecv)
 {
-#if (GAMESERVER_TYPE==1)
-	CSP_ANS_CALCREGGUILDLIST* lpMsg = (CSP_ANS_CALCREGGUILDLIST*)lpRecv;
-	CSP_CALCREGGUILDLIST* lpMsgBody = (CSP_CALCREGGUILDLIST*)(lpRecv+sizeof(CSP_ANS_CALCREGGUILDLIST));
-	
-	if(lpMsg == NULL)
-	return;
-
-	if(lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+	if (gServerInfo.m_ServerType == 1)
 	{
-		LogAdd(LOG_RED,"[CastleSiege] PACKET-ERROR [0x85] GS_DGAnsCalcREgGuildList() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()") ;
-		return;
-	}
+		CSP_ANS_CALCREGGUILDLIST* lpMsg = (CSP_ANS_CALCREGGUILDLIST*)lpRecv;
+		CSP_CALCREGGUILDLIST* lpMsgBody = (CSP_CALCREGGUILDLIST*)(lpRecv + sizeof(CSP_ANS_CALCREGGUILDLIST));
 
-	if(lpMsg->iResult == TRUE)
-	{
-		gCastleSiege.SetCalcRegGuildList(lpMsgBody,lpMsg->iCount);
-		return;
-	}
+		if (lpMsg == NULL)
+			return;
 
-	LogAdd(LOG_RED,"[CastleSiege] PACKET-ERROR [0x85] GS_DGAnsCalcREgGuildList() - lpMsg->iResult != 1 (%d)",lpMsg->iResult) ;
-#else
-	return;
-#endif
+		if (lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+		{
+			LogAdd(LOG_RED, "[CastleSiege] PACKET-ERROR [0x85] GS_DGAnsCalcREgGuildList() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()");
+			return;
+		}
+
+		if (lpMsg->iResult == TRUE)
+		{
+			gCastleSiege.SetCalcRegGuildList(lpMsgBody, lpMsg->iCount);
+			return;
+		}
+
+		LogAdd(LOG_RED, "[CastleSiege] PACKET-ERROR [0x85] GS_DGAnsCalcREgGuildList() - lpMsg->iResult != 1 (%d)", lpMsg->iResult);
+	}
 }
 
 void GS_DGAnsCsGulidUnionInfo(LPBYTE lpRecv)
 {
-#if (GAMESERVER_TYPE==1)
-	CSP_ANS_CSGUILDUNIONINFO* lpMsg = (CSP_ANS_CSGUILDUNIONINFO*)lpRecv;
-	CSP_CSGUILDUNIONINFO* lpMsgBody = (CSP_CSGUILDUNIONINFO*)(lpRecv+sizeof(CSP_ANS_CSGUILDUNIONINFO));
-	
-	if(lpMsg == NULL)
-	return;
-
-	if(lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+	if (gServerInfo.m_ServerType == 1)
 	{
-		LogAdd(LOG_RED,"[CastleSiege] PACKET-ERROR [0x86] GS_DGAnsCsGulidUnionInfo() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()") ;
-		return;
-	}
+		CSP_ANS_CSGUILDUNIONINFO* lpMsg = (CSP_ANS_CSGUILDUNIONINFO*)lpRecv;
+		CSP_CSGUILDUNIONINFO* lpMsgBody = (CSP_CSGUILDUNIONINFO*)(lpRecv + sizeof(CSP_ANS_CSGUILDUNIONINFO));
 
-	if(lpMsg->iResult == TRUE)
-	{
-		gCastleSiege.MakeCsTotalGuildInfo(lpMsgBody,lpMsg->iCount);
-		return;
+		if (lpMsg == NULL)
+			return;
+
+		if (lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+		{
+			LogAdd(LOG_RED, "[CastleSiege] PACKET-ERROR [0x86] GS_DGAnsCsGulidUnionInfo() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()");
+			return;
+		}
+
+		if (lpMsg->iResult == TRUE)
+		{
+			gCastleSiege.MakeCsTotalGuildInfo(lpMsgBody, lpMsg->iCount);
+			return;
+		}
 	}
-#else
-	return;
-#endif
 }
 
 void GS_DGAnsCsSaveTotalGuildInfo(LPBYTE lpRecv)
 {
-#if(GAMESERVER_TYPE==1)
-	CSP_ANS_CSSAVETOTALGUILDINFO* lpMsg = (CSP_ANS_CSSAVETOTALGUILDINFO*)lpRecv;
-	
-	if(lpMsg == NULL)
-	return;
-
-	if(lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+	if (gServerInfo.m_ServerType == 1)
 	{
-		LogAdd(LOG_RED,"[CastleSiege] PACKET-ERROR [0x87] GS_DGAnsCsSaveTotalGuildInfo() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()") ;
-		return;
-	}
+		CSP_ANS_CSSAVETOTALGUILDINFO* lpMsg = (CSP_ANS_CSSAVETOTALGUILDINFO*)lpRecv;
 
-	if(lpMsg->iResult == TRUE)
-	{
-		gCastleSiege.SetIsSiegeGuildList(TRUE);
-		return;
+		if (lpMsg == NULL)
+			return;
+
+		if (lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+		{
+			LogAdd(LOG_RED, "[CastleSiege] PACKET-ERROR [0x87] GS_DGAnsCsSaveTotalGuildInfo() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()");
+			return;
+		}
+
+		if (lpMsg->iResult == TRUE)
+		{
+			gCastleSiege.SetIsSiegeGuildList(TRUE);
+			return;
+		}
+		gCastleSiege.SetIsSiegeGuildList(FALSE);
 	}
-	gCastleSiege.SetIsSiegeGuildList(FALSE);
-#else
-	return;
-#endif
 }
 
 void GS_DGAnsCsLoadTotalGuildInfo(LPBYTE lpRecv)
 {
-#if (GAMESERVER_TYPE==1)
-	CSP_ANS_CSLOADTOTALGUILDINFO* lpMsg = (CSP_ANS_CSLOADTOTALGUILDINFO*)lpRecv;
-	CSP_CSLOADTOTALGUILDINFO* lpMsgBody = (CSP_CSLOADTOTALGUILDINFO*)(lpRecv+sizeof(CSP_ANS_CSLOADTOTALGUILDINFO));
-
-	if(lpMsg == NULL)
-	return;
-
-	if(lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+	if (gServerInfo.m_ServerType == 1)
 	{
-		LogAdd(LOG_RED,"[CastleSiege] PACKET-ERROR [0x88] GS_DGAnsCsLoadTotalGuildInfo() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()") ;
-		return;
-	}
+		CSP_ANS_CSLOADTOTALGUILDINFO* lpMsg = (CSP_ANS_CSLOADTOTALGUILDINFO*)lpRecv;
+		CSP_CSLOADTOTALGUILDINFO* lpMsgBody = (CSP_CSLOADTOTALGUILDINFO*)(lpRecv + sizeof(CSP_ANS_CSLOADTOTALGUILDINFO));
 
-	if(lpMsg->iResult == TRUE)
-	{
-		gCastleSiege.SetCsTotalGuildInfo(lpMsgBody,lpMsg->iCount);
-		return;
+		if (lpMsg == NULL)
+			return;
+
+		if (lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+		{
+			LogAdd(LOG_RED, "[CastleSiege] PACKET-ERROR [0x88] GS_DGAnsCsLoadTotalGuildInfo() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()");
+			return;
+		}
+
+		if (lpMsg->iResult == TRUE)
+		{
+			gCastleSiege.SetCsTotalGuildInfo(lpMsgBody, lpMsg->iCount);
+			return;
+		}
 	}
-#else
-	return;
-#endif
 }
 
 void GS_DGAnsCastleNpcUpdate(LPBYTE lpRecv)
 {
-#if(GAMESERVER_TYPE==1)
-	CSP_ANS_NPCUPDATEDATA* lpMsg = (CSP_ANS_NPCUPDATEDATA*)lpRecv;
-
-	if(lpMsg == NULL)
-	return;
-
-	if(lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+	if (gServerInfo.m_ServerType == 1)
 	{
-		LogAdd(LOG_RED,"[CastleSiege] PACKET-ERROR [0x89] GS_DGAnsCastleNpcUpdate() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()") ;
-		return;
-	}
+		CSP_ANS_NPCUPDATEDATA* lpMsg = (CSP_ANS_NPCUPDATEDATA*)lpRecv;
 
-	char* szResult;
+		if (lpMsg == NULL)
+			return;
 
-	if(lpMsg->iResult != FALSE)
-	{
-		szResult = "SUCCEED";
-	}
-	else
-	{
-		szResult = "FAIL";
-	}
+		if (lpMsg->wMapSvrNum != gMapServerManager.GetMapServerGroup())
+		{
+			LogAdd(LOG_RED, "[CastleSiege] PACKET-ERROR [0x89] GS_DGAnsCastleNpcUpdate() - lpMsg->wMapSvrNum != g_MapServerManager.GetMapServerGroup()");
+			return;
+		}
 
-	LogAdd(LOG_BLACK,"[CastleSiege] [0x89] GS_DGAnsCastleNpcUpdate() - Npc Data Update Result : '%s'",szResult);
-#else
-	return;
-#endif
+		char* szResult;
+
+		if (lpMsg->iResult != FALSE)
+		{
+			szResult = "SUCCEED";
+		}
+		else
+		{
+			szResult = "FAIL";
+		}
+
+		LogAdd(LOG_BLACK, "[CastleSiege] [0x89] GS_DGAnsCastleNpcUpdate() - Npc Data Update Result : '%s'", szResult);
+	}
 }

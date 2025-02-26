@@ -25,7 +25,7 @@ CCastleDeep::CCastleDeep() // OK
 	this->m_State = CD_STATE_EMPTY;
 	this->m_RemainTime = 0;
 	this->m_TargetTime = 0;
-	this->m_TickCount = GetTickCount();
+	this->m_TickCount = GetTickCountEx();
 	this->m_TimeNotify = 0;
 	this->m_Stage = 0;
 	this->m_Group = 0;
@@ -195,14 +195,14 @@ void CCastleDeep::Load(char* path) // OK
 
 void CCastleDeep::MainProc() // OK
 {
-	DWORD elapsed = GetTickCount()-this->m_TickCount;
+	XWORD elapsed = GetTickCountEx()-this->m_TickCount;
 
 	if(elapsed < 1000)
 	{
 		return;
 	}
 
-	this->m_TickCount = GetTickCount();
+	this->m_TickCount = GetTickCountEx();
 
 	this->m_RemainTime = (int)difftime(this->m_TargetTime,time(0));
 
@@ -411,7 +411,7 @@ void CCastleDeep::AddMonster(int stage,int group) // OK
 			lpObj->RegenTime = 1;
 			lpObj->Attribute = 62;
 			lpObj->MaxRegenTime = 1000;
-			lpObj->LastCheckTick = GetTickCount();
+			lpObj->LastCheckTick = GetTickCountEx();
 		}
 	}
 }

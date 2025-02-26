@@ -244,11 +244,7 @@ void CServerInfo::ReadEventInfo() // OK
 
 	gChaosCastle.Load(gPath.GetFullPath("Event\\ChaosCastle.dat"));
 
-	#if(GAMESERVER_TYPE==1)
-
 	gCrywolf.Load(gPath.GetFullPath("Event\\Crywolf.dat"));
-
-	#endif
 
 	gDevilSquare.Load(gPath.GetFullPath("Event\\DevilSquare.dat"));
 
@@ -296,8 +292,6 @@ void CServerInfo::ReadEventInfo() // OK
 
 	#endif
 
-	#if(GAMESERVER_TYPE==1)
-
 	if(gCastleSiege.Ready(gMapServerManager.GetMapServerGroup()) != 0)
 	{
 		if(gCastleSiege.LoadData(gPath.GetFullPath("Event\\MuCastleData.dat")) != 0)
@@ -306,8 +300,6 @@ void CServerInfo::ReadEventInfo() // OK
 			gCastleSiege.SetDataLoadState(CASTLESIEGE_DATALOAD_2);
 		}
 	}
-
-	#endif
 
 	LogAdd(LOG_BLUE,"[ServerInfo] Event loaded successfully");
 }
@@ -451,15 +443,7 @@ void CServerInfo::ReadMonsterInfo() // OK
 
 	gMonsterManager.Load(gPath.GetFullPath("Monster\\Monster.txt"));
 
-	#if(GAMESERVER_TYPE==0)
-
 	gMonsterSetBase.Load(gPath.GetFullPath("Monster\\MonsterSetBase.txt"));
-
-	#else
-
-	gMonsterSetBase.Load(gPath.GetFullPath("Monster\\MonsterSetBaseCS.txt"));
-
-	#endif
 
 	CMonsterSkillElement::LoadData(gPath.GetFullPath("Monster\\MonsterSkillElement.txt"));
 
@@ -560,14 +544,13 @@ void CServerInfo::ReloadMonsterInfo() // OK
 			continue;
 		}
 
-		#if(GAMESERVER_TYPE==1)
-
-		if(gObj[n].CsNpcType != 0)
+		if (gServerInfo.m_ServerType == 1)
 		{
-			continue;
+			if (gObj[n].CsNpcType != 0)
+			{
+				continue;
+			}
 		}
-
-		#endif
 
 		gObjDel(n);
 	}
@@ -597,7 +580,9 @@ void CServerInfo::ReadStartupInfo(char* section,char* path) // OK
 
 	GetPrivateProfileString(section,"ServerName","",this->m_ServerName,sizeof(this->m_ServerName),path);
 
-	this->m_ServerCode = GetPrivateProfileInt(section,"ServerCode",0,path);
+	this->m_ServerCode = GetPrivateProfileInt(section, "ServerCode", 0, path);
+
+	this->m_ServerType = GetPrivateProfileInt(section, "ServerType", 0, path);
 
 	this->m_ServerLock = GetPrivateProfileInt(section,"ServerLock",0,path);
 

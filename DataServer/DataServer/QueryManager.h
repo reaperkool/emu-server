@@ -35,12 +35,12 @@ private:
 	char m_odbc[32];
 	char m_user[32];
 	char m_pass[32];
-	SQLINTEGER m_RowCount;
+	SQLLEN m_RowCount;
 	SQLSMALLINT m_ColCount;
 	SQLCHAR m_SQLColName[MAX_COLUMNS][30];
 	char m_SQLData[MAX_COLUMNS][8192];
-	SQLINTEGER m_SQLDataLen[MAX_COLUMNS];
-	SQLINTEGER m_SQLBindValue[MAX_COLUMNS];
+	SQLLEN m_SQLDataLen[MAX_COLUMNS];
+	SQLLEN m_SQLBindValue[MAX_COLUMNS];
 };
 
 extern CQueryManager gQueryManager;

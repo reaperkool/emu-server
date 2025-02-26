@@ -117,7 +117,7 @@ bool CRaklionBattleUserMng::CheckBattleUsers() // OK
 
 int CRaklionBattleUserMng::GetBattleUserCount() // OK
 {
-	return this->m_UserInfo.size();
+	return (int)this->m_UserInfo.size();
 }
 
 int CRaklionBattleUserMng::GetBattleUserIndex(int index) // OK

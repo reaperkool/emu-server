@@ -5,7 +5,6 @@
 #include "ItemManager.h"
 #include "ServerInfo.h"
 #include "SocketManager.h"
-#include "ThemidaSDK.h"
 #include "Viewport.h"
 
 std::mt19937 seed;
@@ -109,8 +108,6 @@ void PacketArgumentDecrypt(char* out_buff,char* in_buff,int size) // OK
 
 void ErrorMessageBox(char* message,...) // OK
 {
-	VM_START
-
 	char buff[256];
 
 	memset(buff,0,sizeof(buff));
@@ -121,8 +118,6 @@ void ErrorMessageBox(char* message,...) // OK
 	va_end(arg);
 
 	MessageBox(0,buff,"Error",MB_OK | MB_ICONERROR);
-
-	VM_END
 
 	ExitProcess(0);
 }
@@ -156,7 +151,7 @@ void LogAdd(eLogColor color,char* text,...) // OK
 
 	wsprintf(log,"%.8s %s",&time[11],temp);
 
-	gServerDisplayer.LogAddText(color,log,strlen(log));
+	gServerDisplayer.LogAddText(color,log,(int)strlen(log));
 }
 
 bool DataSend(int aIndex,BYTE* lpMsg,DWORD size) // OK
@@ -415,7 +410,8 @@ void PostMessage4(char* name,char* message,char* text) // OK
 
 void SetLargeRand() // OK
 {
-	seed = std::mt19937(std::random_device());
+	std::random_device rd;
+	seed = std::mt19937(rd());
 	dist = std::uniform_int_distribution<int>(0,2147483647);
 }
 

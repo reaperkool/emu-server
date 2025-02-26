@@ -18,7 +18,7 @@ CNotice::CNotice() // OK
 
 	this->m_NoticeValue = 0;
 
-	this->m_NoticeTime = GetTickCount();
+	this->m_NoticeTime = GetTickCountEx();
 }
 
 CNotice::~CNotice() // OK
@@ -109,10 +109,10 @@ void CNotice::MainProc() // OK
 
 	NOTICE_INFO* lpInfo = &this->m_NoticeInfo[this->m_NoticeValue];
 
-	if((GetTickCount()-this->m_NoticeTime) >= ((DWORD)lpInfo->RepeatTime))
+	if((GetTickCountEx()-this->m_NoticeTime) >= ((DWORD)lpInfo->RepeatTime))
 	{
 		this->m_NoticeValue = (((this->m_NoticeValue+1)>=this->m_count)?0:(this->m_NoticeValue+1));
-		this->m_NoticeTime = GetTickCount();
+		this->m_NoticeTime = GetTickCountEx();
 		this->GCNoticeSendToAll(lpInfo->Type,lpInfo->Count,lpInfo->Opacity,lpInfo->Delay,lpInfo->Color,lpInfo->Speed,"%s",lpInfo->Message);
 	}
 }
@@ -126,13 +126,13 @@ void CNotice::GCNoticeSend(int aIndex,BYTE type,BYTE count,BYTE opacity,WORD del
 	vsprintf_s(buff,message,arg);
 	va_end(arg);
 
-	int size = strlen(buff);
+	int size = (int)strlen(buff);
 
 	size = ((size>MAX_MESSAGE_SIZE)?MAX_MESSAGE_SIZE:size);
 
 	PMSG_NOTICE_SEND pMsg;
 
-	pMsg.header.set(0x0D,(sizeof(pMsg)-(sizeof(pMsg.message)-(size+1))));
+	pMsg.header.set(0x0D,(BYTE)((sizeof(pMsg)-(sizeof(pMsg.message)-(size+1)))));
 
 	pMsg.type = type;
 
@@ -162,13 +162,13 @@ void CNotice::GCNoticeSendToAll(BYTE type,BYTE count,BYTE opacity,WORD delay,DWO
 	vsprintf_s(buff,message,arg);
 	va_end(arg);
 
-	int size = strlen(buff);
+	int size = (int)strlen(buff);
 
 	size = ((size>MAX_MESSAGE_SIZE)?MAX_MESSAGE_SIZE:size);
 
 	PMSG_NOTICE_SEND pMsg;
 
-	pMsg.header.set(0x0D,(sizeof(pMsg)-(sizeof(pMsg.message)-(size+1))));
+	pMsg.header.set(0x0D,(BYTE)((sizeof(pMsg)-(sizeof(pMsg.message)-(size+1)))));
 
 	pMsg.type = type;
 

@@ -96,7 +96,7 @@ void CObjectManager::ObjectMsgProc(LPOBJ lpObj) // OK
 {
 	for(int n=0;n < MAX_MONSTER_SEND_MSG;n++)
 	{
-		if(gSMMsg[lpObj->Index][n].MsgCode != -1 && GetTickCount() > ((DWORD)gSMMsg[lpObj->Index][n].MsgTime))
+		if(gSMMsg[lpObj->Index][n].MsgCode != -1 && GetTickCountEx() > ((XWORD)gSMMsg[lpObj->Index][n].MsgTime))
 		{
 			if(lpObj->Type == OBJECT_MONSTER || lpObj->Type == OBJECT_NPC)
 			{
@@ -121,7 +121,7 @@ void CObjectManager::ObjectSetStateCreate(int aIndex) // OK
 		return;
 	}
 
-	if(lpObj->DieRegen == 1 && (GetTickCount()-lpObj->RegenTime) > (lpObj->MaxRegenTime+1000))
+	if(lpObj->DieRegen == 1 && (GetTickCountEx()-lpObj->RegenTime) > (lpObj->MaxRegenTime+1000))
 	{
 		lpObj->DieRegen = 2;
 		lpObj->State = OBJECT_DIECMD;
@@ -187,7 +187,7 @@ void CObjectManager::ObjectSetStateCreate(int aIndex) // OK
 		lpObj->PathStartEnd = 0;
 	}
 
-	lpObj->Teleport = ((lpObj->Teleport==1)?((lpObj->DieRegen==0)?(((GetTickCount()-lpObj->TeleportTime)>100)?2:lpObj->Teleport):0):lpObj->Teleport);
+	lpObj->Teleport = ((lpObj->Teleport==1)?((lpObj->DieRegen==0)?(((GetTickCountEx()-lpObj->TeleportTime)>100)?2:lpObj->Teleport):0):lpObj->Teleport);
 
 	if(lpObj->Type == OBJECT_USER && lpObj->RegenOk == 2)
 	{
@@ -260,14 +260,13 @@ void CObjectManager::ObjectSetStateProc() // OK
 				continue;
 			}
 
-			#if(GAMESERVER_TYPE==1)
-
-			if(lpObj->Map == MAP_CRYWOLF && gCrywolf.GetCrywolfState() == CRYWOLF_STATE_READY)
+			if (gServerInfo.m_ServerType == 1)
 			{
-				continue;
+				if (lpObj->Map == MAP_CRYWOLF && gCrywolf.GetCrywolfState() == CRYWOLF_STATE_READY)
+				{
+					continue;
+				}
 			}
-
-			#endif
 
 			if(lpObj->Map == MAP_KANTURU3)
 			{
@@ -298,29 +297,28 @@ void CObjectManager::ObjectSetStateProc() // OK
 				continue;
 			}
 
-			if(lpObj->Attribute == 62 && (GetTickCount()-lpObj->LastCheckTick) > 600000)
+			if(lpObj->Attribute == 62 && (GetTickCountEx()-lpObj->LastCheckTick) > 600000)
 			{
 				gObjDel(lpObj->Index);
 				continue;
 			}
 
-			#if(GAMESERVER_TYPE==1)
-
-			if(lpObj->Class == 278)
+			if (gServerInfo.m_ServerType == 1)
 			{
-				gLifeStone.DeleteLifeStone(lpObj->Index);
-				gObjDel(lpObj->Index);
-				continue;
-			}
+				if (lpObj->Class == 278)
+				{
+					gLifeStone.DeleteLifeStone(lpObj->Index);
+					gObjDel(lpObj->Index);
+					continue;
+				}
 
-			if(lpObj->Class == 286 || lpObj->Class == 287)
-			{
-				gMercenary.DeleteMercenary(lpObj->Index);
-				gObjDel(lpObj->Index);
-				continue;
+				if (lpObj->Class == 286 || lpObj->Class == 287)
+				{
+					gMercenary.DeleteMercenary(lpObj->Index);
+					gObjDel(lpObj->Index);
+					continue;
+				}
 			}
-
-			#endif
 
 			if(lpObj->Class >= 647 && lpObj->Class <= 650)
 			{
@@ -375,10 +373,10 @@ void CObjectManager::ObjectSetStateProc() // OK
 			lpObj->Shield = lpObj->MaxShield+lpObj->AddShield;
 			lpObj->MiniMapState = 0;
 			lpObj->MiniMapValue = -1;
-			lpObj->HPAutoRecuperationTime = GetTickCount();
-			lpObj->MPAutoRecuperationTime = GetTickCount();
-			lpObj->BPAutoRecuperationTime = GetTickCount();
-			lpObj->SDAutoRecuperationTime = GetTickCount();
+			lpObj->HPAutoRecuperationTime = GetTickCountEx();
+			lpObj->MPAutoRecuperationTime = GetTickCountEx();
+			lpObj->BPAutoRecuperationTime = GetTickCountEx();
+			lpObj->SDAutoRecuperationTime = GetTickCountEx();
 			lpObj->ResurrectionTalismanActive = 1;
 			lpObj->ResurrectionTalismanMap = lpObj->Map;
 			lpObj->ResurrectionTalismanX = lpObj->X;
@@ -596,13 +594,13 @@ void CObjectManager::ObjectMoveProc() // OK
 			MoveTime = (DWORD)((lpObj->MoveSpeed+((lpObj->DelayLevel==0)?0:300))*(double)1.0);
 		}
 
-		if((GetTickCount()-lpObj->PathTime) > MoveTime && lpObj->PathCur < (MAX_ROAD_PATH_TABLE-1))
+		if((GetTickCountEx()-lpObj->PathTime) > MoveTime && lpObj->PathCur < (MAX_ROAD_PATH_TABLE-1))
 		{
 			if(gMap[lpObj->Map].CheckAttr(lpObj->PathX[lpObj->PathCur],lpObj->PathY[lpObj->PathCur],4) != 0 || gMap[lpObj->Map].CheckAttr(lpObj->PathX[lpObj->PathCur],lpObj->PathY[lpObj->PathCur],8) != 0)
 			{
 				lpObj->PathCur = 0;
 				lpObj->PathCount = 0;
-				lpObj->PathTime = GetTickCount();
+				lpObj->PathTime = GetTickCountEx();
 				lpObj->PathStartEnd = ((lpObj->Type==OBJECT_USER)?lpObj->PathStartEnd:0);
 
 				memset(lpObj->PathX,0,sizeof(lpObj->PathX));
@@ -618,7 +616,7 @@ void CObjectManager::ObjectMoveProc() // OK
 				lpObj->X = lpObj->PathX[lpObj->PathCur];
 				lpObj->Y = lpObj->PathY[lpObj->PathCur];
 				lpObj->Dir = lpObj->PathDir[lpObj->PathCur];
-				lpObj->PathTime = GetTickCount();
+				lpObj->PathTime = GetTickCountEx();
 
 				if((++lpObj->PathCur) >= lpObj->PathCount)
 				{
@@ -660,7 +658,7 @@ void CObjectManager::ObjectMonsterAndMsgProc() // OK
 		{
 			for(int i=0;i < MAX_MONSTER_SEND_ATTACK_MSG;i++)
 			{
-				if(gSMAttackProcMsg[n][i].MsgCode != -1 && GetTickCount() > ((DWORD)gSMAttackProcMsg[n][i].MsgTime))
+				if(gSMAttackProcMsg[n][i].MsgCode != -1 && GetTickCountEx() > gSMAttackProcMsg[n][i].MsgTime)
 				{
 					gObjectManager.ObjectStateAttackProc(&gObj[n],gSMAttackProcMsg[n][i].MsgCode,gSMAttackProcMsg[n][i].SendUser,gSMAttackProcMsg[n][i].SubCode,gSMAttackProcMsg[n][i].SubCode2);
 					gSMAttackProcMsg[n][i].Clear();
@@ -859,7 +857,7 @@ void CObjectManager::CharacterGameCloseSet(int aIndex,int type) // OK
 			return;
 		}
 
-		if((GetTickCount()-lpObj->MySelfDefenseTime) < 30000)
+		if((GetTickCountEx()-lpObj->MySelfDefenseTime) < 30000)
 		{
 			gNotice.GCNoticeSend(aIndex,1,0,0,0,0,0,gMessage.GetMessage(265));
 			return;
@@ -889,20 +887,19 @@ bool CObjectManager::CharacterMapServerMove(int aIndex,int map,int x,int y) // O
 
 void CObjectManager::CharacterUpdateMapEffect(LPOBJ lpObj) // OK
 {
-	#if(GAMESERVER_TYPE==1)
-
-	if(lpObj->Map == MAP_CASTLE_SIEGE)
+	if (gServerInfo.m_ServerType == 1)
 	{
-		GCAnsCsNotifyStart(lpObj->Index,((gCastleSiege.GetCastleState()==CASTLESIEGE_STATE_STARTSIEGE)?1:0));
-
-		if(gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE)
+		if (lpObj->Map == MAP_CASTLE_SIEGE)
 		{
-			gCastleSiege.NotifySelfCsJoinSide(lpObj->Index);
-			gCastleSiege.NotifyCsSelfLeftTime(lpObj->Index);
+			GCAnsCsNotifyStart(lpObj->Index, ((gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE) ? 1 : 0));
+
+			if (gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE)
+			{
+				gCastleSiege.NotifySelfCsJoinSide(lpObj->Index);
+				gCastleSiege.NotifyCsSelfLeftTime(lpObj->Index);
+			}
 		}
 	}
-
-	#endif
 
 	if(lpObj->Map == MAP_RAKLION1 || lpObj->Map == MAP_RAKLION2)
 	{
@@ -974,25 +971,24 @@ bool CObjectManager::CharacterGetRespawnLocation(LPOBJ lpObj) // OK
 	}
 	else if(lpObj->Map == MAP_CASTLE_SIEGE)
 	{
-		#if(GAMESERVER_TYPE==0)
-
-		result = gGate.GetGate(100,&gate,&map,&x,&y,&dir,&level);
-
-		#else
-
-		if(gLifeStone.SetReSpawnUserXY(lpObj->Index) == 0)
+		if (gServerInfo.m_ServerType != 1)
 		{
-			if(lpObj->CsJoinSide == 1)
+			result = gGate.GetGate(100, &gate, &map, &x, &y, &dir, &level);
+		}
+		else
+		{
+			if (gLifeStone.SetReSpawnUserXY(lpObj->Index) == 0)
 			{
-				result = gGate.GetGate(101,&gate,&map,&x,&y,&dir,&level);
-			}
-			else
-			{
-				result = gGate.GetGate(100,&gate,&map,&x,&y,&dir,&level);
+				if (lpObj->CsJoinSide == 1)
+				{
+					result = gGate.GetGate(101, &gate, &map, &x, &y, &dir, &level);
+				}
+				else
+				{
+					result = gGate.GetGate(100, &gate, &map, &x, &y, &dir, &level);
+				}
 			}
 		}
-
-		#endif
 	}
 	else if(lpObj->Map == MAP_LAND_OF_TRIALS)
 	{
@@ -1004,14 +1000,13 @@ bool CObjectManager::CharacterGetRespawnLocation(LPOBJ lpObj) // OK
 	}
 	else if(lpObj->Map == MAP_CRYWOLF)
 	{
-		#if(GAMESERVER_TYPE==1)
-
-		if(gCrywolf.GetCrywolfState() == CRYWOLF_STATE_START)
+		if (gServerInfo.m_ServerType == 1)
 		{
-			result = gGate.GetGate(118,&gate,&map,&x,&y,&dir,&level);
+			if (gCrywolf.GetCrywolfState() == CRYWOLF_STATE_START)
+			{
+				result = gGate.GetGate(118, &gate, &map, &x, &y, &dir, &level);
+			}
 		}
-
-		#endif
 	}
 	else if(lpObj->Map == MAP_RESERVED2)
 	{
@@ -1538,9 +1533,9 @@ bool CObjectManager::CharacterLevelUp(LPOBJ lpObj,DWORD AddExperience,int MaxLev
 		gMasterSkillTree.GCMasterLevelUpSend(lpObj);
 	}
 
-	if((GetTickCount()-lpObj->CharSaveTime) > 60000)
+	if((GetTickCountEx()-lpObj->CharSaveTime) > 60000)
 	{
-		lpObj->CharSaveTime = GetTickCount();
+		lpObj->CharSaveTime = GetTickCountEx();
 		GDCharacterInfoSaveSend(lpObj->Index);
 	}
 
@@ -1979,12 +1974,12 @@ bool CObjectManager::CharacterUseScroll(LPOBJ lpObj,CItem* lpItem) // OK
 
 bool CObjectManager::CharacterUsePotion(LPOBJ lpObj,CItem* lpItem) // OK
 {
-	if(gServerInfo.m_CheckAutoPotionHack != 0 && (GetTickCount()-lpObj->PotionTime) < ((DWORD)gServerInfo.m_CheckAutoPotionHackTolerance))
+	if(gServerInfo.m_CheckAutoPotionHack != 0 && (GetTickCountEx()-lpObj->PotionTime) < ((XWORD)gServerInfo.m_CheckAutoPotionHackTolerance))
 	{
 		return 0;
 	}
 
-	lpObj->PotionTime = GetTickCount();
+	lpObj->PotionTime = GetTickCountEx();
 
 	int HPValue = 0;
 	int SDValue = 0;
@@ -2149,36 +2144,35 @@ bool CObjectManager::CharacterUsePortal(LPOBJ lpObj,CItem* lpItem) // OK
 	}
 	else if(lpObj->Map == MAP_CASTLE_SIEGE)
 	{
-		#if(GAMESERVER_TYPE==0)
-
-		gObjMoveGate(lpObj->Index,100);
-
-		#else
-
-		if(gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE)
+		if (gServerInfo.m_ServerType != 1)
 		{
-			if(lpObj->CsJoinSide == 1)
-			{
-				gObjMoveGate(lpObj->Index,101);
-			}
-			else
-			{
-				gObjMoveGate(lpObj->Index,100);
-			}
+			gObjMoveGate(lpObj->Index, 100);
 		}
 		else
 		{
-			if(gCastleSiege.CheckCastleOwnerMember(lpObj->Index) != 0 || gCastleSiege.CheckCastleOwnerUnionMember(lpObj->Index) != 0)
+			if (gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE)
 			{
-				gObjMoveGate(lpObj->Index,101);
+				if (lpObj->CsJoinSide == 1)
+				{
+					gObjMoveGate(lpObj->Index, 101);
+				}
+				else
+				{
+					gObjMoveGate(lpObj->Index, 100);
+				}
 			}
 			else
 			{
-				gObjMoveGate(lpObj->Index,100);
+				if (gCastleSiege.CheckCastleOwnerMember(lpObj->Index) != 0 || gCastleSiege.CheckCastleOwnerUnionMember(lpObj->Index) != 0)
+				{
+					gObjMoveGate(lpObj->Index, 101);
+				}
+				else
+				{
+					gObjMoveGate(lpObj->Index, 100);
+				}
 			}
 		}
-
-		#endif
 	}
 	else if(lpObj->Map == MAP_LAND_OF_TRIALS)
 	{
@@ -2792,7 +2786,7 @@ void CObjectManager::CharacterAutoRecuperation(LPOBJ lpObj) // OK
 		{
 			int rate = gServerInfo.m_HPRecoveryRate[lpObj->Class];
 
-			rate += (((GetTickCount()-lpObj->HPAutoRecuperationTime)>5000)?5:0);
+			rate += (((GetTickCountEx()-lpObj->HPAutoRecuperationTime)>5000)?5:0);
 
 			rate += lpObj->HPRecoveryRate;
 
@@ -2825,7 +2819,7 @@ void CObjectManager::CharacterAutoRecuperation(LPOBJ lpObj) // OK
 			{
 				int rate = gServerInfo.m_SDRecoveryRate[lpObj->Class];
 
-				rate += (((GetTickCount()-lpObj->SDAutoRecuperationTime)>5000)?5:0);
+				rate += (((GetTickCountEx()-lpObj->SDAutoRecuperationTime)>5000)?5:0);
 
 				rate += lpObj->SDRecoveryRate;
 
@@ -2857,7 +2851,7 @@ void CObjectManager::CharacterAutoRecuperation(LPOBJ lpObj) // OK
 		{
 			int rate = gServerInfo.m_MPRecoveryRate[lpObj->Class];
 
-			rate += (((GetTickCount()-lpObj->MPAutoRecuperationTime)>5000)?3:0);
+			rate += (((GetTickCountEx()-lpObj->MPAutoRecuperationTime)>5000)?3:0);
 
 			rate += lpObj->MPRecoveryRate;
 
@@ -2888,7 +2882,7 @@ void CObjectManager::CharacterAutoRecuperation(LPOBJ lpObj) // OK
 		{
 			int rate = gServerInfo.m_BPRecoveryRate[lpObj->Class];
 
-			rate += (((GetTickCount()-lpObj->BPAutoRecuperationTime)>5000)?3:0);
+			rate += (((GetTickCountEx()-lpObj->BPAutoRecuperationTime)>5000)?3:0);
 
 			rate += lpObj->BPRecoveryRate;
 
@@ -4384,7 +4378,7 @@ bool CObjectManager::CharacterInfoSet(BYTE* aRecv,int aIndex) // OK
 		lpObj->Live = 1;
 		lpObj->State = OBJECT_DYING;
 		lpObj->DieRegen = 1;
-		lpObj->RegenTime = GetTickCount();
+		lpObj->RegenTime = GetTickCountEx();
 	}
 
 	lpObj->Authority = 1;
@@ -4418,11 +4412,11 @@ bool CObjectManager::CharacterInfoSet(BYTE* aRecv,int aIndex) // OK
 
 	gDarkSpirit[aIndex].SetMode(DARK_SPIRIT_MODE_NORMAL,-1);
 
-	lpObj->HPAutoRecuperationTime = GetTickCount();
-	lpObj->MPAutoRecuperationTime = GetTickCount();
-	lpObj->BPAutoRecuperationTime = GetTickCount();
-	lpObj->SDAutoRecuperationTime = GetTickCount();
-	lpObj->CharSaveTime = GetTickCount();
+	lpObj->HPAutoRecuperationTime = GetTickCountEx();
+	lpObj->MPAutoRecuperationTime = GetTickCountEx();
+	lpObj->BPAutoRecuperationTime = GetTickCountEx();
+	lpObj->SDAutoRecuperationTime = GetTickCountEx();
+	lpObj->CharSaveTime = GetTickCountEx();
 	return 1;
 }
 
@@ -4527,14 +4521,13 @@ void CObjectManager::CharacterLifeCheck(LPOBJ lpObj,LPOBJ lpTarget,int damage,in
 				gCastleDeep.MonsterDieProc(lpTarget,&gObj[SummonIndex]);
 			}
 
-			#if(GAMESERVER_TYPE==1)
-
-			if(lpTarget->Map == MAP_CRYWOLF)
+			if (gServerInfo.m_ServerType == 1)
 			{
-				gCrywolf.CrywolfMonsterDieProc(lpTarget,&gObj[SummonIndex]);
+				if (lpTarget->Map == MAP_CRYWOLF)
+				{
+					gCrywolf.CrywolfMonsterDieProc(lpTarget, &gObj[SummonIndex]);
+				}
 			}
-
-			#endif
 
 			if(lpTarget->Map == MAP_KANTURU3)
 			{
@@ -4583,7 +4576,7 @@ void CObjectManager::CharacterLifeCheck(LPOBJ lpObj,LPOBJ lpTarget,int damage,in
 
 		lpTarget->Live = 0;
 		lpTarget->State = OBJECT_DYING;
-		lpTarget->RegenTime = GetTickCount();
+		lpTarget->RegenTime = GetTickCountEx();
 		lpTarget->DieRegen = 1;
 		lpTarget->PathCount = 0;
 		lpTarget->Teleport = ((lpTarget->Teleport==1)?0:lpTarget->Teleport);

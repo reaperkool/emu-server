@@ -5,11 +5,9 @@
 #include "BadSyntax.h"
 #include "GuildManager.h"
 #include "MiniDump.h"
-#include "Protect.h"
 #include "QueryManager.h"
 #include "ServerDisplayer.h"
 #include "SocketManager.h"
-#include "ThemidaSDK.h"
 #include "Util.h"
 
 HINSTANCE hInst;
@@ -21,8 +19,6 @@ char CustomerHardwareId[36];
 
 int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,int nCmdShow) // OK
 {
-	VM_START
-
 	CMiniDump::Start();
 
 	LoadString(hInstance,IDS_APP_TITLE,szTitle,MAX_LOADSTRING);
@@ -55,7 +51,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine
 
 	char buff[256];
 
-	wsprintf(buff,"[%s] MuEMU DataServer (QueueSize : %d)",DATASERVER_VERSION,0);
+	wsprintf(buff,"[%s] DataServer (QueueSize : %d)",DATASERVER_VERSION,0);
 
 	SetWindowText(hWnd,buff);
 
@@ -125,9 +121,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine
 
 	CMiniDump::Clean();
 
-	VM_END
-
-	return msg.wParam;
+	return (int)msg.wParam;
 }
 
 ATOM MyRegisterClass(HINSTANCE hInstance) // OK

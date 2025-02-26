@@ -314,7 +314,7 @@ struct SDHP_CHARACTER_INFO_SAVE_RECV
 	BYTE Dir;
 	DWORD PKCount;
 	DWORD PKLevel;
-	DWORD PKTime;
+	XWORD PKTime;
 	BYTE Quest[50];
 	WORD FruitAddPoint;
 	WORD FruitSubPoint;

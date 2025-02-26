@@ -177,7 +177,7 @@ private:
 	int m_Map;
 	int m_RemainTime;
 	int m_TargetTime;
-	int m_TickCount;
+	XWORD m_TickCount;
 	int m_TimeCount;
 	int m_Stage;
 	int m_CurMonster;
@@ -185,7 +185,7 @@ private:
 	int m_PartyNumber;
 	int m_PartyCount;
 	int m_HighestLevel;
-	int m_CreateMonsterTime;
+	XWORD m_CreateMonsterTime;
 	DOUBLE_GOER_USER m_User[MAX_DG_USER];
 	int m_SlaughtererIndex;
 	int m_MadSlaughtererIndex;

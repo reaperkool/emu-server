@@ -2142,10 +2142,10 @@ BYTE CItemManager::MoveItemToInventoryFromTrade(LPOBJ lpObj,BYTE SourceSlot,BYTE
 	if(OBJECT_RANGE(lpObj->TargetNumber) != 0)
 	{
 		lpObj->TradeOk = 0;
-		lpObj->TradeOkTime = GetTickCount();
+		lpObj->TradeOkTime = GetTickCountEx();
 		gTrade.GCTradeOkButtonSend(lpObj->Index,0);
 		gObj[lpObj->TargetNumber].TradeOk = 0;
-		gObj[lpObj->TargetNumber].TradeOkTime = GetTickCount();
+		gObj[lpObj->TargetNumber].TradeOkTime = GetTickCountEx();
 		gTrade.GCTradeOkButtonSend(lpObj->TargetNumber,2);
 		gTrade.GCTradeItemDelSend(lpObj->TargetNumber,SourceSlot);
 	}
@@ -2900,10 +2900,10 @@ BYTE CItemManager::MoveItemToEventInventoryFromTrade(LPOBJ lpObj,BYTE SourceSlot
 	if(OBJECT_RANGE(lpObj->TargetNumber) != 0)
 	{
 		lpObj->TradeOk = 0;
-		lpObj->TradeOkTime = GetTickCount();
+		lpObj->TradeOkTime = GetTickCountEx();
 		gTrade.GCTradeOkButtonSend(lpObj->Index,0);
 		gObj[lpObj->TargetNumber].TradeOk = 0;
-		gObj[lpObj->TargetNumber].TradeOkTime = GetTickCount();
+		gObj[lpObj->TargetNumber].TradeOkTime = GetTickCountEx();
 		gTrade.GCTradeOkButtonSend(lpObj->TargetNumber,2);
 		gTrade.GCTradeItemDelSend(lpObj->TargetNumber,SourceSlot);
 	}
@@ -3293,31 +3293,29 @@ void CItemManager::CGItemDropRecv(PMSG_ITEM_DROP_RECV* lpMsg,int aIndex) // OK
 	}
 	else if(lpItem->m_Index == GET_ITEM(13,7) && (lpItem->m_Level == 0 || lpItem->m_Level == 1)) // Siege Summon
 	{
-		#if(GAMESERVER_TYPE==1)
-
-		if(gMercenary.CreateMercenary(aIndex,286+lpItem->m_Level,lpMsg->x,lpMsg->y) == 0)
+		if (gServerInfo.m_ServerType == 1)
 		{
-			DataSend(aIndex,(BYTE*)&pMsg,pMsg.header.size);
-			return;
+			if (gMercenary.CreateMercenary(aIndex, 286 + lpItem->m_Level, lpMsg->x, lpMsg->y) == 0)
+			{
+				DataSend(aIndex, (BYTE*)&pMsg, pMsg.header.size);
+				return;
+			}
+
+			this->InventoryDelItem(aIndex, lpMsg->slot);
 		}
-
-		this->InventoryDelItem(aIndex,lpMsg->slot);
-
-		#endif
 	}
 	else if(lpItem->m_Index == GET_ITEM(13,11) && lpItem->m_Level == 1) // Life Stone
 	{
-		#if(GAMESERVER_TYPE==1)
-
-		if(gLifeStone.CreateLifeStone(aIndex) == 0)
+		if (gServerInfo.m_ServerType == 1)
 		{
-			DataSend(aIndex,(BYTE*)&pMsg,pMsg.header.size);
-			return;
+			if (gLifeStone.CreateLifeStone(aIndex) == 0)
+			{
+				DataSend(aIndex, (BYTE*)&pMsg, pMsg.header.size);
+				return;
+			}
+
+			this->InventoryDelItem(aIndex, lpMsg->slot);
 		}
-
-		this->InventoryDelItem(aIndex,lpMsg->slot);
-
-		#endif
 	}
 	else if(lpItem->m_Index == GET_ITEM(13,20) && lpItem->m_Level == 1) // Starter Ring 40
 	{

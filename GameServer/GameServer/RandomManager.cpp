@@ -27,6 +27,32 @@ void CRandomManager::Clear() // OK
 	this->m_RandomManagerInfo.clear();
 }
 
+bool CRandomManager::GetRandomElement(XWORD* value) // OK
+{
+	if (this->m_MaxRate == 0)
+	{
+		return 0;
+	}
+
+	if (this->m_RandomManagerInfo.empty() != 0)
+	{
+		return 0;
+	}
+
+	int RandomNumber = GetLargeRand() % this->m_MaxRate;
+
+	for (std::vector<RANDOM_MANAGER_INFO>::iterator it = this->m_RandomManagerInfo.begin(); it != this->m_RandomManagerInfo.end(); it++)
+	{
+		if (RandomNumber >= it->MinRate && RandomNumber < it->MaxRate)
+		{
+			(*value) = it->value;
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
 bool CRandomManager::GetRandomElement(int* value) // OK
 {
 	if(this->m_MaxRate == 0)
@@ -45,7 +71,7 @@ bool CRandomManager::GetRandomElement(int* value) // OK
 	{
 		if(RandomNumber >= it->MinRate && RandomNumber < it->MaxRate)
 		{
-			(*value) = it->value;
+			(*value) = (int)it->value;
 			return 1;
 		}
 	}
@@ -71,7 +97,7 @@ bool CRandomManager::GetRandomElement(WORD* value) // OK
 	{
 		if(RandomNumber >= it->MinRate && RandomNumber < it->MaxRate)
 		{
-			(*value) = it->value;
+			(*value) = (WORD)it->value;
 			return 1;
 		}
 	}
@@ -81,23 +107,23 @@ bool CRandomManager::GetRandomElement(WORD* value) // OK
 
 bool CRandomManager::GetRandomElement(BYTE* value) // OK
 {
-	if(this->m_MaxRate == 0)
+	if (this->m_MaxRate == 0)
 	{
 		return 0;
 	}
 
-	if(this->m_RandomManagerInfo.empty() != 0)
+	if (this->m_RandomManagerInfo.empty() != 0)
 	{
 		return 0;
 	}
 
-	int RandomNumber = GetLargeRand()%this->m_MaxRate;
+	int RandomNumber = GetLargeRand() % this->m_MaxRate;
 
-	for(std::vector<RANDOM_MANAGER_INFO>::iterator it=this->m_RandomManagerInfo.begin();it != this->m_RandomManagerInfo.end();it++)
+	for (std::vector<RANDOM_MANAGER_INFO>::iterator it = this->m_RandomManagerInfo.begin(); it != this->m_RandomManagerInfo.end(); it++)
 	{
-		if(RandomNumber >= it->MinRate && RandomNumber < it->MaxRate)
+		if (RandomNumber >= it->MinRate && RandomNumber < it->MaxRate)
 		{
-			(*value) = it->value;
+			(*value) = (BYTE)it->value;
 			return 1;
 		}
 	}
@@ -105,9 +131,9 @@ bool CRandomManager::GetRandomElement(BYTE* value) // OK
 	return 0;
 }
 
-void CRandomManager::AddElement(int value,int rate) // OK
+void CRandomManager::AddElement(XWORD value, int rate) // OK
 {
-	if(rate == 0)
+	if (rate == 0)
 	{
 		return;
 	}
@@ -118,7 +144,7 @@ void CRandomManager::AddElement(int value,int rate) // OK
 
 	info.MinRate = this->m_MaxRate;
 
-	info.MaxRate = (this->m_MaxRate=(this->m_MaxRate+rate));
+	info.MaxRate = (this->m_MaxRate = (this->m_MaxRate + rate));
 
 	this->m_RandomManagerInfo.push_back(info);
 }

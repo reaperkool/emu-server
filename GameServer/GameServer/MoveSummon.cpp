@@ -10,6 +10,7 @@
 #include "ItemManager.h"
 #include "Map.h"
 #include "MemScript.h"
+#include "ServerInfo.h"
 #include "Util.h"
 
 CMoveSummon gMoveSummon;
@@ -100,14 +101,13 @@ bool CMoveSummon::CheckMoveSummon(LPOBJ lpObj,int map,int x,int y) // OK
 		return 0;
 	}
 
-	#if(GAMESERVER_TYPE==1)
-
-	if(map == MAP_CASTLE_SIEGE && gCastleSiege.GetCastleState() != CASTLESIEGE_STATE_STARTSIEGE && (x > 160 && x < 192 && y > 187 && y < 217))
+	if (gServerInfo.m_ServerType == 1)
 	{
-		return 0;
+		if (map == MAP_CASTLE_SIEGE && gCastleSiege.GetCastleState() != CASTLESIEGE_STATE_STARTSIEGE && (x > 160 && x < 192 && y > 187 && y < 217))
+		{
+			return 0;
+		}
 	}
-
-	#endif
 
 	if(map == MAP_ATLANS && (lpObj->Inventory[8].IsItem() != 0 && (lpObj->Inventory[8].m_Index == GET_ITEM(13,2) || lpObj->Inventory[8].m_Index == GET_ITEM(13,3)))) // Uniria,Dinorant
 	{

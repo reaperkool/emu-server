@@ -45,12 +45,12 @@ void CKanturuStateInfo::SetValue(int value) // OK
 
 void CKanturuStateInfo::SetAppliedTime() // OK
 {
-	this->m_AppliedTickCount = GetTickCount();
+	this->m_AppliedTickCount = GetTickCountEx();
 }
 
 void CKanturuStateInfo::SetConditionAppliedTime() // OK
 {
-	this->m_AppliedTickCount = ((this->GetCondition()==0)?this->m_AppliedTickCount:GetTickCount());
+	this->m_AppliedTickCount = ((this->GetCondition()==0)?this->m_AppliedTickCount:GetTickCountEx());
 }
 
 int CKanturuStateInfo::GetCondition() // OK
@@ -63,19 +63,19 @@ int CKanturuStateInfo::GetValue() // OK
 	return this->m_Value;
 }
 
-int CKanturuStateInfo::GetAppliedTime() // OK
+XWORD CKanturuStateInfo::GetAppliedTime() // OK
 {
 	return this->m_AppliedTickCount;
 }
 
-int CKanturuStateInfo::GetElapsedTime() // OK
+XWORD CKanturuStateInfo::GetElapsedTime() // OK
 {
-	return (GetTickCount()-this->GetAppliedTime());
+	return (GetTickCountEx()-this->GetAppliedTime());
 }
 
 int CKanturuStateInfo::GetRemainTime() // OK
 {
-	return ((this->GetCondition()==0)?0:(((this->m_Value-this->GetElapsedTime())<=0)?0:((this->m_Value-this->GetElapsedTime())/1000)));
+	return ((this->GetCondition()==0)?0:(int)(((this->m_Value-this->GetElapsedTime())<=0)?0:((this->m_Value-this->GetElapsedTime())/1000)));
 }
 
 int CKanturuStateInfo::IsTimeOut() // OK

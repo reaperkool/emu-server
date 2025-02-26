@@ -120,21 +120,13 @@ void gObjEventRunProc() // OK
 
 	gCastleDeep.MainProc();
 
-	#if(GAMESERVER_TYPE==1)
-
 	gCastleSiege.MainProc();
-
-	#endif
 
 	gCastleSiegeWeapon.MainProc();
 
 	gChaosCastle.MainProc();
 
-	#if(GAMESERVER_TYPE==1)
-
 	gCrywolf.MainProc();
-
-	#endif
 
 	gCustomArena.MainProc();
 
@@ -266,22 +258,17 @@ void gObjFirstProc() // OK
 
 	gCastleSiegeSync.AdjustTributeMoney();
 
-	#if(GAMESERVER_TYPE==1)
-
 	gCrywolf.CrywolfSecondAct();
 
-	#endif
-
-	#if(GAMESERVER_TYPE==1)
-
-	if(gCastleSiege.GetDataLoadState() == CASTLESIEGE_DATALOAD_2)
+	if (gServerInfo.m_ServerType == 1)
 	{
-		gCastleSiege.DataRequest();
+		if (gCastleSiege.GetDataLoadState() == CASTLESIEGE_DATALOAD_2)
+		{
+			gCastleSiege.DataRequest();
+		}
+
+		gCastleSiege.SendCastleStateSync();
 	}
-
-	gCastleSiege.SendCastleStateSync();
-
-	#endif
 }
 
 void gObjCloseProc() // OK
@@ -482,7 +469,7 @@ void gObjCharZeroSet(int aIndex) // OK
 	lpObj->ChatLimitTimeSec = 0;
 	lpObj->PKCount = 0;
 	lpObj->PKLevel = 0;
-	lpObj->PKTime = GetTickCount();
+	lpObj->PKTime = GetTickCountEx();
 	lpObj->X = 0;
 	lpObj->Y = 0;
 	lpObj->TX = 0;
@@ -695,12 +682,12 @@ void gObjCharZeroSet(int aIndex) // OK
 	lpObj->ComboTime = 0;
 	lpObj->HelperDelayTime = 0;
 	lpObj->HelperTotalTime = 0;
-	lpObj->PcPointPointTime = GetTickCount();
+	lpObj->PcPointPointTime = GetTickCountEx();
 	lpObj->HPAutoRecuperationTime = 0;
 	lpObj->MPAutoRecuperationTime = 0;
 	lpObj->BPAutoRecuperationTime = 0;
 	lpObj->SDAutoRecuperationTime = 0;
-	lpObj->CashShopGoblinPointTime = GetTickCount();
+	lpObj->CashShopGoblinPointTime = GetTickCountEx();
 	lpObj->Reset = 0;
 	lpObj->MasterReset = 0;
 	lpObj->ChangeSkin = 0;
@@ -730,7 +717,6 @@ void gObjCharZeroSet(int aIndex) // OK
 	lpObj->MobilityTalismanX = 0;
 	lpObj->MobilityTalismanY = 0;
 	lpObj->MapServerMoveQuit = 0;
-	#if(GAMESERVER_TYPE==1)
 	lpObj->CsNpcExistVal = 0;
 	lpObj->CsNpcType = 0;
 	lpObj->CsGateOpen = 0;
@@ -739,17 +725,14 @@ void gObjCharZeroSet(int aIndex) // OK
 	lpObj->CsNpcRgLevel = 0;
 	lpObj->CsJoinSide = 0;
 	lpObj->CsGuildInvolved = 0;
-	#endif
 	lpObj->IsCastleNPCUpgradeCompleted = 0;
 	lpObj->CsSiegeWeaponState = 0;
 	lpObj->CsWeaponIndex = -1;
 	lpObj->KillCount = 0;
 	lpObj->AccumulatedDamage = 0;
-	#if(GAMESERVER_TYPE==1)
 	lpObj->LifeStoneCount = 0;
 	lpObj->CreationState = 0;
 	lpObj->CreatedActivationTime = 0;
-	#endif
 
 	lpObj->MonsterSkillElementOption.Reset();
 
@@ -1035,7 +1018,7 @@ bool gObjAllocData(int aIndex) // OK
 
 		MemoryAllocatorInfo.m_Active = 1;
 
-		MemoryAllocatorInfo.m_ActiveTime = GetTickCount();
+		MemoryAllocatorInfo.m_ActiveTime = GetTickCountEx();
 
 		MemoryAllocatorInfo.Alloc();
 
@@ -1055,7 +1038,7 @@ bool gObjAllocData(int aIndex) // OK
 
 		MemoryAllocatorInfo.m_Active = 1;
 
-		MemoryAllocatorInfo.m_ActiveTime = GetTickCount();
+		MemoryAllocatorInfo.m_ActiveTime = GetTickCountEx();
 
 		gMemoryAllocator.InsertMemoryAllocatorInfo(MemoryAllocatorInfo);
 
@@ -1075,7 +1058,7 @@ void gObjFreeData(int aIndex) // OK
 
 		MemoryAllocatorInfo.m_Active = 0;
 
-		MemoryAllocatorInfo.m_ActiveTime = GetTickCount();
+		MemoryAllocatorInfo.m_ActiveTime = GetTickCountEx();
 
 		gMemoryAllocator.InsertMemoryAllocatorInfo(MemoryAllocatorInfo);
 	}
@@ -1153,8 +1136,8 @@ short gObjAdd(SOCKET socket,char* IpAddress,int aIndex) // OK
 
 	strcpy_s(lpObj->IpAddr,IpAddress);
 
-	lpObj->AutoSaveTime = GetTickCount();
-	lpObj->ConnectTickCount = GetTickCount();
+	lpObj->AutoSaveTime = GetTickCountEx();
+	lpObj->ConnectTickCount = GetTickCountEx();
 	lpObj->Type = OBJECT_USER;
 	lpObj->ExtWarehouse = 0;
 
@@ -1933,7 +1916,7 @@ void gObjTeleportMagicUse(int aIndex,int x,int y) // OK
 		return;
 	}
 
-	lpObj->TeleportTime = GetTickCount();
+	lpObj->TeleportTime = GetTickCountEx();
 	lpObj->PathCount = 0;
 	lpObj->Teleport = 1;
 	lpObj->ViewState = 1;
@@ -1958,7 +1941,7 @@ void gObjInterfaceCheckTime(LPOBJ lpObj) // OK
 		return;
 	}
 
-	if((GetTickCount()-lpObj->InterfaceTime) < 5000)
+	if((GetTickCountEx()-lpObj->InterfaceTime) < 5000)
 	{
 		return;
 	}
@@ -2011,7 +1994,7 @@ void gObjInterfaceCheckTime(LPOBJ lpObj) // OK
 		}
 	}
 
-	lpObj->InterfaceTime = GetTickCount();
+	lpObj->InterfaceTime = GetTickCountEx();
 }
 
 void gObjSkillNovaCheckTime(LPOBJ lpObj) // OK
@@ -2021,12 +2004,12 @@ void gObjSkillNovaCheckTime(LPOBJ lpObj) // OK
 		return;
 	}
 
-	if((GetTickCount()-lpObj->SkillNovaTime) < 500)
+	if((GetTickCountEx()-lpObj->SkillNovaTime) < 500)
 	{
 		return;
 	}
 
-	lpObj->SkillNovaTime = GetTickCount();
+	lpObj->SkillNovaTime = GetTickCountEx();
 
 	if((++lpObj->SkillNovaCount) == 12)
 	{
@@ -2067,7 +2050,7 @@ void gObjPKDownCheckTime(LPOBJ lpObj,int TargetLevel) // OK
 
 	if(lpObj->PKLevel < 3)
 	{
-		if(lpObj->PKTime > gServerInfo.m_PKDownTime1)
+		if(lpObj->PKTime > (XWORD)gServerInfo.m_PKDownTime1)
 		{
 			if(lpObj->PKCount < 100)
 			{
@@ -2083,7 +2066,7 @@ void gObjPKDownCheckTime(LPOBJ lpObj,int TargetLevel) // OK
 	}
 	else
 	{
-		if(lpObj->PKTime > gServerInfo.m_PKDownTime2)
+		if(lpObj->PKTime > (XWORD)gServerInfo.m_PKDownTime2)
 		{
 			if(lpObj->PKCount > 0)
 			{
@@ -2197,29 +2180,28 @@ void gObjPlayerKiller(LPOBJ lpObj,LPOBJ lpTarget) // OK
 		return;
 	}
 
-	#if(GAMESERVER_TYPE==1)
-
-	if(lpObj->Map == MAP_CASTLE_SIEGE)
+	if (gServerInfo.m_ServerType == 1)
 	{
-		if(gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE && lpObj->CsJoinSide != 0)
+		if (lpObj->Map == MAP_CASTLE_SIEGE)
 		{
-			return;
-		}
-		else if(lpObj->Y > 113)
-		{
-			if(gCastleSiege.CheckCastleOwnerUnionMember(lpObj->Index) != 0)
+			if (gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE && lpObj->CsJoinSide != 0)
+			{
+				return;
+			}
+			else if (lpObj->Y > 113)
+			{
+				if (gCastleSiege.CheckCastleOwnerUnionMember(lpObj->Index) != 0)
+				{
+					return;
+				}
+			}
+
+			if (lpTarget->PKLevel >= 6)
 			{
 				return;
 			}
 		}
-
-		if(lpTarget->PKLevel >= 6)
-		{
-			return;
-		}
 	}
-
-	#endif
 
 	if(CA_MAP_RANGE(lpObj->Map) != 0 && CA_MAP_RANGE(lpTarget->Map) != 0)
 	{
@@ -2375,32 +2357,31 @@ BOOL gObjMoveGate(int aIndex,int gate) // OK
 		gEffectManager.DelEffect(lpObj,EFFECT_ELF_BUFFER);
 	}
 
-	#if(GAMESERVER_TYPE==1)
-
-	if(TargetGate == 97)
+	if (gServerInfo.m_ServerType == 1)
 	{
-		if(gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE)
+		if (TargetGate == 97)
 		{
-			if(lpObj->CsJoinSide != 1 && gCastleSiege.GetCastleTowerAccessable() == 0)
+			if (gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE)
 			{
-				goto ERROR_JUMP;
-			}
+				if (lpObj->CsJoinSide != 1 && gCastleSiege.GetCastleTowerAccessable() == 0)
+				{
+					goto ERROR_JUMP;
+				}
 
-			if(lpObj->CsJoinSide == 0)
-			{
-				goto ERROR_JUMP;
+				if (lpObj->CsJoinSide == 0)
+				{
+					goto ERROR_JUMP;
+				}
 			}
-		}
-		else
-		{
-			if(gCastleSiege.CheckCastleOwnerMember(lpObj->Index) == 0 && gCastleSiege.CheckCastleOwnerUnionMember(lpObj->Index) == 0)
+			else
 			{
-				goto ERROR_JUMP;
+				if (gCastleSiege.CheckCastleOwnerMember(lpObj->Index) == 0 && gCastleSiege.CheckCastleOwnerUnionMember(lpObj->Index) == 0)
+				{
+					goto ERROR_JUMP;
+				}
 			}
 		}
 	}
-
-	#endif
 
 	if(map == MAP_ATLANS && lpObj->Inventory[8].IsItem() != 0 && (lpObj->Inventory[8].m_Index == GET_ITEM(13,2) || lpObj->Inventory[8].m_Index == GET_ITEM(13,3))) // Uniria,Dinorant
 	{
@@ -2671,7 +2652,7 @@ void gObjSkillUseProc(LPOBJ lpObj) // OK
 
 	if(lpObj->Type == OBJECT_USER && lpObj->DrinkSpeed > 0)
 	{
-		if(GetTickCount() >= lpObj->DrinkLastTime)
+		if(GetTickCountEx() >= lpObj->DrinkLastTime)
 		{
 			lpObj->DrinkSpeed = 0;
 			lpObj->DrinkLastTime = 0;
@@ -2737,7 +2718,7 @@ void gObjAddMsgSend(LPOBJ lpObj,int MsgCode,int SendUser,int SubCode) // OK
 			if(gSMMsg.ObjectStruct[lpObj->Index]->ObjectStruct[n] == gSMMsg.ObjectStruct[lpObj->Index]->CommonStruct){gSMMsg.ObjectStruct[lpObj->Index]->ObjectStruct[n] = new MESSAGE_STATE_MACHINE;}
 
 			gSMMsg[lpObj->Index][n].MsgCode = MsgCode;
-			gSMMsg[lpObj->Index][n].MsgTime = GetTickCount();
+			gSMMsg[lpObj->Index][n].MsgTime = GetTickCountEx();
 			gSMMsg[lpObj->Index][n].SendUser = SendUser;
 			gSMMsg[lpObj->Index][n].SubCode = SubCode;
 			return;
@@ -2756,7 +2737,7 @@ void gObjAddMsgSendDelay(LPOBJ lpObj,int MsgCode,int SendUser,int MsgTimeDelay,i
 			if(gSMMsg.ObjectStruct[lpObj->Index]->ObjectStruct[n] == gSMMsg.ObjectStruct[lpObj->Index]->CommonStruct){gSMMsg.ObjectStruct[lpObj->Index]->ObjectStruct[n] = new MESSAGE_STATE_MACHINE;}
 
 			gSMMsg[lpObj->Index][n].MsgCode = MsgCode;
-			gSMMsg[lpObj->Index][n].MsgTime = GetTickCount()+MsgTimeDelay;
+			gSMMsg[lpObj->Index][n].MsgTime = GetTickCountEx()+MsgTimeDelay;
 			gSMMsg[lpObj->Index][n].SendUser = SendUser;
 			gSMMsg[lpObj->Index][n].SubCode = SubCode;
 			return;
@@ -2775,7 +2756,7 @@ void gObjAddAttackProcMsgSendDelay(LPOBJ lpObj,int MsgCode,int SendUser,int MsgT
 			if(gSMAttackProcMsg.ObjectStruct[lpObj->Index]->ObjectStruct[n] == gSMAttackProcMsg.ObjectStruct[lpObj->Index]->CommonStruct){gSMAttackProcMsg.ObjectStruct[lpObj->Index]->ObjectStruct[n] = new MESSAGE_STATE_ATTACK_MACHINE;}
 
 			gSMAttackProcMsg[lpObj->Index][n].MsgCode = MsgCode;
-			gSMAttackProcMsg[lpObj->Index][n].MsgTime = GetTickCount()+MsgTimeDelay;
+			gSMAttackProcMsg[lpObj->Index][n].MsgTime = GetTickCountEx()+MsgTimeDelay;
 			gSMAttackProcMsg[lpObj->Index][n].SendUser = SendUser;
 			gSMAttackProcMsg[lpObj->Index][n].SubCode = SubCode;
 			gSMAttackProcMsg[lpObj->Index][n].SubCode2 = SubCode2;
@@ -2801,7 +2782,7 @@ void gObjSecondProc()
 		{
 			if(lpObj->MapServerMoveQuit == 1)
 			{
-				if(GetTickCount() - lpObj->MapServerMoveQuitTickCount > 30000)
+				if(GetTickCountEx() - lpObj->MapServerMoveQuitTickCount > 30000)
 				{
 					gObjDel(lpObj->Index);
 					continue;
@@ -2812,53 +2793,58 @@ void gObjSecondProc()
 
 			if(lpObj->Type == OBJECT_MONSTER)
 			{
-				#if(GAMESERVER_TYPE==1)
-				if(lpObj->Class == 283)
+				if (gServerInfo.m_ServerType == 1)
 				{
-					gGuardianStatue.GuardianStatueAct(lpObj->Index);
-					continue;
-				}
-				
-				if(lpObj->Class == 278)
-				{
-					gLifeStone.LifeStoneAct(lpObj->Index);
-					continue;
+					if (lpObj->Class == 283)
+					{
+						gGuardianStatue.GuardianStatueAct(lpObj->Index);
+						continue;
+					}
+
+					if (lpObj->Class == 278)
+					{
+						gLifeStone.LifeStoneAct(lpObj->Index);
+						continue;
+					}
+
+					if (lpObj->Class == 288)
+					{
+						gCannonTower.CannonTowerAct(lpObj->Index);
+						continue;
+					}
+
+					gCrywolf.CrywolfMonsterAct(lpObj->Index);
 				}
 
-				if(lpObj->Class == 288)
-				{
-					gCannonTower.CannonTowerAct(lpObj->Index);
-					continue;
-				}
-
-				gCrywolf.CrywolfMonsterAct(lpObj->Index);
-				#endif
-				if(lpObj->MonsterDeleteTime != 0 && GetTickCount() >= lpObj->MonsterDeleteTime)
+				if(lpObj->MonsterDeleteTime != 0 && GetTickCountEx() >= lpObj->MonsterDeleteTime)
 				{
 					gObjDel(lpObj->Index);
 					continue;
 				}
 			}
+
 			if(lpObj->Type == OBJECT_NPC)
 			{
-				#if(GAMESERVER_TYPE==1)
-				if( (lpObj->Class < 204)?FALSE:(lpObj->Class > 209)?FALSE:TRUE)
+				if (gServerInfo.m_ServerType == 1)
 				{
-					gCrywolf.CrywolfNpcAct(lpObj->Index);
+					if ((lpObj->Class < 204) ? FALSE : (lpObj->Class > 209) ? FALSE : TRUE)
+					{
+						gCrywolf.CrywolfNpcAct(lpObj->Index);
+					}
+
+					if (lpObj->Class == 216)
+					{
+						gCastleSiegeCrown.CastleSiegeCrownAct(lpObj->Index);
+						continue;
+					}
+
+					if (lpObj->Class == 217 || lpObj->Class == 218)
+					{
+						gCastleSiegeCrownSwitch.CastleSiegeCrownSwitchAct(lpObj->Index);
+						continue;
+					}
 				}
-				
-				if(lpObj->Class == 216)
-				{
-					gCastleSiegeCrown.CastleSiegeCrownAct(lpObj->Index);
-					continue;
-				}
-				
-				if(lpObj->Class == 217 || lpObj->Class == 218)
-				{
-					gCastleSiegeCrownSwitch.CastleSiegeCrownSwitchAct(lpObj->Index);
-					continue;
-				}
-				#endif
+
 				if(lpObj->Class == 221 || lpObj->Class == 222)
 				{
 					gCastleSiegeWeapon.CastleSiegeWeaponAct(lpObj->Index);
@@ -2892,20 +2878,19 @@ void gObjSecondProc()
 					}
 				}
 
-				#if(GAMESERVER_TYPE==1)
-
-				if(lpObj->Map == MAP_CASTLE_SIEGE && gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE)
+				if (gServerInfo.m_ServerType == 1)
 				{
-					if((lpObj->X < 150 || lpObj->X > 200) || (lpObj->Y < 175 || lpObj->Y > 225))
+					if (lpObj->Map == MAP_CASTLE_SIEGE && gCastleSiege.GetCastleState() == CASTLESIEGE_STATE_STARTSIEGE)
 					{
-						if(lpObj->AccumulatedCrownAccessTime > 0)
+						if ((lpObj->X < 150 || lpObj->X > 200) || (lpObj->Y < 175 || lpObj->Y > 225))
 						{
-							lpObj->AccumulatedCrownAccessTime = (((lpObj->AccumulatedCrownAccessTime-gServerInfo.m_CastleSiegeDecayAccumulatedTimeValue)<0)?0:(lpObj->AccumulatedCrownAccessTime-gServerInfo.m_CastleSiegeDecayAccumulatedTimeValue));
+							if (lpObj->AccumulatedCrownAccessTime > 0)
+							{
+								lpObj->AccumulatedCrownAccessTime = (((lpObj->AccumulatedCrownAccessTime - gServerInfo.m_CastleSiegeDecayAccumulatedTimeValue) < 0) ? 0 : (lpObj->AccumulatedCrownAccessTime - gServerInfo.m_CastleSiegeDecayAccumulatedTimeValue));
+							}
 						}
 					}
 				}
-
-				#endif
 
 				gObjectManager.CharacterAutoRecuperation(lpObj);
 	
@@ -3019,13 +3004,13 @@ void gObjSecondProc()
 		}
 		if(lpObj->Connected > OBJECT_LOGGED &&	lpObj->Type == OBJECT_USER)
 		{
-			if(GetTickCount() - lpObj->AutoSaveTime > 600000)
+			if(GetTickCountEx() - lpObj->AutoSaveTime > 600000)
 			{
 				GDCharacterInfoSaveSend(lpObj->Index);
-				lpObj->AutoSaveTime = GetTickCount();
+				lpObj->AutoSaveTime = GetTickCountEx();
 			}
 
-			if(lpObj->CheckSumTime > 0 && GetTickCount() - lpObj->CheckSumTime > 5000)
+			if(lpObj->CheckSumTime > 0 && GetTickCountEx() - lpObj->CheckSumTime > 5000)
 			{
 				LogAdd(LOG_BLACK,"[%s][%s] CheckSumTime Error",lpObj->Account, lpObj->Name);
 				GCCloseClientSend(n,0);
@@ -3042,7 +3027,7 @@ void gObjSecondProc()
 			{
 				if(lpObj->Connected >= OBJECT_LOGGED)
 				{
-					if(GetTickCount() - lpObj->ConnectTickCount > 60000)
+					if(GetTickCountEx() - lpObj->ConnectTickCount > 60000)
 					{
 						CloseClient(n);
 						LogAdd(LOG_BLACK,"Game response error causes conclusion [%d][%s][%s][%s]",lpObj->Index,lpObj->Account,lpObj->Name,lpObj->IpAddr);
@@ -3050,7 +3035,7 @@ void gObjSecondProc()
 				}
 				else
 				{
-					if(GetTickCount() - lpObj->ConnectTickCount > 30000)
+					if(GetTickCountEx() - lpObj->ConnectTickCount > 30000)
 					{
 						CloseClient(n);
 						LogAdd(LOG_BLACK,"Response error after connection causes conclusion [%d][%s][%s][%s]",lpObj->Index,lpObj->Account,lpObj->Name,lpObj->IpAddr);
@@ -3104,71 +3089,73 @@ BOOL gObjBackSpring(LPOBJ lpObj,LPOBJ lpTarget) // OK
 		}
 	}
 
-#if(GAMESERVER_TYPE==1)
-	if( lpObj->Type == OBJECT_USER)
+	if (gServerInfo.m_ServerType == 1)
 	{
-		if((lpObj->Authority &0x02) == 2)
+		if (lpObj->Type == OBJECT_USER)
 		{
-			return FALSE;
+			if ((lpObj->Authority & 0x02) == 2)
+			{
+				return FALSE;
+			}
 		}
 	}
-#endif
 
 	if ( lpObj->Class >= 131 && lpObj->Class <= 134 )
 	{
 		return FALSE;
 	}
 
-#if(GAMESERVER_TYPE==1)
-	if( lpObj->Class == 277 ||
-		lpObj->Class == 283 ||
-		lpObj->Class == 288 ||
-		lpObj->Class == 278 ||
-		lpObj->Class == 215 ||
-		lpObj->Class == 216 ||
-		lpObj->Class == 217 ||
-		lpObj->Class == 218 ||
-		lpObj->Class == 219 )
+	if (gServerInfo.m_ServerType == 1)
 	{
-		return FALSE;
-	}
-	
-	if(gCastleSiege.GetCrownUserIndex() == lpObj->Index)
-	{
-		if(lpObj->Inventory[8].m_Index == GET_ITEM(13,4))
+		if (lpObj->Class == 277 ||
+			lpObj->Class == 283 ||
+			lpObj->Class == 288 ||
+			lpObj->Class == 278 ||
+			lpObj->Class == 215 ||
+			lpObj->Class == 216 ||
+			lpObj->Class == 217 ||
+			lpObj->Class == 218 ||
+			lpObj->Class == 219)
 		{
 			return FALSE;
 		}
-	}
-	
-	if(gCrywolf.GetCrywolfState() == 4 || gCrywolf.GetCrywolfState() == 3)
-	{
-		if(lpObj->Type == OBJECT_USER)
+
+		if (gCastleSiege.GetCrownUserIndex() == lpObj->Index)
 		{
-			for(int i=205;i<=209;i++)
+			if (lpObj->Inventory[8].m_Index == GET_ITEM(13, 4))
 			{
-				int iAltarIndex = gCrywolfAltar.GetAltarUserIndex(i);
-				
-				if(iAltarIndex != -1)
+				return FALSE;
+			}
+		}
+
+		if (gCrywolf.GetCrywolfState() == 4 || gCrywolf.GetCrywolfState() == 3)
+		{
+			if (lpObj->Type == OBJECT_USER)
+			{
+				for (int i = 205; i <= 209; i++)
 				{
-					if(iAltarIndex == lpObj->Index)
+					int iAltarIndex = gCrywolfAltar.GetAltarUserIndex(i);
+
+					if (iAltarIndex != -1)
 					{
-						return FALSE;
+						if (iAltarIndex == lpObj->Index)
+						{
+							return FALSE;
+						}
 					}
 				}
 			}
 		}
-	}
 
-	if(lpObj->Class >= 204 && lpObj->Class <= 209)
-	{
-		return FALSE;
+		if (lpObj->Class >= 204 && lpObj->Class <= 209)
+		{
+			return FALSE;
+		}
+		if (lpObj->Class == 348)
+		{
+			return FALSE;
+		}
 	}
-	if(lpObj->Class == 348)
-	{
-		return FALSE;
-	}
-#endif
 
 	if(lpObj->Class == 275)
 	{
@@ -3308,83 +3295,86 @@ BOOL gObjBackSpring2(LPOBJ lpObj, LPOBJ lpTargetObj, int count)
 		}
 	}
 
-#if(GAMESERVER_TYPE==1)
-	if( lpObj->Type == OBJECT_USER)
+	if (gServerInfo.m_ServerType == 1)
 	{
-		if((lpObj->Authority &0x02) == 2)
+		if (lpObj->Type == OBJECT_USER)
 		{
-			return FALSE;
+			if ((lpObj->Authority & 0x02) == 2)
+			{
+				return FALSE;
+			}
 		}
 	}
-#endif
 
 	if ( lpObj->Class == 287 || lpObj->Class == 286 )
 	{
 		return FALSE;
 	}
 
-#if(GAMESERVER_TYPE==1)
-	if ( lpObj->Class == 278 )
+	if (gServerInfo.m_ServerType == 1)
 	{
-		return FALSE;
+		if (lpObj->Class == 278)
+		{
+			return FALSE;
+		}
 	}
-#endif
 
 	if ( lpObj->Class >= 131 && lpObj->Class <= 134 )
 	{
 		return FALSE;
 	}
 
-#if(GAMESERVER_TYPE==1)
-	if( lpObj->Class == 277 ||
-		lpObj->Class == 283 ||
-		lpObj->Class == 288 ||
-		lpObj->Class == 278 ||
-		lpObj->Class == 215 ||
-		lpObj->Class == 216 ||
-		lpObj->Class == 217 ||
-		lpObj->Class == 218 ||
-		lpObj->Class == 219 )
+	if (gServerInfo.m_ServerType == 1)
 	{
-		return FALSE;
-	}
-	
-	if(gCastleSiege.GetCrownUserIndex() == lpObj->Index)
-	{
-		if(lpObj->Inventory[8].m_Index == GET_ITEM(13,4))
+		if (lpObj->Class == 277 ||
+			lpObj->Class == 283 ||
+			lpObj->Class == 288 ||
+			lpObj->Class == 278 ||
+			lpObj->Class == 215 ||
+			lpObj->Class == 216 ||
+			lpObj->Class == 217 ||
+			lpObj->Class == 218 ||
+			lpObj->Class == 219)
 		{
 			return FALSE;
 		}
-	}
-	
-	if(gCrywolf.GetCrywolfState() == 4 || gCrywolf.GetCrywolfState() == 3)
-	{
-		if(lpObj->Type == OBJECT_USER)
+
+		if (gCastleSiege.GetCrownUserIndex() == lpObj->Index)
 		{
-			for(int i=205;i<=209;i++)
+			if (lpObj->Inventory[8].m_Index == GET_ITEM(13, 4))
 			{
-				int iAltarIndex = gCrywolfAltar.GetAltarUserIndex(i);
-				
-				if(iAltarIndex != -1)
+				return FALSE;
+			}
+		}
+
+		if (gCrywolf.GetCrywolfState() == 4 || gCrywolf.GetCrywolfState() == 3)
+		{
+			if (lpObj->Type == OBJECT_USER)
+			{
+				for (int i = 205; i <= 209; i++)
 				{
-					if(iAltarIndex == lpObj->Index)
+					int iAltarIndex = gCrywolfAltar.GetAltarUserIndex(i);
+
+					if (iAltarIndex != -1)
 					{
-						return FALSE;
+						if (iAltarIndex == lpObj->Index)
+						{
+							return FALSE;
+						}
 					}
 				}
 			}
 		}
+
+		if (lpObj->Class >= 204 && lpObj->Class <= 209)
+		{
+			return FALSE;
+		}
+		if (lpObj->Class == 348)
+		{
+			return FALSE;
+		}
 	}
-	
-	if(lpObj->Class >= 204 && lpObj->Class <= 209)
-	{
-		return FALSE;
-	}
-	if(lpObj->Class == 348)
-	{
-		return FALSE;
-	}
-#endif
 	
 	if(lpObj->Class == 275)
 	{
@@ -3412,11 +3402,14 @@ BOOL gObjBackSpring2(LPOBJ lpObj, LPOBJ lpTargetObj, int count)
 	}
 	*/
 
-#if(GAMESERVER_TYPE==1)
-	tdir = GetPathPacketDirPos(lpObj->X - lpTargetObj->X, lpObj->Y - lpTargetObj->Y) * 2;
-#else
-	tdir = GetPathPacketDirPos(lpObj->X - lpTargetObj->X, lpObj->Y - lpTargetObj->Y) * 2;
-#endif
+	if (gServerInfo.m_ServerType == 1)
+	{
+		tdir = GetPathPacketDirPos(lpObj->X - lpTargetObj->X, lpObj->Y - lpTargetObj->Y) * 2;
+	}
+	else
+	{
+		tdir = GetPathPacketDirPos(lpObj->X - lpTargetObj->X, lpObj->Y - lpTargetObj->Y) * 2;
+	}
 
 	int x = lpObj->X;
 	int y = lpObj->Y;
@@ -3519,7 +3512,7 @@ void gObjCheckSelfDefense(LPOBJ lpObj, int aTargetIndex)
 		{
 			if(lpObj->SelfDefense[n] == aTargetIndex)
 			{
-				lpObj->SelfDefenseTime[n] = GetTickCount()+60000;
+				lpObj->SelfDefenseTime[n] = GetTickCountEx()+60000;
 				return;
 			}
 		}
@@ -3534,9 +3527,9 @@ void gObjCheckSelfDefense(LPOBJ lpObj, int aTargetIndex)
 		return;
 	}
 
-	lpObj->MySelfDefenseTime = GetTickCount();
+	lpObj->MySelfDefenseTime = GetTickCountEx();
 	lpObj->SelfDefense[blank] = aTargetIndex;
-	lpObj->SelfDefenseTime[blank] = GetTickCount() + 60000;
+	lpObj->SelfDefenseTime[blank] = GetTickCountEx() + 60000;
 
 	char szTemp[64];
 
@@ -3576,7 +3569,7 @@ void gObjTimeCheckSelfDefense(LPOBJ lpObj)
 	{
 		if ( lpObj->SelfDefense[n] >= 0 )
 		{
-			if ( GetTickCount() > lpObj->SelfDefenseTime[n] )
+			if ( GetTickCountEx() > lpObj->SelfDefenseTime[n] )
 			{
 				wsprintf(szTemp, gMessage.GetMessage(486), lpObj->Name);
 				gNotice.GCNoticeSend(lpObj->Index,1,0,0,0,0,0,szTemp);
@@ -4157,7 +4150,7 @@ void gObjNotifyUpdateUnionV1(LPOBJ lpObj)
 	{
 		lpMsg->btCount = iVp1Count;
 
-		lpMsg->h.set(0x67,iVp1Count * sizeof(PMSG_UNION_VIEWPORT_NOTIFY) + sizeof(PMSG_UNION_VIEWPORT_NOTIFY_COUNT));
+		lpMsg->h.set(0x67, (WORD)(iVp1Count * sizeof(PMSG_UNION_VIEWPORT_NOTIFY) + sizeof(PMSG_UNION_VIEWPORT_NOTIFY_COUNT)));
 
 		DataSend(lpObj->Index,(LPBYTE)lpMsg,((lpMsg->h.size[1] & 0xFF) & 0xFF | ((lpMsg->h.size[0] & 0xFF) & 0xFF) << 8) & 0xFFFF);
 	}
@@ -4322,13 +4315,13 @@ void gObjUseDrink(LPOBJ lpObj,int level)
 	case 1: //ALE+1
 		GCItemUseSpecialTimeSend(lpObj->Index, 0, 180);
 		lpObj->DrinkSpeed = 20;
-		lpObj->DrinkLastTime = GetTickCount()+(180*1000);
+		lpObj->DrinkLastTime = GetTickCountEx()+(180*1000);
 		gObjectManager.CharacterCalcAttribute(lpObj->Index);
 		break;
 	default: //ALE+0
 		GCItemUseSpecialTimeSend(lpObj->Index, 0, 80);
 		lpObj->DrinkSpeed = 20;
-		lpObj->DrinkLastTime = GetTickCount()+(80*1000);
+		lpObj->DrinkLastTime = GetTickCountEx()+(80*1000);
 		gObjectManager.CharacterCalcAttribute(lpObj->Index);
 		break;
   }

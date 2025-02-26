@@ -88,9 +88,9 @@ struct SDHP_CASH_SHOP_RECIEVE_POINT_RECV
 	PSBMSG_HEAD header; // C1:18:06
 	WORD index;
 	char account[11];
-	DWORD CallbackFunc;
-	DWORD CallbackArg1;
-	DWORD CallbackArg2;
+	XWORD CallbackFunc;
+	XWORD CallbackArg1;
+	XWORD CallbackArg2;
 };
 
 struct SDHP_CASH_SHOP_ADD_POINT_SAVE_RECV
@@ -278,9 +278,9 @@ struct SDHP_CASH_SHOP_RECIEVE_POINT_SEND
 	PSBMSG_HEAD header; // C1:18:06
 	WORD index;
 	char account[11];
-	DWORD CallbackFunc;
-	DWORD CallbackArg1;
-	DWORD CallbackArg2;
+	XWORD CallbackFunc;
+	XWORD CallbackArg1;
+	XWORD CallbackArg2;
 	DWORD WCoinC;
 	DWORD WCoinP;
 	DWORD GoblinPoint;

@@ -41,7 +41,7 @@ CIllusionTemple::CIllusionTemple() // OK
 		lpLevel->Map = MAP_ILLUSION_TEMPLE1+n;
 		lpLevel->RemainTime = 0;
 		lpLevel->TargetTime = 0;
-		lpLevel->TickCount = GetTickCount();
+		lpLevel->TickCount = GetTickCountEx();
 		lpLevel->EnterEnabled = 0;
 		lpLevel->MinutesLeft = -1;
 		lpLevel->TimeCount = 0;
@@ -195,14 +195,14 @@ void CIllusionTemple::MainProc() // OK
 	{
 		ILLUSION_TEMPLE_LEVEL* lpLevel = &this->m_IllusionTempleLevel[n];
 
-		DWORD elapsed = GetTickCount()-lpLevel->TickCount;
+		XWORD elapsed = GetTickCountEx()-lpLevel->TickCount;
 
 		if(elapsed < 1000)
 		{
 			continue;
 		}
 
-		lpLevel->TickCount = GetTickCount();
+		lpLevel->TickCount = GetTickCountEx();
 
 		lpLevel->RemainTime = (int)difftime(lpLevel->TargetTime,time(0));
 
@@ -1517,9 +1517,9 @@ void CIllusionTemple::DropEventItem(int map,int number,int aIndex) // OK
 		return;
 	}
 
-	gMap[map].m_Item[number].m_Time = GetTickCount()+15000;
+	gMap[map].m_Item[number].m_Time = GetTickCountEx()+15000;
 
-	gMap[map].m_Item[number].m_LootTime = GetTickCount();
+	gMap[map].m_Item[number].m_LootTime = GetTickCountEx();
 
 	this->m_IllusionTempleLevel[level].EventItemNumber = number;
 

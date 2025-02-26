@@ -2,16 +2,13 @@
 #include "ConnectServerProtocol.h"
 #include "ClientManager.h"
 #include "Log.h"
-#include "Protect.h"
 #include "ServerList.h"
 #include "SocketManager.h"
 #include "Util.h"
 
 void ConnectServerProtocolCore(int index,BYTE head,BYTE* lpMsg,int size) // OK
 {
-	PROTECT_START
-
-	gClientManager[index].m_PacketTime = GetTickCount();
+	gClientManager[index].m_PacketTime = GetTickCountEx();
 
 	switch(head)
 	{
@@ -27,8 +24,6 @@ void ConnectServerProtocolCore(int index,BYTE head,BYTE* lpMsg,int size) // OK
 			}
 			break;
 	}
-
-	PROTECT_FINAL
 }
 
 void CCServerInfoRecv(PMSG_SERVER_INFO_RECV* lpMsg,int index) // OK

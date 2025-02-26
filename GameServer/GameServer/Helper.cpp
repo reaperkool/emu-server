@@ -55,13 +55,13 @@ void CHelper::MainProc() // OK
 				continue;
 			}
 
-			if((HelperStage=((GetTickCount()-lpObj->HelperTotalTime)/12000000)) >= MAX_HELPER_STAGE)
+			if((HelperStage=(int)((GetTickCountEx()-lpObj->HelperTotalTime)/12000000)) >= MAX_HELPER_STAGE)
 			{
 				this->DisableHelper(lpObj);
 				continue;
 			}
 
-			if((GetTickCount()-lpObj->HelperDelayTime) >= ((DWORD)(gServerInfo.m_HelperActiveDelay*60000)))
+			if((GetTickCountEx()-lpObj->HelperDelayTime) >= ((XWORD)(gServerInfo.m_HelperActiveDelay*60000)))
 			{
 				if(lpObj->Money < ((DWORD)((lpObj->Level+lpObj->MasterLevel)*gServerInfo.m_HelperActiveMoney[HelperStage])))
 				{
@@ -69,13 +69,13 @@ void CHelper::MainProc() // OK
 					continue;
 				}
 
-				lpObj->HelperDelayTime = GetTickCount();
+				lpObj->HelperDelayTime = GetTickCountEx();
 
 				lpObj->Money -= (lpObj->Level+lpObj->MasterLevel)*gServerInfo.m_HelperActiveMoney[HelperStage];
 
 				GCMoneySend(lpObj->Index,lpObj->Money);
 
-				this->GCHelperStartSend(lpObj->Index,((GetTickCount()-lpObj->HelperTotalTime)/60000),((lpObj->Level+lpObj->MasterLevel)*gServerInfo.m_HelperActiveMoney[HelperStage]),0);
+				this->GCHelperStartSend(lpObj->Index,(int)((GetTickCountEx()-lpObj->HelperTotalTime)/60000),((lpObj->Level+lpObj->MasterLevel)*gServerInfo.m_HelperActiveMoney[HelperStage]),0);
 			}
 		}
 	}
@@ -150,9 +150,9 @@ void CHelper::CGHelperStartRecv(PMSG_HELPER_START_RECV* lpMsg,int aIndex) // OK
 
 	if(lpMsg->type == 0)
 	{
-		lpObj->HelperDelayTime = GetTickCount();
+		lpObj->HelperDelayTime = GetTickCountEx();
 
-		lpObj->HelperTotalTime = GetTickCount();
+		lpObj->HelperTotalTime = GetTickCountEx();
 
 		this->GCHelperStartSend(aIndex,0,0,0);
 	}

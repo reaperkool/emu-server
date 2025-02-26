@@ -88,7 +88,7 @@ struct BLOOD_CASTLE_START_TIME
 
 struct BLOOD_CASTLE_DELAY_SCORE
 {
-	int Delay;
+	XWORD Delay;
 	int Index;
 	PMSG_BLOOD_CASTLE_SCORE_SEND Score;
 };
@@ -108,14 +108,14 @@ struct BLOOD_CASTLE_LEVEL
 	int Map;
 	int RemainTime;
 	int TargetTime;
-	int TickCount;
+	XWORD TickCount;
 	int EnterEnabled;
 	int MinutesLeft;
 	int TimeCount;
 	int Stage;
 	int CurMonster;
 	int MaxMonster;
-	int BridgeOpenTime;
+	XWORD BridgeOpenTime;
 	int EventItemSerial;
 	int EventItemNumber;
 	int EventItemOwner;

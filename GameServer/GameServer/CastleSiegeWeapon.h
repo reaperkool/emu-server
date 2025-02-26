@@ -66,7 +66,7 @@ struct CS_WEAPON_DAMAGED_TARGET_INFO
 {
 	int m_iWeaponObjIndex; // 0
 	int m_iTargetObjIndex; // 4
-	int m_iDamageDealingTime; // 8
+	XWORD m_iDamageDealingTime; // 8
 	BOOL m_IsUsed; // C
 
 	void Reset() // OK
@@ -83,7 +83,7 @@ struct CS_WEAPON_CAL_DAMAGER_INFO
 	int m_iWeaponObjIndex; // 0
 	int m_iTargetX; // 4
 	int m_iTargetY; // 8
-	int m_iLimitTime; // C
+	XWORD m_iLimitTime; // C
 	BOOL m_IsUsed; // 10
 
 	void Reset() // OK
@@ -91,7 +91,7 @@ struct CS_WEAPON_CAL_DAMAGER_INFO
 		this->m_iWeaponObjIndex = -1;
 		this->m_iTargetX = -1;
 		this->m_iTargetY = -1;
-		this->m_iLimitTime = -1;
+		this->m_iLimitTime = 0;
 		this->m_IsUsed = 0;
 	}
 };
@@ -103,8 +103,8 @@ public:
 	virtual ~CCastleSiegeWeapon();
 	void MainProc();
 	void CastleSiegeWeaponAct(int aIndex);
-	bool AddWeaponDamagedTargetInfo(int aIndex,int bIndex,int DelayTime);
-	bool AddWeaponCalDamageInfo(int aIndex,BYTE tx,BYTE ty,int DelayTime);
+	bool AddWeaponDamagedTargetInfo(int aIndex,int bIndex,XWORD DelayTime);
+	bool AddWeaponCalDamageInfo(int aIndex,BYTE tx,BYTE ty,XWORD DelayTime);
 	bool GetWeaponCalDamageInfo(int aIndex,BYTE* ox,BYTE* oy);
 	void GetTargetPointXY(int type,int PointIndex,BYTE* ox,BYTE* oy);
 	bool Attack(LPOBJ lpObj,LPOBJ lpTarget);

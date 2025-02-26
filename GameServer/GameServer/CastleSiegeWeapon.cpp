@@ -42,7 +42,7 @@ void CCastleSiegeWeapon::MainProc() // OK
 			continue;
 		}
 
-		if(((DWORD)this->m_WeaponDamagedTargetInfo[n].m_iDamageDealingTime) > GetTickCount())
+		if(((XWORD)this->m_WeaponDamagedTargetInfo[n].m_iDamageDealingTime) > GetTickCountEx())
 		{
 			continue;
 		}
@@ -75,7 +75,7 @@ void CCastleSiegeWeapon::CastleSiegeWeaponAct(int aIndex) // OK
 	{
 		if(this->m_WeaponCalDamageInfo[n].m_IsUsed != 0 && this->m_WeaponCalDamageInfo[n].m_iWeaponObjIndex == aIndex)
 		{
-			if(((DWORD)this->m_WeaponCalDamageInfo[n].m_iLimitTime) < GetTickCount())
+			if(((XWORD)this->m_WeaponCalDamageInfo[n].m_iLimitTime) < GetTickCountEx())
 			{
 				this->m_WeaponCalDamageInfo[n].Reset();
 			}
@@ -83,7 +83,7 @@ void CCastleSiegeWeapon::CastleSiegeWeaponAct(int aIndex) // OK
 	}
 }
 
-bool CCastleSiegeWeapon::AddWeaponDamagedTargetInfo(int aIndex,int bIndex,int DelayTime) // OK
+bool CCastleSiegeWeapon::AddWeaponDamagedTargetInfo(int aIndex,int bIndex,XWORD DelayTime) // OK
 {
 	for(int n=0;n < MAX_CS_WEAPON_DAMAGED_TARGET;n++)
 	{
@@ -91,7 +91,7 @@ bool CCastleSiegeWeapon::AddWeaponDamagedTargetInfo(int aIndex,int bIndex,int De
 		{
 			this->m_WeaponDamagedTargetInfo[n].m_iWeaponObjIndex = aIndex;
 			this->m_WeaponDamagedTargetInfo[n].m_iTargetObjIndex = bIndex;
-			this->m_WeaponDamagedTargetInfo[n].m_iDamageDealingTime = GetTickCount()+DelayTime;
+			this->m_WeaponDamagedTargetInfo[n].m_iDamageDealingTime = GetTickCountEx()+DelayTime;
 			this->m_WeaponDamagedTargetInfo[n].m_IsUsed = 1;
 			return 1;
 		}
@@ -100,7 +100,7 @@ bool CCastleSiegeWeapon::AddWeaponDamagedTargetInfo(int aIndex,int bIndex,int De
 	return 0;
 }
 
-bool CCastleSiegeWeapon::AddWeaponCalDamageInfo(int aIndex,BYTE tx,BYTE ty,int DelayTime) // OK
+bool CCastleSiegeWeapon::AddWeaponCalDamageInfo(int aIndex,BYTE tx,BYTE ty,XWORD DelayTime) // OK
 {
 	for(int n=0;n < MAX_CS_WEAPON_CAL_DAMAGER;n++)
 	{
@@ -109,7 +109,7 @@ bool CCastleSiegeWeapon::AddWeaponCalDamageInfo(int aIndex,BYTE tx,BYTE ty,int D
 			this->m_WeaponCalDamageInfo[n].m_iWeaponObjIndex = aIndex;
 			this->m_WeaponCalDamageInfo[n].m_iTargetX = tx;
 			this->m_WeaponCalDamageInfo[n].m_iTargetY = ty;
-			this->m_WeaponCalDamageInfo[n].m_iLimitTime = GetTickCount()+DelayTime;
+			this->m_WeaponCalDamageInfo[n].m_iLimitTime = GetTickCountEx()+DelayTime;
 			this->m_WeaponCalDamageInfo[n].m_IsUsed = 1;
 			return 1;
 		}

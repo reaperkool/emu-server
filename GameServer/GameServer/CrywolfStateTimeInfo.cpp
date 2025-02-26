@@ -29,7 +29,7 @@ bool CCrywolfStateTimeInfo::CheckScheduleTime() // OK
 	int Hour = CurrentTime.GetHour();
 	int Minute = CurrentTime.GetMinute();
 
-	CTimeSpan ValidRange(0,0,0,this->m_ContinuanceTime);
+	CTimeSpan ValidRange(0, 0, 0, this->m_ContinuanceTime);
 
 	if(this->m_Month != -1 && this->m_Month != Month)
 	{
@@ -76,7 +76,7 @@ bool CCrywolfStateTimeInfo::CheckScheduleTime() // OK
 
 bool CCrywolfStateTimeInfo::CheckContinuanceTime() // OK
 {
-	if((GetTickCount()-this->m_AppliedTickCount) > ((DWORD)this->m_ContinuanceTime))
+	if((GetTickCountEx()-this->m_AppliedTickCount) > (DWORD)this->m_ContinuanceTime)
 	{
 		return 0;
 	}
@@ -106,7 +106,7 @@ void CCrywolfStateTimeInfo::ResetAppliedTime() // OK
 
 void CCrywolfStateTimeInfo::SetAppliedTime() // OK
 {
-	this->m_AppliedTickCount = GetTickCount();
+	this->m_AppliedTickCount = GetTickCountEx();
 }
 
 int CCrywolfStateTimeInfo::GetLeftTime() // OK
@@ -116,7 +116,7 @@ int CCrywolfStateTimeInfo::GetLeftTime() // OK
 		return 0;
 	}
 
-	int LeftTime = this->m_ContinuanceTime-(GetTickCount()-this->m_AppliedTickCount);
+	int LeftTime = this->m_ContinuanceTime-(int)(GetTickCountEx()-this->m_AppliedTickCount);
 
 	LeftTime = ((LeftTime<0)?0:LeftTime);
 

@@ -30,7 +30,7 @@ void CQueueTimer::CreateTimer(int TimerIndex,int TimerDelay,WAITORTIMERCALLBACK 
 
 	QueueTimerInfo.TimerIndex = TimerIndex;
 
-	CreateTimerQueueTimer(&QueueTimerInfo.QueueTimerTimer,this->m_QueueTimer,CallbackFunction,(PVOID)TimerIndex,1000,TimerDelay,WT_EXECUTEINTIMERTHREAD);
+	CreateTimerQueueTimer(&QueueTimerInfo.QueueTimerTimer,this->m_QueueTimer,CallbackFunction,(PVOID)(XWORD)TimerIndex,1000,TimerDelay,WT_EXECUTEINTIMERTHREAD);
 
 	this->m_QueueTimerInfo.insert(std::pair<int,QUEUE_TIMER_INFO>(QueueTimerInfo.TimerIndex,QueueTimerInfo));
 }

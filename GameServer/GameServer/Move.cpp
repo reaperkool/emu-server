@@ -245,14 +245,13 @@ void CMove::CGTeleportRecv(PMSG_TELEPORT_RECV* lpMsg,int aIndex) // OK
 			return;
 		}
 
-		#if(GAMESERVER_TYPE==1)
-
-		if(lpObj->Map == MAP_CASTLE_SIEGE && gCastleSiege.CheckTeleportMagicAxisY(lpObj->Y,lpMsg->x,lpMsg->y) == 0)
+		if (gServerInfo.m_ServerType == 1)
 		{
-			lpMsg->y = (BYTE)lpObj->Y;
+			if (lpObj->Map == MAP_CASTLE_SIEGE && gCastleSiege.CheckTeleportMagicAxisY(lpObj->Y, lpMsg->x, lpMsg->y) == 0)
+			{
+				lpMsg->y = (BYTE)lpObj->Y;
+			}
 		}
-
-		#endif
 
 		CSkill* lpSkill = gSkillManager.GetSkill(lpObj,SKILL_TELEPORT);
 

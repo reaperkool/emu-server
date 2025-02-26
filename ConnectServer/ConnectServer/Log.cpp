@@ -131,5 +131,5 @@ void CLog::Output(eLogType type,char* text,...) // OK
 
 	DWORD OutSize;
 
-	WriteFile(lpInfo->File,buff,strlen(buff),&OutSize,0);
+	WriteFile(lpInfo->File,buff,(int)strlen(buff),&OutSize,0);
 }

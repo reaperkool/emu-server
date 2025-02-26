@@ -67,9 +67,9 @@ private:
 	int m_RaklionState;
 	int m_IsSucccess;
 	int m_IsComplete;
-	int m_AppearanceMSec;
-	int m_BossZoneCloseMSec;
-	int m_BossZoneOpenMSec;
+	XWORD m_AppearanceMSec;
+	XWORD m_BossZoneCloseMSec;
+	XWORD m_BossZoneOpenMSec;
 	int m_FileDataLoad;
 	int m_AppearanceDelay;
 	int m_BossZoneCloseDelay;

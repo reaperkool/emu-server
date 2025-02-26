@@ -50,9 +50,9 @@ public:
 	int m_AltarIndex;
 	int m_UserIndex;
 	int m_ContractCount;
-	int m_AppliedContractTime;
-	int m_ValidContractTime;
-	int m_LastValidContractTime;
+	XWORD m_AppliedContractTime;
+	XWORD m_ValidContractTime;
+	XWORD m_LastValidContractTime;
 };
 
 class CCrywolfAltar

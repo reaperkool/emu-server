@@ -6,6 +6,7 @@
 #include "MonsterSetBase.h"
 #include "MapServerManager.h"
 #include "MemScript.h"
+#include "MonsterManager.h"
 #include "Util.h"
 
 CMonsterSetBase gMonsterSetBase;
@@ -126,6 +127,11 @@ void CMonsterSetBase::SetInfo(MONSTER_SET_BASE_INFO info) // OK
 	}
 	
 	if(gMapServerManager.CheckMapServer(info.Map) == 0)
+	{
+		return;
+	}
+
+	if(gMonsterManager.GetInfo(info.MonsterClass) == 0)
 	{
 		return;
 	}

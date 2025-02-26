@@ -30,7 +30,7 @@ CInvasionManager::CInvasionManager() // OK
 		lpInfo->State = INVASION_STATE_BLANK;
 		lpInfo->RemainTime = 0;
 		lpInfo->TargetTime = 0;
-		lpInfo->TickCount = GetTickCount();
+		lpInfo->TickCount = GetTickCountEx();
 
 		this->CleanMonster(lpInfo);
 	}
@@ -224,14 +224,14 @@ void CInvasionManager::MainProc() // OK
 	{
 		INVASION_INFO* lpInfo = &this->m_InvasionInfo[n];
 
-		DWORD elapsed = GetTickCount()-lpInfo->TickCount;
+		XWORD elapsed = GetTickCountEx()-lpInfo->TickCount;
 
 		if(elapsed < 1000)
 		{
 			continue;
 		}
 
-		lpInfo->TickCount = GetTickCount();
+		lpInfo->TickCount = GetTickCountEx();
 
 		lpInfo->RemainTime = (int)difftime(lpInfo->TargetTime,time(0));
 

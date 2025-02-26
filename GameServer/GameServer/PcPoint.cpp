@@ -108,9 +108,9 @@ void CPcPoint::MainProc() // OK
 
 		LPOBJ lpObj = &gObj[n];
 
-		if((GetTickCount()-lpObj->PcPointPointTime) >= ((DWORD)gServerInfo.m_PcPointPointDelay*60000))
+		if((GetTickCountEx()-lpObj->PcPointPointTime) >= ((DWORD)gServerInfo.m_PcPointPointDelay*60000))
 		{
-			lpObj->PcPointPointTime = GetTickCount();
+			lpObj->PcPointPointTime = GetTickCountEx();
 			this->GDPcPointAddPointSaveSend(lpObj->Index,gBonusManager.GetBonusValue(lpObj,BONUS_INDEX_GLOBIN_POINT,gServerInfo.m_PcPointPointValue[lpObj->AccountLevel],-1,-1,-1,-1));
 			this->GDPcPointPointSend(lpObj->Index);
 		}

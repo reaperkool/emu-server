@@ -22,7 +22,7 @@ public:
 	BYTE m_Live;
 	BYTE m_Give;
 	DWORD m_State;
-	DWORD m_Time;
+	XWORD m_Time;
 	int m_UserIndex;
-	DWORD m_LootTime;
+	XWORD m_LootTime;
 };

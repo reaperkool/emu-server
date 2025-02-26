@@ -25,5 +25,5 @@ public:
 	int m_Minute;
 	int m_Second;
 	int m_ContinuanceTime;
-	DWORD m_AppliedTickCount;
+	XWORD m_AppliedTickCount;
 };

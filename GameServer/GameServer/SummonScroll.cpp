@@ -196,13 +196,13 @@ bool CSummonScroll::CreateSummonScrollMonster(int aIndex,int ItemIndex,int map,i
 	{
 		if(it->Index == SummonScrollInfo.Index)
 		{
-			RandomManager[it->Group].AddElement((int)(&(*it)),it->CreateRate);
+			RandomManager[it->Group].AddElement((XWORD)(&(*it)),it->CreateRate);
 		}
 	}
 
 	for(int n=0;n < MAX_SUMMON_SCROLL_MONSTER_GROUP;n++)
 	{
-		if(RandomManager[n].GetRandomElement((int*)&lpSummonScrollInfo) != 0)
+		if(RandomManager[n].GetRandomElement((XWORD*)&lpSummonScrollInfo) != 0)
 		{
 			int index = gObjAddMonster(map);
 
@@ -232,7 +232,7 @@ bool CSummonScroll::CreateSummonScrollMonster(int aIndex,int ItemIndex,int map,i
 			lpMonster->StartY = py;
 			lpMonster->Dir = 1;
 			lpMonster->Map = map;
-			lpMonster->MonsterDeleteTime = GetTickCount()+1800000;
+			lpMonster->MonsterDeleteTime = GetTickCountEx()+1800000;
 
 			if(gObjSetMonster(index,lpSummonScrollInfo->MonsterClass) == 0)
 			{

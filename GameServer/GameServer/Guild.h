@@ -172,10 +172,8 @@ struct GUILD_INFO_STRUCT
 	int GuildRival;
 	int TimeStamp;
 	char GuildRivalName[9];
-	#if(GAMESERVER_TYPE==1)
 	OBJECTSTRUCT* LifeStone;
 	int LifeStoneCount;
-	#endif
 	GUILD_INFO_STRUCT* back;
 	GUILD_INFO_STRUCT* next;
 };

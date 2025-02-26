@@ -61,7 +61,7 @@ bool CClientManager::CheckAlloc() // OK
 
 bool CClientManager::CheckOnlineTime() // OK
 {
-	if((GetTickCount()-this->m_OnlineTime) > MAX_ONLINE_TIME)
+	if((GetTickCountEx()-this->m_OnlineTime) > MAX_ONLINE_TIME)
 	{
 		return 0;
 	}
@@ -104,7 +104,7 @@ void CClientManager::AddClient(int index,char* ip,SOCKET socket) // OK
 	this->m_IoSendContext->IoMainBuffer.size = 0;
 	this->m_IoSendContext->IoSideBuffer.size = 0;
 
-	this->m_OnlineTime = GetTickCount();
+	this->m_OnlineTime = GetTickCountEx();
 
 	this->m_PacketTime = 0;
 
@@ -125,7 +125,7 @@ void CClientManager::DelClient() // OK
 
 	this->m_socket = INVALID_SOCKET;
 
-	this->m_OnlineTime = GetTickCount();
+	this->m_OnlineTime = GetTickCountEx();
 
 	this->m_PacketTime = 0;
 }

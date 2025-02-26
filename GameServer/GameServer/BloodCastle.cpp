@@ -37,7 +37,7 @@ CBloodCastle::CBloodCastle() // OK
 		lpLevel->Map = ((n<7)?(MAP_BLOOD_CASTLE1+n):MAP_BLOOD_CASTLE8);
 		lpLevel->RemainTime = 0;
 		lpLevel->TargetTime = 0;
-		lpLevel->TickCount = GetTickCount();
+		lpLevel->TickCount = GetTickCountEx();
 		lpLevel->EnterEnabled = 0;
 		lpLevel->MinutesLeft = -1;
 		lpLevel->TimeCount = 0;
@@ -224,14 +224,14 @@ void CBloodCastle::MainProc() // OK
 	{
 		BLOOD_CASTLE_LEVEL* lpLevel = &this->m_BloodCastleLevel[n];
 
-		DWORD elapsed = GetTickCount()-lpLevel->TickCount;
+		XWORD elapsed = GetTickCountEx()-lpLevel->TickCount;
 
 		if(elapsed < 1000)
 		{
 			continue;
 		}
 
-		lpLevel->TickCount = GetTickCount();
+		lpLevel->TickCount = GetTickCountEx();
 
 		lpLevel->RemainTime = (int)difftime(lpLevel->TargetTime,time(0));
 
@@ -670,7 +670,7 @@ void CBloodCastle::SetStage0(BLOOD_CASTLE_LEVEL* lpLevel) // OK
 
 	lpLevel->Stage = 1;
 
-	lpLevel->BridgeOpenTime = GetTickCount();
+	lpLevel->BridgeOpenTime = GetTickCountEx();
 
 	this->GCBloodCastleSimpleStateSend(lpLevel,3,-1);
 
@@ -681,7 +681,7 @@ void CBloodCastle::SetStage0(BLOOD_CASTLE_LEVEL* lpLevel) // OK
 
 void CBloodCastle::SetStage1(BLOOD_CASTLE_LEVEL* lpLevel) // OK
 {
-	if((GetTickCount()-lpLevel->BridgeOpenTime) < 3000)
+	if((GetTickCountEx()-lpLevel->BridgeOpenTime) < 3000)
 	{
 		return;
 	}
@@ -1682,9 +1682,9 @@ void CBloodCastle::DropEventItem(int map,int number,int aIndex) // OK
 		return;
 	}
 
-	gMap[map].m_Item[number].m_Time = GetTickCount()+this->m_BloodCastleLevel[level].RemainTime;
+	gMap[map].m_Item[number].m_Time = GetTickCountEx()+this->m_BloodCastleLevel[level].RemainTime;
 
-	gMap[map].m_Item[number].m_LootTime = GetTickCount();
+	gMap[map].m_Item[number].m_LootTime = GetTickCountEx();
 
 	this->m_BloodCastleLevel[level].EventItemNumber = number;
 
@@ -1944,7 +1944,7 @@ void CBloodCastle::CheckDelayScore(BLOOD_CASTLE_LEVEL* lpLevel) // OK
 {
 	for(std::vector<BLOOD_CASTLE_DELAY_SCORE>::iterator it=lpLevel->DelayScore.begin();it != lpLevel->DelayScore.end();)
 	{
-		if((GetTickCount()-it->Delay) < 8000)
+		if((GetTickCountEx()-it->Delay) < 8000)
 		{
 			it++;
 			continue;
@@ -2165,7 +2165,7 @@ void CBloodCastle::GCBloodCastleDelayScoreSend(BLOOD_CASTLE_LEVEL* lpLevel,int a
 
 	BLOOD_CASTLE_DELAY_SCORE DelayScore;
 
-	DelayScore.Delay = GetTickCount();
+	DelayScore.Delay = GetTickCountEx();
 
 	DelayScore.Index = lpUser->Index;
 

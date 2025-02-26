@@ -48,6 +48,7 @@ public:
 	char m_CustomerHardwareId[36];
 	char m_ServerName[32];
 	long m_ServerCode;
+	long m_ServerType;
 	long m_ServerLock;
 	long m_ServerPort;
 	char m_ServerMutex[32];

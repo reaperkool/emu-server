@@ -16,6 +16,6 @@ public:
 private:
 	int m_MayaObjIndex;
 	int m_MonsterKillCount;
-	int m_MayaSkillTime;
+	XWORD m_MayaSkillTime;
 	int m_IceStormCount;
 };

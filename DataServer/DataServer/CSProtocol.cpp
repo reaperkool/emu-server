@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "CSProtocol.h"
 #include "CharacterManager.h"
-#include "Protect.h"
 #include "QueryManager.h"
 #include "ServerManager.h"
 #include "Util.h"
@@ -82,8 +81,6 @@ void CSDataRecv(int index,BYTE head,BYTE* lpMsg,int size) // OK
 
 void ChatServerProtocolCore(int index,BYTE head,BYTE* lpMsg,int size) // OK
 {
-	PROTECT_START
-
 	switch(head)
 	{
 		case 0x60:
@@ -114,8 +111,6 @@ void ChatServerProtocolCore(int index,BYTE head,BYTE* lpMsg,int size) // OK
 			FriendMemoDelReq((FHP_FRIEND_MEMO_DEL_REQ*)lpMsg,index);
 			break;
 	}
-
-	PROTECT_FINAL
 }
 
 void FriendListRequest(FHP_FRIENDLIST_REQ* lpMsg,int index)
@@ -420,7 +415,11 @@ void FriendMemoSend(FHP_FRIEND_MEMO_SEND* lpMsg,int index)
 
 	pMsg.WindowGuid = lpMsg->WindowGuid;
 
-	gQueryManager.ExecQuery("WZ_WriteMail '%s','%s','%s',%d,%d",lpMsg->Name,lpMsg->ToName,lpMsg->Subject,lpMsg->Dir,lpMsg->Action);
+	gQueryManager.BindParameterAsString(1, lpMsg->ToName, sizeof(lpMsg->ToName));
+
+	gQueryManager.BindParameterAsString(2, lpMsg->Subject, sizeof(lpMsg->Subject));
+
+	gQueryManager.ExecQuery("WZ_WriteMail '%s',?,?,%d,%d", lpMsg->Name, lpMsg->Dir, lpMsg->Action);
 
 	gQueryManager.Fetch();
 
@@ -535,7 +534,7 @@ void FriendMemoReadReq(FHP_FRIEND_MEMO_RECV_REQ* lpMsg,int index)
 
 	gQueryManager.GetAsBinary("Memo",(BYTE*)pMsg.Memo,sizeof(pMsg.Memo));
 
-	pMsg.MemoSize = strlen(pMsg.Memo);
+	pMsg.MemoSize = (int)strlen(pMsg.Memo);
 
 	gQueryManager.Close();
 

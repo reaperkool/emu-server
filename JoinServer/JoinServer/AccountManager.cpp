@@ -30,7 +30,7 @@ void CAccountManager::DisconnectProc() // OK
 
 	for(std::map<std::string,ACCOUNT_INFO>::iterator it=this->m_AccountInfo.begin();it != this->m_AccountInfo.end();)
 	{
-		if(it->second.MapServerMove == 0 || (GetTickCount()-it->second.MapServerMoveTime) < 30000)
+		if(it->second.MapServerMove == 0 || (GetTickCountEx()-it->second.MapServerMoveTime) < 30000)
 		{
 			it++;
 			continue;
@@ -143,7 +143,7 @@ long CAccountManager::GetAccountCount() // OK
 
 	this->m_critical.lock();
 
-	AccountCount = this->m_AccountInfo.size();
+	AccountCount = (int)this->m_AccountInfo.size();
 
 	this->m_critical.unlock();
 

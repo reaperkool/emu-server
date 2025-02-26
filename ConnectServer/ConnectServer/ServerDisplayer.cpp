@@ -5,7 +5,6 @@
 #include "stdafx.h"
 #include "ServerDisplayer.h"
 #include "Log.h"
-#include "Protect.h"
 #include "ServerList.h"
 #include "SocketManager.h"
 
@@ -39,11 +38,7 @@ CServerDisplayer::~CServerDisplayer() // OK
 
 void CServerDisplayer::Init(HWND hWnd) // OK
 {
-	PROTECT_START
-
 	this->m_hwnd = hWnd;
-
-	PROTECT_FINAL
 
 	gLog.AddLog(1,"LOG");
 }
@@ -59,7 +54,7 @@ void CServerDisplayer::SetWindowName() // OK
 {
 	char buff[256];
 
-	wsprintf(buff,"[%s] MuEMU ConnectServer (QueueSize : %d)",CONNECTSERVER_VERSION,gSocketManager.GetQueueSize());
+	wsprintf(buff,"[%s] ConnectServer (QueueSize : %d)",CONNECTSERVER_VERSION,gSocketManager.GetQueueSize());
 
 	SetWindowText(this->m_hwnd,buff);
 }
@@ -83,13 +78,13 @@ void CServerDisplayer::PaintAllInfo() // OK
 	{
 		SetTextColor(hdc,RGB(200,200,200));
 		FillRect(hdc,&rect,this->m_brush[0]);
-		TextOut(hdc,120,20,this->m_DisplayerText[0],strlen(this->m_DisplayerText[0]));
+		TextOut(hdc,120,20,this->m_DisplayerText[0],(int)strlen(this->m_DisplayerText[0]));
 	}
 	else
 	{
 		SetTextColor(hdc,RGB(250,250,250));
 		FillRect(hdc,&rect,this->m_brush[1]);
-		TextOut(hdc,120,20,this->m_DisplayerText[1],strlen(this->m_DisplayerText[1]));
+		TextOut(hdc,120,20,this->m_DisplayerText[1],(int)strlen(this->m_DisplayerText[1]));
 	}
 
 	SelectObject(hdc,OldFont);
@@ -131,7 +126,7 @@ void CServerDisplayer::LogTextPaint() // OK
 				break;
 		}
 
-		int size = strlen(this->m_log[count].text);
+		int size = (int)strlen(this->m_log[count].text);
 
 		if(size > 1)
 		{
@@ -147,8 +142,6 @@ void CServerDisplayer::LogTextPaint() // OK
 
 void CServerDisplayer::LogAddText(eLogColor color,char* text,int size) // OK
 {
-	PROTECT_START
-
 	size = ((size>=MAX_LOG_TEXT_SIZE)?(MAX_LOG_TEXT_SIZE-1):size);
 
 	memset(&this->m_log[this->m_count].text,0,sizeof(this->m_log[this->m_count].text));
@@ -158,8 +151,6 @@ void CServerDisplayer::LogAddText(eLogColor color,char* text,int size) // OK
 	this->m_log[this->m_count].color = color;
 
 	this->m_count = (((++this->m_count)>=MAX_LOG_TEXT_LINE)?0:this->m_count);
-
-	PROTECT_FINAL
 
 	gLog.Output(LOG_GENERAL,"%s",&text[9]);
 }

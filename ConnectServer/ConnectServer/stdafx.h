@@ -1,17 +1,16 @@
 #pragma once
 
 #define WIN32_LEAN_AND_MEAN
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
 
-#define _WIN32_WINNT _WIN32_WINNT_WINXP
-
-#define CONNECTSERVER_VERSION "PREMIUM"
+#define CONNECTSERVER_VERSION "ALPHA"
 
 #ifndef CONNECTSERVER_UPDATE
 #define CONNECTSERVER_UPDATE 803
 #endif
 
 #ifndef PROTECT_STATE
-#define PROTECT_STATE 1
+#define PROTECT_STATE 0
 #endif
 
 // System Include
@@ -42,3 +41,11 @@ extern char CustomerHardwareId[36];
 extern long MaxIpConnection;
 
 typedef unsigned __int64 QWORD;
+
+#if (_WIN64)
+typedef unsigned __int64 XWORD;
+#define GetTickCountEx GetTickCount64
+#else
+typedef unsigned int XWORD;
+#define GetTickCountEx GetTickCount
+#endif

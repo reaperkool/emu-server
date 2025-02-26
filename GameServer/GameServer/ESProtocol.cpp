@@ -7,7 +7,6 @@
 #include "GuildClass.h"
 #include "Message.h"
 #include "Notice.h"
-#include "Protect.h"
 #include "ServerInfo.h"
 #include "Union.h"
 #include "Util.h"
@@ -15,12 +14,12 @@
 
 void ESDataSend(BYTE* lpMsg,int size)
 {
+	BYTE send[8192];
+
 	switch(lpMsg[0])
 	{
 		case 0xC1:
 			{
-				BYTE send[8192];
-
 				PSBMSG_HEAD pMsg;
 
 				pMsg.set(0xE0,lpMsg[2],(size=(size+1)));
@@ -34,8 +33,6 @@ void ESDataSend(BYTE* lpMsg,int size)
 			break;
 		case 0xC2:
 			{
-				BYTE send[8192];
-
 				PSWMSG_HEAD pMsg;
 
 				pMsg.set(0xE0,lpMsg[3],(size=(size+1)));
@@ -52,12 +49,12 @@ void ESDataSend(BYTE* lpMsg,int size)
 
 void ESDataRecv(BYTE head,BYTE* lpMsg,int size) // OK
 {
+	BYTE recv[8192];
+
 	switch(lpMsg[0])
 	{
 		case 0xC1:
 			{
-				BYTE recv[8192];
-
 				PBMSG_HEAD pMsg;
 
 				pMsg.set(lpMsg[3],(size=(size-1)));
@@ -71,8 +68,6 @@ void ESDataRecv(BYTE head,BYTE* lpMsg,int size) // OK
 			break;
 		case 0xC2:
 			{
-				BYTE recv[8192];
-
 				PWMSG_HEAD pMsg;
 
 				pMsg.set(lpMsg[4],(size=(size-1)));
@@ -89,8 +84,6 @@ void ESDataRecv(BYTE head,BYTE* lpMsg,int size) // OK
 
 void ExDBServerProtocolCore(BYTE head,BYTE* lpMsg,int size) // OK
 {
-	PROTECT_START
-
 	BYTE* aRecv = lpMsg;
 
 	switch(head)
@@ -158,8 +151,6 @@ void ExDBServerProtocolCore(BYTE head,BYTE* lpMsg,int size) // OK
 			}
 			break;
 	}
-
-	PROTECT_FINAL
 }
 
 void GDCharClose(int type, char* GuildName, char* Name)
@@ -218,10 +209,12 @@ void GDGuildCreateRecv(SDHP_GUILDCREATE_RESULT * lpMsg)
 	PMSG_GUILDCREATED_RESULT pMsg;
 	GUILD_INFO_STRUCT * lpNode;
 	char szMaster[11];
-	char szGuildName[9];
+	char szGuildName[9] = {0};
 
 	memcpy(szMaster, lpMsg->Master, sizeof(szMaster));
 	memcpy(szGuildName, lpMsg->GuildName, sizeof(szGuildName));
+
+	szGuildName[sizeof(szGuildName) - 1] = '\0';
 
 	if (lpMsg->Result == 0 )
 	{
@@ -404,11 +397,13 @@ void GDGuildMemberAddResult(SDHP_GUILDMEMBERADD_RESULT * lpMsg)
 	GUILD_INFO_STRUCT * lpNode;
 	int aIndex = -1;
 	int HereUserIndex=-1;
-	char szMember[11];
-	char szGuildName[9];
+	char szMember[11] = { 0 };
+	char szGuildName[9] = { 0 };
 
 	memcpy(szMember, lpMsg->MemberID, sizeof(szMember));
 	memcpy(szGuildName, lpMsg->GuildName, sizeof(szGuildName));
+
+	szGuildName[sizeof(szGuildName) - 1] = '\0';
 
 	if ( lpMsg->Flag == 1 )
 	{
@@ -470,6 +465,7 @@ void GDGuildMemberDelResult(SDHP_GUILDMEMBERDEL_RESULT * lpMsg)
 
 		if ( gObjIsConnected(aIndex) == TRUE )
 		{
+			szMember[sizeof(szMember) - 1] = '\0';
 			if ( strcmp(szMember, gObj[aIndex].Name) == 0 )
 			{
 				GCResultSend(aIndex, 0x53, lpMsg->Result);
@@ -556,11 +552,12 @@ void DGGuildMemberInfo(SDHP_GUILDMEMBER_INFO * lpMsg)
 			{
 				if ( strcmp(lpMsg->MemberID, gObj[n].Name ) == 0 )
 				{
-					#if(GAMESERVER_TYPE==1)
-					szGuildName[8] = NULL;
-					gCastleSiege.GetCsJoinSide(szGuildName,&gObj[n].CsJoinSide,&gObj[n].CsGuildInvolved);
-					gCastleSiege.NotifySelfCsJoinSide(n);
-					#endif
+					if (gServerInfo.m_ServerType == 1)
+					{
+						szGuildName[8] = NULL;
+						gCastleSiege.GetCsJoinSide(szGuildName, &gObj[n].CsJoinSide, &gObj[n].CsGuildInvolved);
+						gCastleSiege.NotifySelfCsJoinSide(n);
+					}
 					memcpy(gObj[n].GuildName,szGuildName,sizeof(gObj[n].GuildName));
 					gObj[n].Guild = gGuildClass.SearchGuild(gObj[n].GuildName);
 
@@ -629,10 +626,11 @@ void DGGuildMemberInfo(SDHP_GUILDMEMBER_INFO * lpMsg)
 					}
 					else
 					{
-						#if(GAMESERVER_TYPE==1)
-						gObj[n].CsJoinSide = 0;
-						gObj[n].CsGuildInvolved = 0;
-						#endif
+						if (gServerInfo.m_ServerType == 1)
+						{
+							gObj[n].CsJoinSide = 0;
+							gObj[n].CsGuildInvolved = 0;
+						}
 					}
 
 					return;
@@ -722,7 +720,7 @@ void GDGuildNoticeSave(LPSTR guild_name, LPSTR guild_notice)
 {
 	SDHP_GUILDNOTICE pMsg;
 
-	int len = strlen((char*)guild_notice);
+	int len = (int)strlen((char*)guild_notice);
 
 	if ( len < 1 )
 	{
@@ -1406,7 +1404,7 @@ void GDUnionListSend(int iUserIndex, int iUnionMasterGuildNumber)
 void DGUnionListRecv(LPBYTE aRecv)
 {
 	EXSDHP_UNION_LIST_COUNT * lpRecvMsg = (EXSDHP_UNION_LIST_COUNT *)aRecv;
-	EXSDHP_UNION_LIST * lpRecvMsgBody = (EXSDHP_UNION_LIST *)((DWORD)aRecv + 0x10 ) ;
+	EXSDHP_UNION_LIST * lpRecvMsgBody = (EXSDHP_UNION_LIST *)((XWORD)aRecv + 0x10 ) ;
 	char cBUFFER_V1[6000];
 	memset(cBUFFER_V1, 0, sizeof(cBUFFER_V1));
 	int iSize = MAKE_NUMBERW(lpRecvMsg->h.size[0], lpRecvMsg->h.size[1]);
@@ -1422,7 +1420,7 @@ void DGUnionListRecv(LPBYTE aRecv)
 		return;
 
 	PMSG_UNIONLIST_COUNT * lpMsg = (PMSG_UNIONLIST_COUNT *)cBUFFER_V1;
-	PMSG_UNIONLIST * lpMsgBody = (PMSG_UNIONLIST *)((DWORD)cBUFFER_V1+sizeof(PMSG_UNIONLIST_COUNT));
+	PMSG_UNIONLIST * lpMsgBody = (PMSG_UNIONLIST *)((XWORD)&cBUFFER_V1+sizeof(PMSG_UNIONLIST_COUNT));
 	lpMsg->btResult = lpRecvMsg->btResult;
 	lpMsg->btCount = lpRecvMsg->btCount;
 	lpMsg->btRivalMemberNum = lpRecvMsg->btRivalMemberNum;

@@ -310,9 +310,9 @@ void CCashShop::MainProc() // OK
 
 		LPOBJ lpObj = &gObj[n];
 
-		if((GetTickCount()-lpObj->CashShopGoblinPointTime) >= ((DWORD)gServerInfo.m_CashShopGoblinPointDelay*60000))
+		if((GetTickCountEx()-lpObj->CashShopGoblinPointTime) >= ((DWORD)gServerInfo.m_CashShopGoblinPointDelay*60000))
 		{
-			lpObj->CashShopGoblinPointTime = GetTickCount();
+			lpObj->CashShopGoblinPointTime = GetTickCountEx();
 			this->GDCashShopAddPointSaveSend(lpObj->Index,0,0,0,gBonusManager.GetBonusValue(lpObj,BONUS_INDEX_GLOBIN_POINT,gServerInfo.m_CashShopGoblinPointValue[lpObj->AccountLevel],-1,-1,-1,-1));
 			this->CGCashShopPointRecv(lpObj->Index);
 		}
@@ -1503,7 +1503,7 @@ void CCashShop::DGCashShopRecievePointRecv(SDHP_CASH_SHOP_RECIEVE_POINT_RECV* lp
 
 	LPOBJ lpObj = &gObj[lpMsg->index];
 
-	((void(*)(LPOBJ,DWORD,DWORD,DWORD,DWORD,DWORD))lpMsg->CallbackFunc)(lpObj,lpMsg->CallbackArg1,lpMsg->CallbackArg2,lpMsg->WCoinC,lpMsg->WCoinP,lpMsg->GoblinPoint);
+	((void(*)(LPOBJ,XWORD,XWORD,DWORD,DWORD,DWORD))lpMsg->CallbackFunc)(lpObj,lpMsg->CallbackArg1,lpMsg->CallbackArg2,lpMsg->WCoinC,lpMsg->WCoinP,lpMsg->GoblinPoint);
 
 	#endif
 }
@@ -1570,7 +1570,7 @@ void CCashShop::GDCashShopPeriodicItemSend(int aIndex) // OK
 	#endif
 }
 
-void CCashShop::GDCashShopRecievePointSend(int aIndex,DWORD CallbackFunc,DWORD CallbackArg1,DWORD CallbackArg2) // OK
+void CCashShop::GDCashShopRecievePointSend(int aIndex,XWORD CallbackFunc,XWORD CallbackArg1,XWORD CallbackArg2) // OK
 {
 	#if(GAMESERVER_UPDATE>=501)
 

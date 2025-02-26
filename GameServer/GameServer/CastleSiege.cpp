@@ -20,12 +20,11 @@
 #include "Move.h"
 #include "Notice.h"
 #include "ObjectManager.h"
+#include "ServerInfo.h"
 #include "Union.h"
 #include "User.h"
 #include "Util.h"
 #include "Viewport.h"
-
-#if(GAMESERVER_TYPE==1)
 
 CCastleSiege gCastleSiege;
 //////////////////////////////////////////////////////////////////////
@@ -141,18 +140,25 @@ void CCastleSiege::Clear()
 
 int CCastleSiege::Ready(int iMapSvrGroup)
 {
-	if(iMapSvrGroup < 0)
+	if (gServerInfo.m_ServerType == 1)
+	{
+		if (iMapSvrGroup < 0)
+		{
+			return false;
+		}
+
+		this->Clear();
+		this->ClearAllNPC();
+
+		this->m_iMapSvrGroup = iMapSvrGroup;
+		this->m_iCastleDataLoadState = 1;
+
+		return true;
+	}
+	else
 	{
 		return false;
 	}
-
-	this->Clear();
-	this->ClearAllNPC();
-
-	this->m_iMapSvrGroup = iMapSvrGroup;
-	this->m_iCastleDataLoadState = 1;
-
-	return true;
 }
 
 int CCastleSiege::LoadPreFixData(char * lpszFileName)
@@ -941,6 +947,11 @@ void CCastleSiege::SetState(int iCastleSiegeState,BOOL bSetRemainMsec)
 
 void CCastleSiege::MainProc()
 {
+	if (gServerInfo.m_ServerType != 1)
+	{
+		return;
+	}
+
 	if( this->m_bDoRun == FALSE )
 	{
 		return;
@@ -1651,7 +1662,7 @@ BOOL CCastleSiege::FirstCreateDbNPC()
 
 	lpMsg->wMapSvrNum = this->m_iMapSvrGroup;
 	lpMsg->iCount = iCOUNT;
-	lpMsg->h.set(0x84, (iCOUNT * sizeof(CSP_NPCSAVEDATA)) + sizeof(CSP_REQ_NPCSAVEDATA));
+	lpMsg->h.set(0x84, (WORD)((iCOUNT * sizeof(CSP_NPCSAVEDATA)) + sizeof(CSP_REQ_NPCSAVEDATA)));
 	gDataServerConnection.DataSend((BYTE*)lpMsg, (iCOUNT * sizeof(CSP_NPCSAVEDATA)) + sizeof(CSP_REQ_NPCSAVEDATA));
 
 	return TRUE;
@@ -3221,7 +3232,7 @@ void CCastleSiege::StoreDbNpc()
 
 	lpMsg->wMapSvrNum = this->m_iMapSvrGroup;
 	lpMsg->iCount = iCOUNT;
-	lpMsg->h.set(0x89,iCOUNT * sizeof(CSP_NPCUPDATEDATA) + sizeof(CSP_REQ_NPCUPDATEDATA));
+	lpMsg->h.set(0x89, (WORD)(iCOUNT * sizeof(CSP_NPCUPDATEDATA) + sizeof(CSP_REQ_NPCUPDATEDATA)));
 	gDataServerConnection.DataSend((BYTE*)lpMsg,iCOUNT * sizeof(CSP_NPCUPDATEDATA) + sizeof(CSP_REQ_NPCUPDATEDATA));
 
 	LogAdd(LOG_BLACK,"[CastleSiege] CCastleSiege::StoreDbNpc() - << END >>");
@@ -3301,7 +3312,7 @@ void CCastleSiege::SendNpcStateList(int iIndex, int iNpcType)
 	LeaveCriticalSection(&this->m_critNpcData);
 
 	lpMsgSend->btResult = 1;
-	lpMsgSend->h.set(0xB3, (sizeof(PMSG_NPCDBLIST) * iNPC_COUNT)+sizeof(PMSG_ANS_NPCDBLIST));
+	lpMsgSend->h.set(0xB3, (WORD)((sizeof(PMSG_NPCDBLIST) * iNPC_COUNT)+sizeof(PMSG_ANS_NPCDBLIST)));
 	lpMsgSend->iCount = iNPC_COUNT;
 
 	DataSend(iIndex, (LPBYTE)&cNPC_LIST, (sizeof(PMSG_NPCDBLIST) * iNPC_COUNT)+sizeof(PMSG_ANS_NPCDBLIST));
@@ -3866,7 +3877,7 @@ void CCastleSiege::SetCalcRegGuildList(CSP_CALCREGGUILDLIST* lpMsg, int iCOUNT)
 
 	sort(vtRegGuildScore.begin(), vtRegGuildScore.end(), CCastleSiege::RegGuildScoreCompFunc);
 
-	int iGUILD_COUNT = vtRegGuildScore.size();
+	int iGUILD_COUNT = (int)vtRegGuildScore.size();
 
 	if( iGUILD_COUNT > 3 ) 
 	{
@@ -3941,7 +3952,7 @@ void CCastleSiege::SetCalcRegGuildList(CSP_CALCREGGUILDLIST* lpMsg, int iCOUNT)
 
 	this->m_bCsBasicGuildInfoLoadOK = TRUE;
 
-	lpMsgSend->h.set(0x86, (lpMsgSend->iCount * sizeof(CSP_CSGUILDUNIONINFO))+ sizeof(CSP_REQ_CSGUILDUNIONINFO));
+	lpMsgSend->h.set(0x86, (WORD)((lpMsgSend->iCount * sizeof(CSP_CSGUILDUNIONINFO))+ sizeof(CSP_REQ_CSGUILDUNIONINFO)));
 	gDataServerConnection.DataSend((BYTE*)lpMsgSend, (lpMsgSend->iCount * sizeof(CSP_CSGUILDUNIONINFO))+ sizeof(CSP_REQ_CSGUILDUNIONINFO));
 }
 
@@ -4043,14 +4054,14 @@ void CCastleSiege::SaveCsTotalGuildInfo()
 
 	LeaveCriticalSection(&this->m_critCsTotalGuildInfo);
 
-	lpMsgSend->h.set(0x87, (lpMsgSend->iCount * sizeof(CSP_CSSAVETOTALGUILDINFO))+ sizeof(CSP_REQ_CSSAVETOTALGUILDINFO));
+	lpMsgSend->h.set(0x87, (WORD)((lpMsgSend->iCount * sizeof(CSP_CSSAVETOTALGUILDINFO))+ sizeof(CSP_REQ_CSSAVETOTALGUILDINFO)));
 	gDataServerConnection.DataSend((BYTE*)lpMsgSend, (lpMsgSend->iCount * sizeof(CSP_CSSAVETOTALGUILDINFO))+ sizeof(CSP_REQ_CSSAVETOTALGUILDINFO));
 
 	EnterCriticalSection(&this->m_critCsTotalGuildInfo);
 
 	std::map<std::string,_CS_TOTAL_GUILD_DATA>::iterator it2 = this->m_mapCsTotalGuildInfo.begin();
 
-	for( int iSize = this->m_mapCsTotalGuildInfo.size(); it2 != this->m_mapCsTotalGuildInfo.end(); it2++ )
+	for(int iSize = (int)this->m_mapCsTotalGuildInfo.size(); it2 != this->m_mapCsTotalGuildInfo.end(); it2++ )
 	{
 		std::string szGuildName = it2->first;
 
@@ -4108,7 +4119,7 @@ void CCastleSiege::SetCsTotalGuildInfo(CSP_CSLOADTOTALGUILDINFO* lpMsg, int iCOU
 
 	std::map<std::string,_CS_TOTAL_GUILD_DATA>::iterator it2 = this->m_mapCsTotalGuildInfo.begin();
 	
-	int iSize = this->m_mapCsTotalGuildInfo.size();
+	int iSize = (int)this->m_mapCsTotalGuildInfo.size();
 
 	for( ; it2 != this->m_mapCsTotalGuildInfo.end(); it2++ )
 	{
@@ -5416,7 +5427,7 @@ void CCastleSiege::OperateMiniMapWork()
 		}
 	}
 
-	lpMsgSend2->h.set(0xBB, (lpMsgSend2->iCount * sizeof(PMSG_SENDNPCMINIMAPDATA)) + sizeof(PMSG_ANS_SENDNPCMINIMAPDATA));
+	lpMsgSend2->h.set(0xBB, (WORD)((lpMsgSend2->iCount * sizeof(PMSG_SENDNPCMINIMAPDATA)) + sizeof(PMSG_ANS_SENDNPCMINIMAPDATA)));
 
 	LeaveCriticalSection(&this->m_critNpcData);
 
@@ -5489,7 +5500,7 @@ void CCastleSiege::OperateMiniMapWork()
 
 		memcpy(lpMsgSendBody1, it4->second.m_stMiniMapPoint, (lpMsgSend1->iCount * sizeof(PMSG_SENDMINIMAPDATA)));
 
-		lpMsgSend1->h.set(0xB6, (lpMsgSend1->iCount * sizeof(PMSG_SENDMINIMAPDATA)) + sizeof(PMSG_ANS_SENDMINIMAPDATA));
+		lpMsgSend1->h.set(0xB6, (WORD)((lpMsgSend1->iCount * sizeof(PMSG_SENDMINIMAPDATA)) + sizeof(PMSG_ANS_SENDMINIMAPDATA)));
 
 		DataSend(it4->second.m_iGuildMasterIndex, cBUFFER1, (lpMsgSend1->iCount * sizeof(PMSG_SENDMINIMAPDATA)) + sizeof(PMSG_ANS_SENDMINIMAPDATA));
 		DataSend(it4->second.m_iGuildMasterIndex, cBUFFER2, (lpMsgSend2->iCount * sizeof(PMSG_SENDNPCMINIMAPDATA)) + sizeof(PMSG_ANS_SENDNPCMINIMAPDATA));
@@ -5730,5 +5741,3 @@ void CCastleSiege::SavePcRoomUserList()
 {
 
 }
-
-#endif

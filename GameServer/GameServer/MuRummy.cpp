@@ -685,7 +685,7 @@ void CMuRummyMng::CGReqMuRummyEventOpen(_tagPMSG_REQ_MURUMMY_EVENT_OPEN* lpMsg, 
 
 	CTime ExpireTime(gServerInfo.m_EventInventoryExpireYear,gServerInfo.m_EventInventoryExpireMonth,gServerInfo.m_EventInventoryExpireDay,0,0,0,-1);
 
-	DWORD time = (DWORD)(ExpireTime.GetTime()-CTime::GetTickCount().GetTime());
+	XWORD time = (XWORD)(ExpireTime.GetTime()-CTime::GetTickCount().GetTime());
 
 	pMsg.btEventTime1 = SET_NUMBERHB(SET_NUMBERHW(time));
 	pMsg.btEventTime2 = SET_NUMBERLB(SET_NUMBERHW(time));

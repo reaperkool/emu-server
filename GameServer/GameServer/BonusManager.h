@@ -57,7 +57,7 @@ struct BONUS_INFO
 	int State;
 	int RemainTime;
 	int TargetTime;
-	int TickCount;
+	XWORD TickCount;
 	int StartMessage;
 	int FinalMessage;
 	int BonusTime;

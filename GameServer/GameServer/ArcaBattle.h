@@ -258,8 +258,8 @@ struct ARCA_BATTLE_OBELISK_INFO
 	int Attr;
 	int Life;
 	int OccupyLife;
-	int CreatedTime;
-	int RespawnTime;
+	XWORD CreatedTime;
+	XWORD RespawnTime;
 	ARCA_BATTLE_OBELISK_AURA_INFO AuraInfo[MAX_ARCA_BATTLE_OBELISK_AURA];
 };
 
@@ -354,7 +354,7 @@ private:
 	int m_State;
 	int m_RemainTime;
 	int m_TargetTime;
-	int m_TickCount;
+	XWORD m_TickCount;
 	ARCA_BATTLE_OBELISK_INFO m_ObeliskInfo[MAX_ARCA_BATTLE_OBELISK];
 	ARCA_BATTLE_OBELISK_STATE_INFO m_ObeliskStateInfo[MAX_ARCA_BATTLE_OBELISK];
 

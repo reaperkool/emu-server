@@ -312,7 +312,7 @@ BOOL CCastleDBSet::DSDB_QueryGuildMarkRegInfo(int iMapSvrGroup, char* lpszGuildN
 		return TRUE;
 	}
 
-	if (CheckTextSyntax(lpszGuildName,strlen(lpszGuildName)) == FALSE)
+	if (CheckTextSyntax(lpszGuildName,(int)strlen(lpszGuildName)) == FALSE)
 	{
 		return TRUE;
 	}
@@ -387,7 +387,7 @@ BOOL CCastleDBSet::DSDB_QueryCastleOwnerChange(int iMapSvrGroup, CSP_REQ_CASTLEO
 	char szGuildName[9] = {'\0'};
 	memcpy(szGuildName, lpCastleOwnerInfo->szOwnerGuildName, 8);
 	
-	if (CheckTextSyntax(szGuildName,strlen(szGuildName)) == FALSE)
+	if (CheckTextSyntax(szGuildName,(int)strlen(szGuildName)) == FALSE)
 	{
 		return TRUE;
 	}
@@ -424,8 +424,8 @@ BOOL CCastleDBSet::DSDB_QueryRegAttackGuild(int iMapSvrGroup, CSP_REQ_REGATTACKG
 
 	char szGuildName[9] = {'\0'};
 	memcpy(szGuildName, lpRegAttackGuild->szEnemyGuildName, 8);
-	
-	if (CheckTextSyntax(szGuildName,strlen(szGuildName)) == FALSE)
+
+	if (CheckTextSyntax(szGuildName,(int)strlen(szGuildName)) == FALSE)
 	{
 		return TRUE;
 	}
@@ -487,7 +487,7 @@ BOOL CCastleDBSet::DSDB_QueryGuildMarkRegMark(int iMapSvrGroup, char* lpszGuildN
 		return TRUE;
 	}
 
-	if ( !CheckTextSyntax(lpszGuildName,strlen(lpszGuildName)) )
+	if ( !CheckTextSyntax(lpszGuildName,(int)strlen(lpszGuildName)) )
 	{
 		return TRUE;
 	}
@@ -524,7 +524,7 @@ BOOL CCastleDBSet::DSDB_QueryGuildMarkReset(int iMapSvrGroup, char* lpszGuildNam
 		return TRUE;
 	}
 
-	if (CheckTextSyntax(lpszGuildName,strlen(lpszGuildName)) == FALSE)
+	if (CheckTextSyntax(lpszGuildName,(int)strlen(lpszGuildName)) == FALSE)
 	{
 		return TRUE;
 	}
@@ -559,7 +559,7 @@ BOOL CCastleDBSet::DSDB_QueryGuildSetGiveUp(int iMapSvrGroup, char* lpszGuildNam
 		return TRUE;
 	}
 	
-	if (CheckTextSyntax(lpszGuildName,strlen(lpszGuildName)) == FALSE)
+	if (CheckTextSyntax(lpszGuildName,(int)strlen(lpszGuildName)) == FALSE)
 	{
 		return TRUE;
 	}

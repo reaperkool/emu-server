@@ -213,7 +213,7 @@ void CRaklion::ProcState_NOTIFY1() // OK
 
 void CRaklion::ProcState_STANDBY() // OK
 {
-	if(((DWORD)this->m_AppearanceDelay*1000) <= (GetTickCount()-this->m_AppearanceMSec))
+	if(((XWORD)this->m_AppearanceDelay*1000) <= (GetTickCountEx()-this->m_AppearanceMSec))
 	{
 		this->SetState(RAKLION_STATE_NOTIFY2);
 		return;
@@ -232,7 +232,7 @@ void CRaklion::ProcState_READY() // OK
 
 void CRaklion::ProcState_START_BATTLE() // OK
 {
-	if(((DWORD)this->m_BossZoneCloseDelay*1000) <= (GetTickCount()-this->m_BossZoneCloseMSec))
+	if(((DWORD)this->m_BossZoneCloseDelay*1000) <= (GetTickCountEx()-this->m_BossZoneCloseMSec))
 	{
 		this->SetState(RAKLION_STATE_NOTIFY3);
 		return;
@@ -280,7 +280,7 @@ void CRaklion::ProcState_ALL_USER_DIE() // OK
 
 void CRaklion::ProcState_NOTIFY4() // OK
 {
-	if(((DWORD)this->m_BossZoneOpenDelay*1000) <= (GetTickCount()-this->m_BossZoneOpenMSec))
+	if(((XWORD)this->m_BossZoneOpenDelay*1000) <= (GetTickCountEx()-this->m_BossZoneOpenMSec))
 	{
 		this->SetState(RAKLION_STATE_END);
 		return;
@@ -352,7 +352,7 @@ void CRaklion::SetState_STANDBY() // OK
 {
 	LogAdd(LOG_BLACK,"[ RAKLION ] State(%d) -> STANDBY",this->m_RaklionState);
 
-	this->m_AppearanceMSec = GetTickCount();
+	this->m_AppearanceMSec = GetTickCountEx();
 
 	this->SetRaklionState(RAKLION_STATE_STANDBY);
 }
@@ -379,7 +379,7 @@ void CRaklion::SetState_START_BATTLE() // OK
 {
 	LogAdd(LOG_BLACK,"[ RAKLION ] State(%d) -> START_BATTLE",this->m_RaklionState);
 
-	this->m_BossZoneCloseMSec = GetTickCount();
+	this->m_BossZoneCloseMSec = GetTickCountEx();
 
 	this->SetRaklionState(RAKLION_STATE_START_BATTLE);
 }
@@ -415,7 +415,7 @@ void CRaklion::SetState_NOTIFY4() // OK
 {
 	LogAdd(LOG_BLACK,"[ RAKLION ] State(%d) -> NOTIFY4",this->m_RaklionState);
 
-	this->m_BossZoneOpenMSec = GetTickCount();
+	this->m_BossZoneOpenMSec = GetTickCountEx();
 
 	gNotice.GCNoticeSendToAll(0,0,0,0,0,0,gMessage.GetMessage(323),(((this->m_BossZoneOpenDelay/60)==0)?1:(this->m_BossZoneOpenDelay/60)));
 

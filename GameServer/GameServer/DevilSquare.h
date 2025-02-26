@@ -90,7 +90,7 @@ struct DEVIL_SQUARE_LEVEL
 	int Map;
 	int RemainTime;
 	int TargetTime;
-	int TickCount;
+	XWORD TickCount;
 	int EnterEnabled;
 	int MinutesLeft;
 	int TimeCount;

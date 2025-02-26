@@ -20,7 +20,7 @@ CMap gMap[MAX_MAP];
 CMap::CMap() // OK
 {
 	this->m_Weather = 0;
-	this->m_WeatherTimer = GetTickCount();
+	this->m_WeatherTimer = GetTickCountEx();
 	this->m_NextWeatherTimer = (GetLargeRand()%10000)+10000;
 	this->m_MapAttr = 0;
 	this->m_width = 0;
@@ -222,9 +222,9 @@ void CMap::SetWeather(BYTE weather,BYTE variation) // OK
 
 void CMap::WeatherVariationProcess() // OK
 {
-	if((GetTickCount()-this->m_WeatherTimer) > this->m_NextWeatherTimer)
+	if((GetTickCountEx()-this->m_WeatherTimer) > this->m_NextWeatherTimer)
 	{
-		this->m_WeatherTimer = GetTickCount();
+		this->m_WeatherTimer = GetTickCountEx();
 		this->m_NextWeatherTimer = (GetLargeRand()%10000)+10000;
 		this->m_WeatherVariation = GetLargeRand()%10;
 		this->m_Weather = GetLargeRand()%3;
@@ -307,7 +307,7 @@ bool CMap::MoneyItemDrop(int money,int x,int y) // OK
 			this->m_Item[count].m_Live = 1;
 			this->m_Item[count].m_Give = 0;
 			this->m_Item[count].m_State = 1;
-			this->m_Item[count].m_Time = GetTickCount()+(gServerInfo.m_MoneyDropTime*1000);
+			this->m_Item[count].m_Time = GetTickCountEx()+(gServerInfo.m_MoneyDropTime*1000);
 			this->m_Item[count].m_LootTime = 0;
 			this->m_ItemCount = (((++this->m_ItemCount)>=MAX_MAP_ITEM)?0:this->m_ItemCount);
 			return 1;
@@ -420,7 +420,7 @@ bool CMap::CheckItemGive(int aIndex,int index) // OK
 
 	int loot = 1;
 
-	if(OBJECT_RANGE(this->m_Item[index].m_UserIndex) != 0 && this->m_Item[index].m_LootTime > GetTickCount() && this->m_Item[index].m_UserIndex != aIndex)
+	if(OBJECT_RANGE(this->m_Item[index].m_UserIndex) != 0 && this->m_Item[index].m_LootTime > GetTickCountEx() && this->m_Item[index].m_UserIndex != aIndex)
 	{
 		loot = 0;
 
@@ -471,7 +471,7 @@ void CMap::StateSetDestroy() // OK
 				this->m_Item[n].m_Give = 0;
 				break;
 			default:
-				if((GetTickCount() > this->m_Item[n].m_Time))
+				if((GetTickCountEx() > this->m_Item[n].m_Time))
 				{
 					if(IT_MAP_RANGE(this->m_MapNumber) != 0 && gIllusionTemple.CheckEventItemSerial(this->m_MapNumber,&this->m_Item[n]) != 0)
 					{
