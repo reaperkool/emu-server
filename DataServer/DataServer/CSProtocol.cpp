@@ -186,7 +186,9 @@ void FriendStateClientRecv(FHP_FRIEND_STATE_C* lpMsg, int index)
 
 void FriendAddRequest(FHP_FRIEND_ADD_REQ* lpMsg, int index)
 {
-	gQueryManager.ExecQuery("WZ_WaitFriendAdd '%s','%s'", lpMsg->Name, lpMsg->FriendName);
+	gQueryManager.BindParameterAsString(1, lpMsg->FriendName, sizeof(lpMsg->FriendName));
+
+	gQueryManager.ExecQuery("WZ_WaitFriendAdd '%s',?", lpMsg->Name);
 
 	gQueryManager.Fetch();
 
@@ -304,7 +306,9 @@ void WaitFriendAddRequest(FHP_WAITFRIEND_ADD_REQ* lpMsg, int index)
 
 	if(lpMsg->Result == 0)
 	{
-		gQueryManager.ExecQuery("WZ_WaitFriendDel '%s','%s'", lpMsg->Name, lpMsg->FriendName);
+		gQueryManager.BindParameterAsString(1, lpMsg->FriendName, sizeof(lpMsg->FriendName));
+
+		gQueryManager.ExecQuery("WZ_WaitFriendDel '%s',?", lpMsg->Name);
 
 		gQueryManager.Fetch();
 
@@ -316,7 +320,9 @@ void WaitFriendAddRequest(FHP_WAITFRIEND_ADD_REQ* lpMsg, int index)
 	}
 	else
 	{
-		gQueryManager.ExecQuery("WZ_FriendAdd '%s','%s'", lpMsg->Name, lpMsg->FriendName);
+		gQueryManager.BindParameterAsString(1, lpMsg->FriendName, sizeof(lpMsg->FriendName));
+
+		gQueryManager.ExecQuery("WZ_FriendAdd '%s',?", lpMsg->Name);
 
 		gQueryManager.Fetch();
 
@@ -366,7 +372,9 @@ void FriendDelRequest(FHP_FRIEND_ADD_REQ* lpMsg, int index)
 
 	memcpy(pMsg.FriendName, lpMsg->FriendName, sizeof(pMsg.FriendName));
 
-	gQueryManager.ExecQuery("WZ_FriendDel '%s','%s'", lpMsg->Name, lpMsg->FriendName);
+	gQueryManager.BindParameterAsString(1, lpMsg->FriendName, sizeof(lpMsg->FriendName));
+
+	gQueryManager.ExecQuery("WZ_FriendDel '%s',?", lpMsg->Name);
 
 	gQueryManager.Fetch();
 
